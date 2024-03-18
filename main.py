@@ -14,6 +14,13 @@ def resourcePath(relativePath):
 
 logoPath = resourcePath("Assets/Images/sunstone.png")
 
+class adminMonitoring(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Admin Dashboard")
+        self.setGeometry(550,150,255,600)
+
 class userMonitoring(QWidget):
     def __init__(self):
         super().__init__()
