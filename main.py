@@ -35,6 +35,13 @@ class userManagement(QWidget):
         self.setWindowTitle("User Management")
         self.setGeometry(0,0,650,580)
 
+class adminMenu(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Admin Menu")
+        self.setWindowTitle(0,0,430,180)
+
 class adminMonitoring(QWidget):
     def __init__(self):
         super().__init__()
