@@ -127,6 +127,10 @@ class adminMonitoring(QWidget):
 
         layout.addWidget(mapButton)
 
+        adminButton = QPushButton("Admin Menu")
+
+        layout.addWidget(adminButton)
+
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0,0,255,600)
 
