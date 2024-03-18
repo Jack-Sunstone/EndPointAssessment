@@ -21,7 +21,7 @@ class ioDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle("IO Box Dashboard")
-        self.setGeometry(0,0,760,305)
+        self.setGeometry(0,0,760,200)
 
         layout = QGridLayout()
 
@@ -71,6 +71,10 @@ class ioDashboard(QWidget):
 
         layout.addWidget(self.Camera4, 0, 4)
         layout.addWidget(camera4Button, 1, 4)
+
+        routerButton = QPushButton("Router Webpage")
+
+        layout.addWidget(routerButton,2,1,1,3)
 
         self.setLayout(layout)
 
