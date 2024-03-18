@@ -25,6 +25,13 @@ class loginUI(QMainWindow):
 
         self.Logo = QLabel()
         pixmap = QPixmap(logoPath)
+        self.Logo.setPixmap(pixmap)
+
+        loginLayout.addWidget(self.Logo,0,0)
+
+        loginWidget = QWidget()
+        loginWidget.setLayout(loginLayout)
+        self.setCentralWidget(loginWidget)
 
 
 app = QApplication([])
