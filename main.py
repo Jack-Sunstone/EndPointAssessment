@@ -26,22 +26,24 @@ class loginUI(QMainWindow):
         self.Logo = QLabel()
         pixmap = QPixmap(logoPath)
         self.Logo.setPixmap(pixmap)
+        self.Logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loginLayout.addWidget(self.Logo,0,0)
+        loginLayout.addWidget(self.Logo, 0,0, 3,3)
+
 
         usernameEntry = QLineEdit()
         usernameEntry.setPlaceholderText("Username")
 
-        loginLayout.addWidget(usernameEntry, 1, 0)
+        loginLayout.addWidget(usernameEntry, 4, 0,)
 
         passwordEntry = QLineEdit()
         passwordEntry.setPlaceholderText("Password")
 
-        loginLayout.addWidget(passwordEntry, 2, 0)
+        loginLayout.addWidget(passwordEntry, 5, 0,)
 
         loginButton = QPushButton("Login")
 
-        loginLayout.addWidget(loginButton, 3, 0)
+        loginLayout.addWidget(loginButton, 6,0)
 
         loginWidget = QWidget()
         loginWidget.setLayout(loginLayout)
