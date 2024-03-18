@@ -21,6 +21,11 @@ class loginUI(QMainWindow):
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(550,300,380,320)
 
+        loginLayout = QGridLayout()
+
+        self.Logo = QLabel()
+        pixmap = QPixmap(logoPath)
+
 
 app = QApplication([])
 app.setStyle('GTK')
