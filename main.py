@@ -14,8 +14,6 @@ def resourcePath(relativePath):
 
 logoPath = resourcePath("Assets/Images/sunstone.png")
 
-
-
 class ioDashboard(QWidget):
     def __init__(self):
         super().__init__()
@@ -49,7 +47,19 @@ class adminMenu(QWidget):
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
-        self.setWindowTitle(0,0,430,180)
+        self.setGeometry(0,0,430,180)
+
+        adminMenuLayout = QVBoxLayout()
+
+        userManagementButton = QPushButton("User Management")
+
+        adminMenuLayout.addWidget(userManagementButton)
+
+        unitManagementButton = QPushButton("Unit Management")
+
+        adminMenuLayout.addWidget(unitManagementButton)
+
+        self.setLayout(adminMenuLayout)
 
 class interactiveMap(QWidget):
     def __init__(self):
@@ -103,11 +113,11 @@ class loginUI(QMainWindow):
 
         loginLayout.addWidget(loginButton, 6,0)
 
-        loginWidget = QWidget()
-        loginWidget.setLayout(loginLayout)
-        self.setCentralWidget(loginWidget)
+        widget = QWidget()
+        widget.setLayout(loginLayout)
+        self.setCentralWidget(widget)
 
-        self.monitor = ioDashboard()
+        self.monitor = adminMenu()
         self.monitor.show()
 
 app = QApplication([])
