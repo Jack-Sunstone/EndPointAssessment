@@ -14,12 +14,30 @@ def resourcePath(relativePath):
 
 logoPath = resourcePath("Assets/Images/sunstone.png")
 
+cameraPath = resourcePath("Assets/Images/CCTV.png")
+
 class ioDashboard(QWidget):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("IO Box Dashboard")
         self.setGeometry(0,0,760,305)
+
+        layout = QGridLayout()
+
+        self.allCameras = QLabel()
+        pixmap = QPixmap(logoPath)
+        self.allCameras.setPixmap(pixmap)
+
+        allCamerasButton = QPushButton("All Cameras")
+
+        layout.addWidget(self.allCameras, 0, 0)
+        layout.addWidget(allCamerasButton,1,0)
+
+
+
+        self.setLayout(layout)
+
 
 class arcDashboard(QWidget):
     def __init__(self):
