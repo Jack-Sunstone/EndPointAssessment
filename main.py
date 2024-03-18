@@ -46,7 +46,6 @@ class userManagement(QWidget):
 
         userSelection = QComboBox()
 
-
         layout.addWidget(userSelection,0,0)
 
         usernameLabel = QLabel("PLACEHOLDER")
@@ -75,8 +74,6 @@ class userManagement(QWidget):
         layout.addWidget(passwordAddLineEdit,3,1)
 
         companyLineEdit = QLineEdit()
-
-
 
         layout.addWidget(companyLineEdit,3,2)
 
@@ -161,7 +158,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = userManagement()
+        self.monitor = userMonitoring()
         self.monitor.show()
 
 app = QApplication([])
