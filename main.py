@@ -25,8 +25,9 @@ class ioDashboard(QWidget):
 
         layout = QGridLayout()
 
+        pixmap = QPixmap(cameraPath)
+
         self.allCameras = QLabel()
-        pixmap = QPixmap(logoPath)
         self.allCameras.setPixmap(pixmap)
 
         allCamerasButton = QPushButton("All Cameras")
@@ -34,7 +35,37 @@ class ioDashboard(QWidget):
         layout.addWidget(self.allCameras, 0, 0)
         layout.addWidget(allCamerasButton,1,0)
 
+        self.Camera1 = QLabel()
+        self.Camera1.setPixmap(pixmap)
 
+        camera1Button = QPushButton("Camera 1")
+
+        layout.addWidget(self.Camera1, 0, 1)
+        layout.addWidget(camera1Button, 1, 1)
+
+        self.Camera2 = QLabel()
+        self.Camera2.setPixmap(pixmap)
+
+        camera2Button = QPushButton("Camera 2")
+
+        layout.addWidget(self.Camera2, 0, 2)
+        layout.addWidget(camera2Button, 1, 2)
+
+        self.Camera3 = QLabel()
+        self.Camera3.setPixmap(pixmap)
+
+        camera3Button = QPushButton("Camera 3")
+
+        layout.addWidget(self.Camera3, 0, 3)
+        layout.addWidget(camera3Button, 1, 3)
+
+        self.Camera4 = QLabel()
+        self.Camera4.setPixmap(pixmap)
+
+        camera4Button = QPushButton("Camera 4")
+
+        layout.addWidget(self.Camera4, 0, 4)
+        layout.addWidget(camera4Button, 1, 4)
 
         self.setLayout(layout)
 
@@ -210,7 +241,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = userMonitoring()
+        self.monitor = ioDashboard()
         self.monitor.show()
 
 app = QApplication([])
