@@ -28,6 +28,13 @@ class arcDashboard(QWidget):
         self.setWindowTitle("ARC Dashboard")
         self.setGeometry(0,0,760,520)
 
+class unitManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Unit Mangement")
+        self.setGeometry(0,0,600,680)
+
 class userManagement(QWidget):
     def __init__(self):
         super().__init__()
