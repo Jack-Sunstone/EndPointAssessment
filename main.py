@@ -1,7 +1,18 @@
 import sys
+import os
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
+
+def resourcePath(relativePath):
+    try:
+        basePath = sys._MEIPASS
+    except Exception:
+        basePath = os.path.abspath(".")
+
+    return os.path.join(basePath, relativePath)
+
+logoPath = resourcePath("Assets/Images/sunstone.png")
 
 class loginUI(QMainWindow):
     def __init__(self):
