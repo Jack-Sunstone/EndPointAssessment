@@ -29,6 +29,7 @@ class ioDashboard(QWidget):
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(pixmap)
+        self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         allCamerasButton = QPushButton("All Cameras")
 
@@ -37,6 +38,7 @@ class ioDashboard(QWidget):
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
+        self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
 
@@ -45,6 +47,7 @@ class ioDashboard(QWidget):
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
+        self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera2Button = QPushButton("Camera 2")
 
@@ -53,6 +56,7 @@ class ioDashboard(QWidget):
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(pixmap)
+        self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera3Button = QPushButton("Camera 3")
 
@@ -61,6 +65,7 @@ class ioDashboard(QWidget):
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(pixmap)
+        self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera4Button = QPushButton("Camera 4")
 
