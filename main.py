@@ -133,6 +133,10 @@ class userMonitoring(QWidget):
 
         layout.addWidget(companyTabs)
 
+        mapButton = QPushButton("Interactive Map")
+
+        layout.addWidget(mapButton)
+
         self.setLayout(layout)
 
 class loginUI(QMainWindow):
