@@ -42,7 +42,49 @@ class userManagement(QWidget):
         self.setWindowTitle("User Management")
         self.setGeometry(0,0,650,580)
 
-        userManagement
+        layout = QGridLayout()
+
+        userSelection = QComboBox()
+
+
+        layout.addWidget(userSelection,0,0)
+
+        usernameLabel = QLabel("PLACEHOLDER")
+
+        layout.addWidget(usernameLabel,1,0)
+
+        passwordLineEdit = QLineEdit()
+        passwordLineEdit.setPlaceholderText("Password")
+
+        layout.addWidget(passwordLineEdit,1,1)
+
+        changeButton = QPushButton("Change Details")
+
+        layout.addWidget(changeButton,2,0)
+
+        deleteButton = QPushButton("Delete Unit")
+
+        layout.addWidget(deleteButton,2,1)
+
+        usernameEdit = QLineEdit()
+
+        layout.addWidget(usernameEdit,3,0)
+
+        passwordAddLineEdit = QLineEdit()
+
+        layout.addWidget(passwordAddLineEdit,3,1)
+
+        companyLineEdit = QLineEdit()
+
+
+
+        layout.addWidget(companyLineEdit,3,2)
+
+        addUserButton = QPushButton("Add New User")
+
+        layout.addWidget(addUserButton,4,0)
+
+        self.setLayout(layout)
 
 class adminMenu(QWidget):
     def __init__(self):
@@ -119,7 +161,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = adminMenu()
+        self.monitor = userManagement()
         self.monitor.show()
 
 app = QApplication([])
