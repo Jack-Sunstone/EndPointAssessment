@@ -123,6 +123,18 @@ class userMonitoring(QWidget):
         self.setWindowTitle("Dashboard")
         self.setGeometry(0,0,255,600)
 
+        layout = QVBoxLayout()
+
+        companyTabs = QTabWidget()
+
+        placeholder = QLabel("placeholder")
+
+        companyTabs.addTab(placeholder,"Company")
+
+        layout.addWidget(companyTabs)
+
+        self.setLayout(layout)
+
 class loginUI(QMainWindow):
     def __init__(self):
         super().__init__()
