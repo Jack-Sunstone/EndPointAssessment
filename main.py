@@ -26,16 +26,14 @@ class userMonitoring(QWidget):
         super().__init__()
 
         self.setWindowTitle("Dashboard")
-        self.setGeometry(550,150,255,600)
-
-
+        self.setGeometry(0,0,255,600)
 
 class loginUI(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Dashboard Login")
-        self.setGeometry(550,300,380,320)
+        self.setGeometry(0,0,380,320)
 
         loginLayout = QGridLayout()
 
@@ -73,4 +71,10 @@ app.setStyle('GTK')
 window = loginUI()
 
 window.show()
+
+center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+geo = window.frameGeometry()
+geo.moveCenter(center)
+window.move(geo.topLeft())
+
 sys.exit(app.exec())
