@@ -28,13 +28,19 @@ class arcDashboard(QWidget):
         self.setWindowTitle("ARC Dashboard")
         self.setGeometry(0,0,760,520)
 
+class userManagement(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("User Management")
+        self.setGeometry(0,0,650,580)
 
 class adminMonitoring(QWidget):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Admin Dashboard")
-        self.setGeometry(550,150,255,600)
+        self.setGeometry(0,0,255,600)
 
 class userMonitoring(QWidget):
     def __init__(self):
@@ -78,9 +84,8 @@ class loginUI(QMainWindow):
         loginWidget.setLayout(loginLayout)
         self.setCentralWidget(loginWidget)
 
-        self.monitor = arcDashboard()
+        self.monitor = ioDashboard()
         self.monitor.show()
-
 
 app = QApplication([])
 app.setStyle('GTK')
