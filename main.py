@@ -14,6 +14,15 @@ def resourcePath(relativePath):
 
 logoPath = resourcePath("Assets/Images/sunstone.png")
 
+class userMonitoring(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Dashboard")
+        self.setGeometry(550,150,255,600)
+
+
+
 class loginUI(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -49,6 +58,8 @@ class loginUI(QMainWindow):
         loginWidget.setLayout(loginLayout)
         self.setCentralWidget(loginWidget)
 
+        self.monitor = userMonitoring()
+        self.monitor.show()
 
 app = QApplication([])
 app.setStyle('GTK')
