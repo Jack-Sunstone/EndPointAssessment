@@ -29,6 +29,20 @@ class loginUI(QMainWindow):
 
         loginLayout.addWidget(self.Logo,0,0)
 
+        usernameEntry = QLineEdit()
+        usernameEntry.setPlaceholderText("Username")
+
+        loginLayout.addWidget(usernameEntry, 1, 0)
+
+        passwordEntry = QLineEdit()
+        passwordEntry.setPlaceholderText("Password")
+
+        loginLayout.addWidget(passwordEntry, 2, 0)
+
+        loginButton = QPushButton("Login")
+
+        loginLayout.addWidget(loginButton, 3, 0)
+
         loginWidget = QWidget()
         loginWidget.setLayout(loginLayout)
         self.setCentralWidget(loginWidget)
