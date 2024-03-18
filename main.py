@@ -113,6 +113,20 @@ class adminMonitoring(QWidget):
     def __init__(self):
         super().__init__()
 
+        layout = QVBoxLayout()
+
+        companyTabs = QTabWidget()
+
+        placeholder = QLabel("placeholder")
+
+        companyTabs.addTab(placeholder, "Company")
+
+        layout.addWidget(companyTabs)
+
+        mapButton = QPushButton("Interactive Map")
+
+        layout.addWidget(mapButton)
+
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0,0,255,600)
 
