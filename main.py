@@ -14,6 +14,13 @@ def resourcePath(relativePath):
 
 logoPath = resourcePath("Assets/Images/sunstone.png")
 
+class ioDashboard(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("IO Box Dashboard")
+        self.setGeometry(0,0,760,305)
+
 class arcDashboard(QWidget):
     def __init__(self):
         super().__init__()
