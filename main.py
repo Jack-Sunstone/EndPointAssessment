@@ -42,6 +42,8 @@ class userManagement(QWidget):
         self.setWindowTitle("User Management")
         self.setGeometry(0,0,650,580)
 
+        userManagement
+
 class adminMenu(QWidget):
     def __init__(self):
         super().__init__()
@@ -49,17 +51,17 @@ class adminMenu(QWidget):
         self.setWindowTitle("Admin Menu")
         self.setGeometry(0,0,430,180)
 
-        adminMenuLayout = QVBoxLayout()
+        layout = QVBoxLayout()
 
         userManagementButton = QPushButton("User Management")
 
-        adminMenuLayout.addWidget(userManagementButton)
+        layout.addWidget(userManagementButton)
 
         unitManagementButton = QPushButton("Unit Management")
 
-        adminMenuLayout.addWidget(unitManagementButton)
+        layout.addWidget(unitManagementButton)
 
-        self.setLayout(adminMenuLayout)
+        self.setLayout(layout)
 
 class interactiveMap(QWidget):
     def __init__(self):
@@ -89,32 +91,32 @@ class loginUI(QMainWindow):
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
 
-        loginLayout = QGridLayout()
+        layout = QGridLayout()
 
         self.Logo = QLabel()
         pixmap = QPixmap(logoPath)
         self.Logo.setPixmap(pixmap)
         self.Logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loginLayout.addWidget(self.Logo, 0,0)
+        layout.addWidget(self.Logo, 0,0)
 
 
         usernameEntry = QLineEdit()
         usernameEntry.setPlaceholderText("Username")
 
-        loginLayout.addWidget(usernameEntry, 4, 0)
+        layout.addWidget(usernameEntry, 4, 0)
 
         passwordEntry = QLineEdit()
         passwordEntry.setPlaceholderText("Password")
 
-        loginLayout.addWidget(passwordEntry, 5, 0)
+        layout.addWidget(passwordEntry, 5, 0)
 
         loginButton = QPushButton("Login")
 
-        loginLayout.addWidget(loginButton, 6,0)
+        layout.addWidget(loginButton, 6,0)
 
         widget = QWidget()
-        widget.setLayout(loginLayout)
+        widget.setLayout(layout)
         self.setCentralWidget(widget)
 
         self.monitor = adminMenu()
