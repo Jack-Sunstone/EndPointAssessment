@@ -274,6 +274,17 @@ class unitManagement(QWidget):
         layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
 
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
+
+        self.hide()
+
 class userManagement(QWidget):
     def __init__(self):
         super().__init__()
@@ -331,6 +342,17 @@ class userManagement(QWidget):
 
         self.setLayout(layout)
 
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
+
+        self.hide()
+
 class adminMenu(QWidget):
     def __init__(self):
         super().__init__()
@@ -371,6 +393,17 @@ class adminMenu(QWidget):
         geo = self.openUnitManagement.frameGeometry()
         geo.moveCenter(center)
         self.openUnitManagement.move(geo.topLeft())
+
+        self.hide()
+
+    def closeEvent(self, event):
+        self.openMonitoring = adminMonitoring()
+        self.openMonitoring.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMonitoring.frameGeometry()
+        geo.moveCenter(center)
+        self.openMonitoring.move(geo.topLeft())
 
         self.hide()
 
@@ -426,6 +459,8 @@ class adminMonitoring(QWidget):
         geo.moveCenter(center)
         self.openMapPage.move(geo.topLeft())
 
+        self.hide()
+
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
@@ -434,6 +469,8 @@ class adminMonitoring(QWidget):
         geo = self.openAdminMenu.frameGeometry()
         geo.moveCenter(center)
         self.openAdminMenu.move(geo.topLeft())
+
+        self.hide()
 
 class userMonitoring(QWidget):
     def __init__(self):
@@ -467,6 +504,8 @@ class userMonitoring(QWidget):
         geo = self.openMapPage.frameGeometry()
         geo.moveCenter(center)
         self.openMapPage.move(geo.topLeft())
+
+        self.hide()
 
 class loginUI(QMainWindow):
     def __init__(self):
