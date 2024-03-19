@@ -16,6 +16,12 @@ logoPath = resourcePath("Assets/Images/sunstone.png")
 
 cameraPath = resourcePath("Assets/Images/CCTV.png")
 
+sunPath = resourcePath("Assets/Images/Sun.png")
+
+batteryPath = resourcePath("Assets/Images/fullBattery.png")
+
+loadPath = resourcePath("Assets/Images/Load.png")
+
 class ioDashboard(QWidget):
     def __init__(self):
         super().__init__()
