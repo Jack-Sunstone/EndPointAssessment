@@ -204,41 +204,42 @@ class userManagement(QWidget):
         layout = QGridLayout()
 
         userSelection = QComboBox()
+        userSelection.setPlaceholderText("User Selection")
 
-        layout.addWidget(userSelection,0,0)
+        layout.addWidget(userSelection,0,0,1,3)
 
         usernameLabel = QLabel("PLACEHOLDER")
 
-        layout.addWidget(usernameLabel,1,0)
+        layout.addWidget(usernameLabel,1,0.5)
 
         passwordLineEdit = QLineEdit()
         passwordLineEdit.setPlaceholderText("Password")
 
-        layout.addWidget(passwordLineEdit,1,1)
+        layout.addWidget(passwordLineEdit,1,1,1,2)
 
         changeButton = QPushButton("Change Details")
 
-        layout.addWidget(changeButton,2,0)
+        layout.addWidget(changeButton,2,1)
 
         deleteButton = QPushButton("Delete Unit")
 
-        layout.addWidget(deleteButton,2,1)
+        layout.addWidget(deleteButton,2,2)
 
         usernameEdit = QLineEdit()
 
-        layout.addWidget(usernameEdit,3,0)
+        layout.addWidget(usernameEdit,4,0)
 
         passwordAddLineEdit = QLineEdit()
 
-        layout.addWidget(passwordAddLineEdit,3,1)
+        layout.addWidget(passwordAddLineEdit,4,1)
 
         companyLineEdit = QLineEdit()
 
-        layout.addWidget(companyLineEdit,3,2)
+        layout.addWidget(companyLineEdit,4,2)
 
         addUserButton = QPushButton("Add New User")
 
-        layout.addWidget(addUserButton,4,0)
+        layout.addWidget(addUserButton,5,1)
 
         self.setLayout(layout)
 
@@ -351,7 +352,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = arcDashboard()
+        self.monitor = userManagement()
         self.monitor.show()
 
 app = QApplication([])
