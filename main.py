@@ -5,6 +5,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
 
+username =  ""
+password =  ""
+
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -581,27 +584,38 @@ class loginUI(QMainWindow):
 
     def openMonitoring(self):
         userRights = "USER" #Placeholder
+        placeholderUsername = "Jack"
+        placeholderpassword = "Password"
 
-        if "ADMIN" in userRights:
-            self.adminMonitoring = adminMonitoring()
-            self.adminMonitoring.show()
+        if username == placeholderUsername:
+            loggedIn = password == placeholderpassword
+        else:
+            self.errorMessage.setText("WRONG USERNAME OR PASSWORD")
 
-            center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            geo = self.adminMonitoring.frameGeometry()
-            geo.moveCenter(center)
-            self.adminMonitoring.move(geo.topLeft())
+        if loggedIn:
 
-            self.hide()
-        elif "USER" in userRights:
-            self.userMonitoring = userMonitoring()
-            self.userMonitoring.show()
+            if "ADMIN" in userRights:
+                self.adminMonitoring = adminMonitoring()
+                self.adminMonitoring.show()
 
-            center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            geo = self.userMonitoring.frameGeometry()
-            geo.moveCenter(center)
-            self.userMonitoring.move(geo.topLeft())
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.adminMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.adminMonitoring.move(geo.topLeft())
 
-            self.hide()
+                self.hide()
+            elif "USER" in userRights:
+                self.userMonitoring = userMonitoring()
+                self.userMonitoring.show()
+
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.userMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.userMonitoring.move(geo.topLeft())
+
+                self.hide()
+        else:
+            self.errorMessage.setText("WRONG USERNAME OR PASSWORD")
 
 app = QApplication([])
 app.setStyle('GTK')
