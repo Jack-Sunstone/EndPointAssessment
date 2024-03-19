@@ -559,6 +559,13 @@ class loginUI(QMainWindow):
         loginButton.clicked.connect(self.openMonitoring)
         layout.addWidget(loginButton, 6,0)
 
+        self.errorMessage = QLabel()
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage,7,0)
+
+        self.errorMessage.hide()
+
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
