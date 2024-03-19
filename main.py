@@ -199,7 +199,7 @@ class userManagement(QWidget):
         super().__init__()
 
         self.setWindowTitle("User Management")
-        self.setGeometry(0,0,650,580)
+        self.setGeometry(0,0,300,250)
 
         layout = QGridLayout()
 
@@ -225,15 +225,23 @@ class userManagement(QWidget):
 
         layout.addWidget(deleteButton,2,2)
 
+        addNewUserLabel = QLabel("Add New User")
+        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(addNewUserLabel,3,1)
+
         usernameEdit = QLineEdit()
+        usernameEdit.setPlaceholderText("Username")
 
         layout.addWidget(usernameEdit,4,0)
 
         passwordAddLineEdit = QLineEdit()
+        passwordAddLineEdit.setPlaceholderText("Password")
 
         layout.addWidget(passwordAddLineEdit,4,1)
 
         companyLineEdit = QLineEdit()
+        companyLineEdit.setPlaceholderText("Company")
 
         layout.addWidget(companyLineEdit,4,2)
 
