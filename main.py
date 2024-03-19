@@ -368,6 +368,9 @@ class adminMonitoring(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.setWindowTitle("Admin Dashboard")
+        self.setGeometry(0, 0, 255, 600)
+
         layout = QVBoxLayout()
 
         companyTabs = QTabWidget()
@@ -384,15 +387,19 @@ class adminMonitoring(QWidget):
         layout.addWidget(mapButton)
 
         adminButton = QPushButton("Admin Menu")
+        adminButton.clicked.connect(self.openAdmin)
 
         layout.addWidget(adminButton)
 
-        self.setWindowTitle("Admin Dashboard")
-        self.setGeometry(0,0,255,600)
+        self.setLayout(layout)
 
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
+
+    def openAdmin(self):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
 
 class userMonitoring(QWidget):
     def __init__(self):
@@ -457,7 +464,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = userMonitoring()
+        self.monitor = adminMonitoring()
         self.monitor.show()
 
 app = QApplication([])
