@@ -94,10 +94,10 @@ class arcDashboard(QWidget):
 
         layout = QGridLayout()
 
-        pixmap = QPixmap(cameraPath)
+        cameraPixmap = QPixmap(cameraPath)
 
         self.allCameras = QLabel()
-        self.allCameras.setPixmap(pixmap)
+        self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         allCamerasButton = QPushButton("All Cameras")
@@ -106,7 +106,7 @@ class arcDashboard(QWidget):
         layout.addWidget(allCamerasButton, 4, 0)
 
         self.Camera1 = QLabel()
-        self.Camera1.setPixmap(pixmap)
+        self.Camera1.setPixmap(cameraPixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
@@ -115,7 +115,7 @@ class arcDashboard(QWidget):
         layout.addWidget(camera1Button, 4, 1)
 
         self.Camera2 = QLabel()
-        self.Camera2.setPixmap(pixmap)
+        self.Camera2.setPixmap(cameraPixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera2Button = QPushButton("Camera 2")
@@ -124,7 +124,7 @@ class arcDashboard(QWidget):
         layout.addWidget(camera2Button, 4, 2)
 
         self.Camera3 = QLabel()
-        self.Camera3.setPixmap(pixmap)
+        self.Camera3.setPixmap(cameraPixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera3Button = QPushButton("Camera 3")
@@ -133,7 +133,7 @@ class arcDashboard(QWidget):
         layout.addWidget(camera3Button, 4, 3)
 
         self.Camera4 = QLabel()
-        self.Camera4.setPixmap(pixmap)
+        self.Camera4.setPixmap(cameraPixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera4Button = QPushButton("Camera 4")
