@@ -192,7 +192,7 @@ class unitManagement(QWidget):
         super().__init__()
 
         self.setWindowTitle("Unit Mangement")
-        self.setGeometry(0, 0, 600, 680)
+        self.setGeometry(0, 0, 600, 300)
 
         layout = QGridLayout()
 
