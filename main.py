@@ -356,6 +356,11 @@ class interactiveMap(QWidget):
         self.setWindowTitle("Interactive Unit Map")
         self.setGeometry(0,0,550,550)
 
+        layout = QGridLayout()
+
+
+        self.setLayout(layout)
+
 class adminMonitoring(QWidget):
     def __init__(self):
         super().__init__()
