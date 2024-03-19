@@ -86,6 +86,69 @@ class arcDashboard(QWidget):
         self.setWindowTitle("ARC Dashboard")
         self.setGeometry(0,0,760,520)
 
+        layout = QGridLayout()
+
+        pixmap = QPixmap(cameraPath)
+
+        self.allCameras = QLabel()
+        self.allCameras.setPixmap(pixmap)
+        self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        allCamerasButton = QPushButton("All Cameras")
+
+        layout.addWidget(self.allCameras, 3, 0)
+        layout.addWidget(allCamerasButton, 4, 0)
+
+        self.Camera1 = QLabel()
+        self.Camera1.setPixmap(pixmap)
+        self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        camera1Button = QPushButton("Camera 1")
+
+        layout.addWidget(self.Camera1, 3, 1)
+        layout.addWidget(camera1Button, 4, 1)
+
+        self.Camera2 = QLabel()
+        self.Camera2.setPixmap(pixmap)
+        self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        camera2Button = QPushButton("Camera 2")
+
+        layout.addWidget(self.Camera2, 3, 2)
+        layout.addWidget(camera2Button, 4, 2)
+
+        self.Camera3 = QLabel()
+        self.Camera3.setPixmap(pixmap)
+        self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        camera3Button = QPushButton("Camera 3")
+
+        layout.addWidget(self.Camera3, 3, 3)
+        layout.addWidget(camera3Button, 4, 3)
+
+        self.Camera4 = QLabel()
+        self.Camera4.setPixmap(pixmap)
+        self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        camera4Button = QPushButton("Camera 4")
+
+        layout.addWidget(self.Camera4, 3, 4)
+        layout.addWidget(camera4Button, 4, 4)
+
+        victronButton = QPushButton("Victron Webpage")
+
+        layout.addWidget(victronButton, 5, 1)
+
+        routerButton = QPushButton("Router Webpage")
+
+        layout.addWidget(routerButton, 5, 2)
+
+        efoyButton = QPushButton("Efoy Webpage")
+
+        layout.addWidget(efoyButton, 5, 3)
+
+        self.setLayout(layout)
+
 class unitManagement(QWidget):
     def __init__(self):
         super().__init__()
@@ -250,7 +313,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = ioDashboard()
+        self.monitor = arcDashboard()
         self.monitor.show()
 
 app = QApplication([])
