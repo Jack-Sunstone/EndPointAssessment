@@ -560,6 +560,7 @@ class loginUI(QMainWindow):
         layout.addWidget(loginButton, 6,0)
 
         self.errorMessage = QLabel()
+        self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(self.errorMessage,7,0)
