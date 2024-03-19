@@ -560,8 +560,17 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
+    def getUser(self, Username):
+        global username
+        username = Username
+
+    def getPassword(self, Password):
+        global password
+        password = Password
+
     def openMonitoring(self):
-        userRights = "ADMIN"
+        userRights = "USER" #Placeholder
+
         if "ADMIN" in userRights:
             self.adminMonitoring = adminMonitoring()
             self.adminMonitoring.show()
@@ -573,7 +582,7 @@ class loginUI(QMainWindow):
 
             self.hide()
         elif "USER" in userRights:
-            self.userMonitoring = adminMonitoring()
+            self.userMonitoring = userMonitoring()
             self.userMonitoring.show()
 
             center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
