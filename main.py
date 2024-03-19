@@ -194,6 +194,11 @@ class unitManagement(QWidget):
         self.setWindowTitle("Unit Mangement")
         self.setGeometry(0,0,600,680)
 
+        layout = QGridLayout()
+
+
+        self.setLayout(layout)
+
 class userManagement(QWidget):
     def __init__(self):
         super().__init__()
