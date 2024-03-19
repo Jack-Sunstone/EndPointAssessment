@@ -341,6 +341,7 @@ class adminMenu(QWidget):
         layout = QVBoxLayout()
 
         userManagementButton = QPushButton("User Management")
+        userManagementButton.clicked.connect(self.openUser)
 
         layout.addWidget(userManagementButton)
 
@@ -349,6 +350,17 @@ class adminMenu(QWidget):
         layout.addWidget(unitManagementButton)
 
         self.setLayout(layout)
+
+    def openUser(self):
+        self.openUserManagement = userManagement()
+        self.openUserManagement.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openUserManagement.frameGeometry()
+        geo.moveCenter(center)
+        self.openUserManagement.move(geo.topLeft())
+
+        self.hide()
 
 class interactiveMap(QWidget):
     def __init__(self):
@@ -397,9 +409,19 @@ class adminMonitoring(QWidget):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
 
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMapPage.frameGeometry()
+        geo.moveCenter(center)
+        self.openMapPage.move(geo.topLeft())
+
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
 
 class userMonitoring(QWidget):
     def __init__(self):
@@ -428,6 +450,11 @@ class userMonitoring(QWidget):
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMapPage.frameGeometry()
+        geo.moveCenter(center)
+        self.openMapPage.move(geo.topLeft())
 
 class loginUI(QMainWindow):
     def __init__(self):
