@@ -359,6 +359,8 @@ class interactiveMap(QWidget):
 
         layout = QGridLayout()
 
+        self.mapBrowser = QtWebEngineWidgets.QWebEngineView(self)
+        layout.addWidget(self.mapBrowser, 0, 0)
 
         self.setLayout(layout)
 
