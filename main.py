@@ -228,7 +228,49 @@ class unitManagement(QWidget):
 
         layout.addWidget(deleteButton, 2, 2,1,2)
 
+        addNewUnitLabel = QLabel("--------------- Add New User ---------------")
+        addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
+
+        unitNameAdd = QLineEdit()
+        unitNameAdd.setPlaceholderText("Unit ID")
+
+        layout.addWidget(unitNameAdd,4,0)
+
+        locationAdd = QLineEdit()
+        locationAdd.setPlaceholderText("Location")
+
+        layout.addWidget(locationAdd,4,1)
+
+        companyAdd = QLineEdit()
+        companyAdd.setPlaceholderText("Company")
+
+        layout.addWidget(companyAdd,4,2)
+
+        numCamerasAdd = QLineEdit()
+        numCamerasAdd.setPlaceholderText("Number of Cameras")
+
+        layout.addWidget(numCamerasAdd,4,3)
+
+        voltageAdd = QLineEdit()
+        voltageAdd.setPlaceholderText("Unit Voltage")
+
+        layout.addWidget(voltageAdd,5,0)
+
+        routerAdd = QLineEdit()
+        routerAdd.setPlaceholderText("Router Type")
+
+        layout.addWidget(routerAdd,5,1)
+
+        victronAdd = QLineEdit()
+        victronAdd.setPlaceholderText("Victron Site ID")
+
+        layout.addWidget(victronAdd,5,2)
+
+        addUnit = QPushButton("Add New Unit")
+
+        layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
 
 class userManagement(QWidget):
