@@ -346,6 +346,7 @@ class adminMenu(QWidget):
         layout.addWidget(userManagementButton)
 
         unitManagementButton = QPushButton("Unit Management")
+        unitManagementButton.clicked.connect(self.openUnit)
 
         layout.addWidget(unitManagementButton)
 
@@ -359,6 +360,17 @@ class adminMenu(QWidget):
         geo = self.openUserManagement.frameGeometry()
         geo.moveCenter(center)
         self.openUserManagement.move(geo.topLeft())
+
+        self.hide()
+
+    def openUnit(self):
+        self.openUnitManagement = unitManagement()
+        self.openUnitManagement.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openUnitManagement.frameGeometry()
+        geo.moveCenter(center)
+        self.openUnitManagement.move(geo.topLeft())
 
         self.hide()
 
