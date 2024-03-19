@@ -563,7 +563,7 @@ class loginUI(QMainWindow):
         loginButton.clicked.connect(self.openMonitoring)
         layout.addWidget(loginButton, 6,0)
 
-        self.errorMessage = QLabel()
+        self.errorMessage = QLabel("WRONG USERNAME OR PASSWORD")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -578,20 +578,23 @@ class loginUI(QMainWindow):
     def getUser(self, Username):
         global username
         username = Username
+        self.errorMessage.hide()
 
     def getPassword(self, Password):
         global password
         password = Password
+        self.errorMessage.hide()
+
 
     def openMonitoring(self):
-        userRights = "USER" #Placeholder
+        userRights = "ADMIN" #Placeholder
         placeholderUsername = "Jack"
         placeholderpassword = "Password"
 
         if username == placeholderUsername:
             loggedIn = password == placeholderpassword
         else:
-            self.errorMessage.setText("WRONG USERNAME OR PASSWORD")
+            self.errorMessage.show()
 
         if loggedIn:
 
@@ -616,7 +619,7 @@ class loginUI(QMainWindow):
 
                 self.hide()
         else:
-            self.errorMessage.setText("WRONG USERNAME OR PASSWORD")
+            self.errorMessage.show()
 
 app = QApplication([])
 app.setStyle('GTK')
