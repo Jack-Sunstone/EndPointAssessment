@@ -84,7 +84,6 @@ class ioDashboard(QWidget):
 
         self.setLayout(layout)
 
-
 class arcDashboard(QWidget):
     def __init__(self):
         super().__init__()
