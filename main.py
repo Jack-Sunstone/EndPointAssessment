@@ -470,6 +470,16 @@ class adminMonitoring(QWidget):
 
         self.hide()
 
+    def closeEvent(self, event):
+        self.login = loginUI()
+        self.login.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.login.frameGeometry()
+        geo.moveCenter(center)
+        self.login.move(geo.topLeft())
+
+        self.hide()
 class userMonitoring(QWidget):
     def __init__(self):
         super().__init__()
@@ -503,6 +513,17 @@ class userMonitoring(QWidget):
         geo.moveCenter(center)
         self.openMapPage.move(geo.topLeft())
 
+    def closeEvent(self, event):
+        self.login = loginUI()
+        self.login.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.login.frameGeometry()
+        geo.moveCenter(center)
+        self.login.move(geo.topLeft())
+
+        self.hide()
+
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -532,13 +553,12 @@ class loginUI(QMainWindow):
         layout.addWidget(passwordEntry, 5, 0)
 
         loginButton = QPushButton("Login")
-        loginButton.clicked.connnect(self.openMonitoring)
+        loginButton.clicked.connect(self.openMonitoring)
         layout.addWidget(loginButton, 6,0)
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-
 
     def openMonitoring(self):
         userRights = "ADMIN"
