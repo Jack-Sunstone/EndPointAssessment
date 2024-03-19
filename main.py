@@ -544,11 +544,14 @@ class loginUI(QMainWindow):
 
         usernameEntry = QLineEdit()
         usernameEntry.setPlaceholderText("Username")
+        usernameEntry.textChanged.connect(self.getUser)
 
         layout.addWidget(usernameEntry, 4, 0)
 
         passwordEntry = QLineEdit()
         passwordEntry.setPlaceholderText("Password")
+        passwordEntry.textChanged.connect(self.getPassword)
+        passwordEntry.returnPressed.connect(self.openMonitoring)
 
         layout.addWidget(passwordEntry, 5, 0)
 
