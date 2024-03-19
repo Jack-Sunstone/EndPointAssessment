@@ -532,15 +532,36 @@ class loginUI(QMainWindow):
         layout.addWidget(passwordEntry, 5, 0)
 
         loginButton = QPushButton("Login")
-
+        loginButton.clicked.connnect(self.openMonitoring)
         layout.addWidget(loginButton, 6,0)
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = adminMonitoring()
-        self.monitor.show()
+
+    def openMonitoring(self):
+        userRights = "ADMIN"
+        if "ADMIN" in userRights:
+            self.adminMonitoring = adminMonitoring()
+            self.adminMonitoring.show()
+
+            center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            geo = self.adminMonitoring.frameGeometry()
+            geo.moveCenter(center)
+            self.adminMonitoring.move(geo.topLeft())
+
+            self.hide()
+        elif "USER" in userRights:
+            self.userMonitoring = adminMonitoring()
+            self.userMonitoring.show()
+
+            center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            geo = self.userMonitoring.frameGeometry()
+            geo.moveCenter(center)
+            self.userMonitoring.move(geo.topLeft())
+
+            self.hide()
 
 app = QApplication([])
 app.setStyle('GTK')
