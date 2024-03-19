@@ -90,7 +90,7 @@ class arcDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle("ARC Dashboard")
-        self.setGeometry(0,0,760,520)
+        self.setGeometry(0,0,760,300)
 
         layout = QGridLayout()
 
