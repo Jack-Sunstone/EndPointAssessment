@@ -555,6 +555,7 @@ class loginUI(QMainWindow):
         passwordEntry.setPlaceholderText("Password")
         passwordEntry.textChanged.connect(self.getPassword)
         passwordEntry.returnPressed.connect(self.openMonitoring)
+        passwordEntry.setEchoMode(QLineEdit.EchoMode.Password)
 
         layout.addWidget(passwordEntry, 5, 0)
 
