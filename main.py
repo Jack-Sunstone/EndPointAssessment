@@ -199,7 +199,7 @@ class unitManagement(QWidget):
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.setPlaceholderText("Unit Management")
 
-        layout.addWidget(unitManagementDropdown, 0, 1, 1, 3)
+        layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
 
         unitName = QLabel("Placeholder")
 
@@ -220,9 +220,15 @@ class unitManagement(QWidget):
 
         layout.addWidget(numCameras, 1, 3)
 
+        changeButton = QPushButton("Change Details")
+
+        layout.addWidget(changeButton,2,0,1,2)
+
         deleteButton = QPushButton("Delete")
 
-        layout.addWidget(deleteButton, 1, 4)
+        layout.addWidget(deleteButton, 2, 2,1,2)
+
+
         self.setLayout(layout)
 
 class userManagement(QWidget):
