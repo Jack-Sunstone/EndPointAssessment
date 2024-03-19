@@ -94,7 +94,40 @@ class arcDashboard(QWidget):
 
         layout = QGridLayout()
 
+        sunPixmap = QPixmap(sunPath)
+        batteryPixmap = QPixmap(batteryPath)
+        loadPixmap = QPixmap(loadPath)
         cameraPixmap = QPixmap(cameraPath)
+
+        self.sunImage = QLabel()
+        self.sunImage.setPixmap(sunPixmap)
+        self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        solarPower = QLabel("Placeholder")
+        solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.sunImage, 0, 0)
+        layout.addWidget(solarPower, 0, 1)
+
+        self.batteryImage = QLabel()
+        self.batteryImage.setPixmap(batteryPixmap)
+        self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        batteryVoltage = QLabel("Placeholder")
+        batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.batteryImage, 1, 0)
+        layout.addWidget(batteryVoltage, 1, 1)
+
+        self.loadImage = QLabel()
+        self.loadImage.setPixmap(loadPixmap)
+        self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        loadDraw = QLabel("Placeholder")
+        loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.loadImage, 2, 0)
+        layout.addWidget(loadDraw, 2, 1)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
