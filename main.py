@@ -192,11 +192,37 @@ class unitManagement(QWidget):
         super().__init__()
 
         self.setWindowTitle("Unit Mangement")
-        self.setGeometry(0,0,600,680)
+        self.setGeometry(0, 0, 600, 680)
 
         layout = QGridLayout()
 
+        unitManagementDropdown = QComboBox()
+        unitManagementDropdown.setPlaceholderText("Unit Management")
 
+        layout.addWidget(unitManagementDropdown, 0, 1, 1, 3)
+
+        unitName = QLabel("Placeholder")
+
+        layout.addWidget(unitName,1,0)
+
+        locationEdit = QLineEdit()
+        locationEdit.setPlaceholderText("Unit Location")
+
+        layout.addWidget(locationEdit, 1, 1)
+
+        companyEdit = QLineEdit()
+        companyEdit.setPlaceholderText("Company")
+
+        layout.addWidget(companyEdit, 1, 2)
+
+        numCameras = QLineEdit()
+        numCameras.setPlaceholderText("Number of Cameras")
+
+        layout.addWidget(numCameras, 1, 3)
+
+        deleteButton = QPushButton("Delete")
+
+        layout.addWidget(deleteButton, 1, 4)
         self.setLayout(layout)
 
 class userManagement(QWidget):
@@ -230,10 +256,10 @@ class userManagement(QWidget):
 
         layout.addWidget(deleteButton,2,2)
 
-        addNewUserLabel = QLabel("Add New User")
+        addNewUserLabel = QLabel("--------------- Add New User ---------------")
         addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUserLabel,3,1)
+        layout.addWidget(addNewUserLabel,3,0,1,3)
 
         usernameEdit = QLineEdit()
         usernameEdit.setPlaceholderText("Username")
@@ -365,7 +391,7 @@ class loginUI(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = userManagement()
+        self.monitor = unitManagement()
         self.monitor.show()
 
 app = QApplication([])
