@@ -273,15 +273,17 @@ class unitManagement(QWidget):
 
         layout.addWidget(unitType,5,2)
 
-        victronAdd = QLineEdit()
-        victronAdd.setPlaceholderText("Victron Site ID")
+        self.victronAdd = QLineEdit()
+        self.victronAdd.setPlaceholderText("Victron Site ID")
 
-        layout.addWidget(victronAdd,5,3)
+        layout.addWidget(self.victronAdd,5,3)
 
         addUnit = QPushButton("Add New Unit")
 
         layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
+
+
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
