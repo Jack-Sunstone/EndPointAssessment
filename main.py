@@ -5,6 +5,9 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
 
+username =  ""
+password =  ""
+
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -229,7 +232,7 @@ class unitManagement(QWidget):
 
         layout.addWidget(deleteButton, 2, 2,1,2)
 
-        addNewUnitLabel = QLabel("--------------- Add New User ---------------")
+        addNewUnitLabel = QLabel("--------------- Add New Unit ---------------")
         addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
@@ -264,15 +267,28 @@ class unitManagement(QWidget):
 
         layout.addWidget(routerAdd,5,1)
 
-        victronAdd = QLineEdit()
-        victronAdd.setPlaceholderText("Victron Site ID")
+        unitType = QComboBox()
+        unitType.setPlaceholderText("Unit Type")
+        unitType.addItems(["ARC","IO"])
+        unitType.currentIndexChanged.connect(self.getUnitType)
 
-        layout.addWidget(victronAdd,5,2)
+        layout.addWidget(unitType,5,2)
+
+        self.victronAdd = QLineEdit()
+        self.victronAdd.setPlaceholderText("Victron Site ID")
+
+        layout.addWidget(self.victronAdd,5,3)
 
         addUnit = QPushButton("Add New Unit")
 
         layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
+
+    def getUnitType(self, unitIndex):
+        if unitIndex == 0:
+            self.victronAdd.show()
+        elif unitIndex == 1:
+            self.victronAdd.hide()
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
@@ -470,6 +486,16 @@ class adminMonitoring(QWidget):
 
         self.hide()
 
+    def closeEvent(self, event):
+        self.login = loginUI()
+        self.login.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.login.frameGeometry()
+        geo.moveCenter(center)
+        self.login.move(geo.topLeft())
+
+        self.hide()
 class userMonitoring(QWidget):
     def __init__(self):
         super().__init__()
@@ -503,6 +529,17 @@ class userMonitoring(QWidget):
         geo.moveCenter(center)
         self.openMapPage.move(geo.topLeft())
 
+    def closeEvent(self, event):
+        self.login = loginUI()
+        self.login.show()
+
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.login.frameGeometry()
+        geo.moveCenter(center)
+        self.login.move(geo.topLeft())
+
+        self.hide()
+
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -523,24 +560,79 @@ class loginUI(QMainWindow):
 
         usernameEntry = QLineEdit()
         usernameEntry.setPlaceholderText("Username")
+        usernameEntry.textChanged.connect(self.getUser)
 
         layout.addWidget(usernameEntry, 4, 0)
 
         passwordEntry = QLineEdit()
         passwordEntry.setPlaceholderText("Password")
+        passwordEntry.textChanged.connect(self.getPassword)
+        passwordEntry.returnPressed.connect(self.openMonitoring)
+        passwordEntry.setEchoMode(QLineEdit.EchoMode.Password)
 
         layout.addWidget(passwordEntry, 5, 0)
 
         loginButton = QPushButton("Login")
-
+        loginButton.clicked.connect(self.openMonitoring)
         layout.addWidget(loginButton, 6,0)
+
+        self.errorMessage = QLabel("WRONG USERNAME OR PASSWORD")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage,7,0)
+
+        self.errorMessage.hide()
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
-        self.monitor = adminMonitoring()
-        self.monitor.show()
+    def getUser(self, Username):
+        global username
+        username = Username
+        self.errorMessage.hide()
+
+    def getPassword(self, Password):
+        global password
+        password = Password
+        self.errorMessage.hide()
+
+
+    def openMonitoring(self):
+        userRights = "ADMIN" #Placeholder
+        placeholderUsername = "Jack"
+        placeholderpassword = "Password"
+
+        if username == placeholderUsername:
+            loggedIn = password == placeholderpassword
+        else:
+            self.errorMessage.show()
+
+        if loggedIn:
+
+            if "ADMIN" in userRights:
+                self.adminMonitoring = adminMonitoring()
+                self.adminMonitoring.show()
+
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.adminMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.adminMonitoring.move(geo.topLeft())
+
+                self.hide()
+            elif "USER" in userRights:
+                self.userMonitoring = userMonitoring()
+                self.userMonitoring.show()
+
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.userMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.userMonitoring.move(geo.topLeft())
+
+                self.hide()
+        else:
+            self.errorMessage.show()
 
 app = QApplication([])
 app.setStyle('GTK')
