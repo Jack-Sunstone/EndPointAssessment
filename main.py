@@ -232,7 +232,7 @@ class unitManagement(QWidget):
 
         layout.addWidget(deleteButton, 2, 2,1,2)
 
-        addNewUnitLabel = QLabel("--------------- Add New User ---------------")
+        addNewUnitLabel = QLabel("--------------- Add New Unit ---------------")
         addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
@@ -267,10 +267,16 @@ class unitManagement(QWidget):
 
         layout.addWidget(routerAdd,5,1)
 
+        unitType = QComboBox()
+        unitType.setPlaceholderText("Unit Type")
+        unitType.addItems(["ARC","IO"])
+
+        layout.addWidget(unitType,5,2)
+
         victronAdd = QLineEdit()
         victronAdd.setPlaceholderText("Victron Site ID")
 
-        layout.addWidget(victronAdd,5,2)
+        layout.addWidget(victronAdd,5,3)
 
         addUnit = QPushButton("Add New Unit")
 
