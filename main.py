@@ -270,6 +270,7 @@ class unitManagement(QWidget):
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
+        unitType.currentIndexChanged.connect(self.getUnitType)
 
         layout.addWidget(unitType,5,2)
 
@@ -283,7 +284,11 @@ class unitManagement(QWidget):
         layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
 
-
+    def getUnitType(self, unitIndex):
+        if unitIndex == 0:
+            self.victronAdd.show()
+        elif unitIndex == 1:
+            self.victronAdd.hide()
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
