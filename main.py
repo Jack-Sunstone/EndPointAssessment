@@ -262,22 +262,17 @@ class unitManagement(QWidget):
 
         layout.addWidget(voltageAdd,5,0)
 
-        routerAdd = QLineEdit()
-        routerAdd.setPlaceholderText("Router Type")
-
-        layout.addWidget(routerAdd,5,1)
-
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
         unitType.currentIndexChanged.connect(self.getUnitType)
 
-        layout.addWidget(unitType,5,2)
+        layout.addWidget(unitType,5,1)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
 
-        layout.addWidget(self.victronAdd,5,3)
+        layout.addWidget(self.victronAdd,5,2)
 
         addUnit = QPushButton("Add New Unit")
 
