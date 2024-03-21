@@ -653,6 +653,7 @@ app.setStyleSheet("""
     }
     QPushButton:hover {
         background-color: #dedede;
+        border: 1px solid #dedede;
     }
 """)
 
