@@ -633,6 +633,29 @@ app = QApplication([])
 app.setStyle('GTK')
 window = loginUI()
 
+app.setStyleSheet(""" 
+    QLineEdit {
+        border-radius: 10px;
+        border: 1px solid #e0e4e7;
+        padding: 5px 15px; 
+    }
+    QComboBox {
+        border: 1px solid #000000;
+        background-color: #ffffff;
+        padding: 5px 15px;
+    }
+    QPushButton {
+        border-radius: 8px;
+        border: 1px solid #000000;
+        background-color: #ffffff;
+        padding: 5px 15px; 
+        
+    }
+    QPushButton:hover {
+        background-color: #dedede;
+    }
+""")
+
 window.show()
 
 center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
