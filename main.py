@@ -369,7 +369,7 @@ class adminMenu(QWidget):
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
-        self.setGeometry(0,0,430,180)
+        self.setGeometry(0, 0, 430, 180)
 
         layout = QVBoxLayout()
 
@@ -497,6 +497,7 @@ class userMonitoring(QWidget):
 
         self.setWindowTitle("Dashboard")
         self.setGeometry(0,0,255,600)
+        self.setStyleSheet("background-color: white;")
 
         layout = QVBoxLayout()
 
@@ -542,6 +543,7 @@ class loginUI(QMainWindow):
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
+        #self.setStyleSheet("background-color: white;")
 
         layout = QGridLayout()
 
@@ -630,30 +632,33 @@ class loginUI(QMainWindow):
             self.errorMessage.show()
 
 app = QApplication([])
-app.setStyle('GTK')
+app.setStyle('Fusion')
 window = loginUI()
 
-app.setStyleSheet(""" 
+app.setStyleSheet("""
+    
     QLineEdit {
         border-radius: 10px;
         border: 1px solid #e0e4e7;
+        background-color: #c8eacf;
+        color: #0e2515;
         padding: 5px 15px; 
     }
     QComboBox {
         border: 1px solid #000000;
-        background-color: #ffffff;
         padding: 5px 15px;
     }
     QPushButton {
         border-radius: 8px;
-        border: 1px solid #000000;
-        background-color: #ffffff;
+        color: white;
+        border: 1px solid #46a15b;
+        background-color: #358446;
         padding: 5px 15px; 
         
     }
     QPushButton:hover {
-        background-color: #dedede;
-        border: 1px solid #dedede;
+        background-color: #358446;
+        border: 1px solid #2d683a;
     }
 """)
 
