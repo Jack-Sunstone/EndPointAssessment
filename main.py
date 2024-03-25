@@ -665,6 +665,7 @@ app.setStyleSheet("""
 window.show()
 
 center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+
 geo = window.frameGeometry()
 geo.moveCenter(center)
 window.move(geo.topLeft())
