@@ -306,8 +306,14 @@ class unitManagement(QWidget):
         layout.addWidget(lonAdd,6,1)
 
         addUnit = QPushButton("Add New Unit")
+        addUnit.clicked.connect(self.addNewUnit)
 
         layout.addWidget(addUnit,7,0,1,4)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         self.setLayout(layout)
 
     def getUnitName(self,Name):
