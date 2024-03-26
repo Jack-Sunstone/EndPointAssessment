@@ -380,7 +380,11 @@ class userManagement(QWidget):
         self.newCompany = Company
 
     def addUser(self):
-        SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
+        
+        if "" not in (self.newUsername, self.newPassword, self.newCompany):
+            SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
+        else:
+            self.errorMessage.setText("One Field Is Empty")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
