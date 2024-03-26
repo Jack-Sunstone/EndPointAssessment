@@ -342,16 +342,19 @@ class userManagement(QWidget):
 
         usernameEdit = QLineEdit()
         usernameEdit.setPlaceholderText("Username")
+        usernameEdit.textChanged.connect(self.getNewUsername)
 
         layout.addWidget(usernameEdit,4,0)
 
         passwordAddLineEdit = QLineEdit()
         passwordAddLineEdit.setPlaceholderText("Password")
+        passwordAddLineEdit.textChanged.connect(self.getNewPassword)
 
         layout.addWidget(passwordAddLineEdit,4,1)
 
         companyLineEdit = QLineEdit()
         companyLineEdit.setPlaceholderText("Company")
+        companyLineEdit.textChanged.connect(self.getNewCompany)
 
         layout.addWidget(companyLineEdit,4,2)
 
