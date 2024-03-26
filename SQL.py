@@ -35,9 +35,9 @@ def deleteUnits(Name):
 
     cursor.execute(f"DELETE FROM dbo.Units WHERE Name = {str(Name)}")
 
-def addUsers(Username, Password, Rights):
+def addUsers(Username, Password, Company, Rights):
 
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Rights)})")
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Company)}, {str(Rights)})")
 
 def deleteUsers(Username):
 
