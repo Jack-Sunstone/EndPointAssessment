@@ -15,7 +15,6 @@ fetchUnits = SQL.fetchUnits()
 for item in fetchUnits:
    listOfUnits.append(item)
 
-print(listOfUnits)
 
 def resourcePath(relativePath):
     try:
