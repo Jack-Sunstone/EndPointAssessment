@@ -39,5 +39,8 @@ def addUsers(Username, Password, Rights):
 
     cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Rights)})")
 
+def deleteUsers(Username):
+
+    cursor.execute(f"DELETE FROM dbo.Users WHERE Username = {str(Username)}")
 
 cnxn.commit()
