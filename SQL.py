@@ -31,16 +31,22 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType)
 
     cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ({str(Name)}, {str(IP)}, {int(victronID)}, {str(Location)}, {int(NoCCTV)}, {str(Company)}, {float(Lat)}, {float(Lon)}, {str(UnitType)})")
 
+    cnxn.commit()
+
 def deleteUnits(Name):
 
     cursor.execute(f"DELETE FROM dbo.Units WHERE Name = {str(Name)}")
 
-def addUsers(Username, Password, Company, Rights):
+    cnxn.commit()
 
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Company)}, USER)")
+def addUsers(Username, Password, Company):
+
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{str(Username)}', '{str(Password)}', '{str(Company)}', 'USER')")
+
+    cnxn.commit()
 
 def deleteUsers(Username):
 
     cursor.execute(f"DELETE FROM dbo.Users WHERE Username = {str(Username)}")
 
-cnxn.commit()
+    cnxn.commit()
