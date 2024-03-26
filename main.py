@@ -258,10 +258,10 @@ class unitManagement(QWidget):
 
         layout.addWidget(numCamerasAdd,4,3)
 
-        voltageAdd = QLineEdit()
-        voltageAdd.setPlaceholderText("Unit Voltage")
+        IPAdd = QLineEdit()
+        IPAdd.setPlaceholderText("Unit Voltage")
 
-        layout.addWidget(voltageAdd,5,0)
+        layout.addWidget(IPAdd,5,0)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
