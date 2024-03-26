@@ -430,6 +430,7 @@ class userManagement(QWidget):
         layout.addWidget(changeButton,2,1)
 
         deleteButton = QPushButton("Delete Unit")
+        deleteButton.clicked.connect(self.deleteUser)
 
         layout.addWidget(deleteButton,2,2)
 
@@ -486,6 +487,11 @@ class userManagement(QWidget):
 
         self.usernameLabel.setText(self.selectedUser)
         self.passwordLineEdit.setText(password)
+
+    def deleteUser(self):
+
+        SQL.deleteUsers(self.selectedUser)
+        self.errorMessage.setText("User Deleted")
 
     def addUser(self):
 

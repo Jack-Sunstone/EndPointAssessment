@@ -51,7 +51,7 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType)
 
 def deleteUnits(Name):
 
-    cursor.execute(f"DELETE FROM dbo.Units WHERE Name = {str(Name)}")
+    cursor.execute(f"DELETE FROM dbo.Units WHERE Name = '{str(Name)}'")
 
     cnxn.commit()
 
@@ -63,6 +63,6 @@ def addUsers(Username, Password, Company):
 
 def deleteUsers(Username):
 
-    cursor.execute(f"DELETE FROM dbo.Users WHERE Username = {str(Username)}")
+    cursor.execute(f"DELETE FROM dbo.Users WHERE Username = '{str(Username)}'")
 
     cnxn.commit()
