@@ -388,7 +388,7 @@ class userManagement(QWidget):
             self.passwordAddLineEdit.setText("")
             self.companyLineEdit.setText("")
         else:
-            self.errorMessage.setText("One Field Is Empty")
+            self.errorMessage.setText("One or All Field Is Empty")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
