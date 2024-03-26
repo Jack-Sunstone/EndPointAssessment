@@ -15,6 +15,12 @@ fetchUnits = SQL.fetchUnits()
 for item in fetchUnits:
    listOfUnits.append(item)
 
+listOfUsers = []
+
+fetchUsers = SQL.fetchUsers()
+
+for item in fetchUsers:
+   listOfUsers.append(item)
 
 def resourcePath(relativePath):
     try:
