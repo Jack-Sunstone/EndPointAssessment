@@ -194,6 +194,17 @@ class arcDashboard(QWidget):
 
 class unitManagement(QWidget):
     def __init__(self):
+
+        #Add new Unit
+        self.newUnitName = ""
+        self.newIP = ""
+        self.newVictronID = ""
+        self.NoCCTV = ""
+        self.newCompany = ""
+        self.newLat = ""
+        self.newLon = ""
+        self.newUnitType = ""
+
         super().__init__()
 
         self.setWindowTitle("Unit Mangement")
