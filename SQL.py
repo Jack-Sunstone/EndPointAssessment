@@ -7,7 +7,7 @@ cnxn = pyodbc.connect(driver="{ODBC Driver 17 for SQL Server}",
 
 cursor = cnxn.cursor()
 
-#cursor.execute("INSERT INTO dbo.Units (ID, Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES (01, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL")
+#cursor.execute("INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL")
 
 def fetchUnits():
 
@@ -26,5 +26,9 @@ def fetchCompanies():
 test = fetchCompanies()
 for item in test:
     print(item)
+
+def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
+
+    cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ({str(Name)}, {str(IP)}, {int(victronID)}, {str(Location)}, {int(NoCCTV)}, {str(Company)}, {float(Lat)}, {float(Lon)}, {str(UnitType)})")
 
 cnxn.commit()
