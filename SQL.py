@@ -9,12 +9,12 @@ cursor = cnxn.cursor()
 
 #cursor.execute("INSERT INTO dbo.Units (ID, Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES (01, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL")
 
-def readUnitList():
+def fetchUnits():
 
     cursor.execute("SELECT Name FROM dbo.Units")
 
     for row in cursor.fetchall():
         return row[0]
 
-readUnitList()
+
 cnxn.commit()
