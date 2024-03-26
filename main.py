@@ -304,7 +304,7 @@ class userManagement(QWidget):
         #New User
         self.newUsername = ""
         self.newPassword = ""
-        self.newRights = ""
+        self.newCompany = ""
 
         super().__init__()
 
@@ -363,6 +363,15 @@ class userManagement(QWidget):
         layout.addWidget(addUserButton,5,1)
 
         self.setLayout(layout)
+
+    def getNewUsername(self, Username):
+        self.newUsername = Username
+
+    def getNewPassword(self, Password):
+        self.newPassword = Password
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
