@@ -29,8 +29,10 @@ for item in test:
 
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
 
-    cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ({str(Name)}, {str(IP)}, {int(victronID)}, {str(Location)}, {int(NoCCTV)}, {str(Company)}, {float(Lat)}, {float(Lon)}, {str(UnitType)})")
-
+    if victronID == "":
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{str(Name)}', '{str(IP)}', NULL, '{str(Location)}', {int(NoCCTV)}, '{str(Company)}', {float(Lat)}, {float(Lon)}, '{str(UnitType)}')")
+    else:
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{str(Name)}', '{str(IP)}', {int(victronID)}, '{str(Location)}', {int(NoCCTV)}, '{str(Company)}', {float(Lat)}, {float(Lon)}, '{str(UnitType)}')")
     cnxn.commit()
 
 def deleteUnits(Name):
