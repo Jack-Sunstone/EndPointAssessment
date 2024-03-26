@@ -4,8 +4,7 @@ from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
-import pyodbc
-
+import SQL
 
 username =  ""
 password =  ""
@@ -359,6 +358,7 @@ class userManagement(QWidget):
         layout.addWidget(companyLineEdit,4,2)
 
         addUserButton = QPushButton("Add New User")
+        addUserButton.clicked.connect(self.addUser)
 
         layout.addWidget(addUserButton,5,1)
 
@@ -372,6 +372,9 @@ class userManagement(QWidget):
 
     def getNewCompany(self, Company):
         self.newCompany = Company
+
+    def addUser(self):
+        SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
