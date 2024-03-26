@@ -411,17 +411,18 @@ class userManagement(QWidget):
         userSelection = QComboBox()
         userSelection.addItems(listOfUsers)
         userSelection.setPlaceholderText("User Selection")
+        userSelection.currentIndexChanged.connect(self.unitChanged)
 
         layout.addWidget(userSelection,0,0,1,3)
 
-        usernameLabel = QLabel("PLACEHOLDER")
+        self.usernameLabel = QLabel("PLACEHOLDER")
 
-        layout.addWidget(usernameLabel,1,0.5)
+        layout.addWidget(self.usernameLabel,1,0.5)
 
-        passwordLineEdit = QLineEdit()
-        passwordLineEdit.setPlaceholderText("Password")
+        self.passwordLineEdit = QLineEdit()
+        self.passwordLineEdit.setPlaceholderText("Password")
 
-        layout.addWidget(passwordLineEdit,1,1,1,2)
+        layout.addWidget(self.passwordLineEdit,1,1,1,2)
 
         changeButton = QPushButton("Change Details")
 
@@ -475,6 +476,15 @@ class userManagement(QWidget):
 
     def getNewCompany(self, Company):
         self.newCompany = Company
+
+    def unitChanged(self, index):
+
+        currentUser = listOfUsers[index]
+
+        password = SQL.fetchPassword(currentUser)
+
+        self.usernameLabel.setText(currentUser)
+        self.passwordLineEdit.setText(password)
 
     def addUser(self):
 
