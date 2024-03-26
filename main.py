@@ -392,9 +392,10 @@ class unitManagement(QWidget):
 
 class userManagement(QWidget):
     def __init__(self):
-        #Current Selected User
 
+        #Current Selected User
         self.selectedUser = ""
+        self.selectedPassword = ""
 
         #New User
         self.newUsername = ""
@@ -479,11 +480,11 @@ class userManagement(QWidget):
 
     def unitChanged(self, index):
 
-        currentUser = listOfUsers[index]
+        self.selectedUser = listOfUsers[index]
 
-        password = SQL.fetchPassword(currentUser)
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser)
 
-        self.usernameLabel.setText(currentUser)
+        self.usernameLabel.setText(self.selectedUser)
         self.passwordLineEdit.setText(password)
 
     def addUser(self):
