@@ -300,6 +300,12 @@ class unitManagement(QWidget):
 
 class userManagement(QWidget):
     def __init__(self):
+
+        #New User
+        self.newUsername = ""
+        self.newPassword = ""
+        self.newRights = ""
+
         super().__init__()
 
         self.setWindowTitle("User Management")
