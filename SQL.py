@@ -33,6 +33,14 @@ def fetchUsers():
         yield row[0]
 
     cnxn.commit()
+
+def fetchPassword(Username):
+
+    cursor.execute(f"SELECT Password FROM dbo.Users WHERE Username = '{Username}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
 
     if victronID == "":
