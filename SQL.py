@@ -14,7 +14,17 @@ def fetchUnits():
     cursor.execute("SELECT Name FROM dbo.Units")
 
     for row in cursor.fetchall():
-        return row[0]
+        yield row[0]
 
+def fetchCompanies():
+
+    cursor.execute("SELECT Company FROM dbo.Units")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
+test = fetchCompanies()
+for item in test:
+    print(item)
 
 cnxn.commit()
