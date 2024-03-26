@@ -262,22 +262,17 @@ class unitManagement(QWidget):
 
         layout.addWidget(voltageAdd,5,0)
 
-        routerAdd = QLineEdit()
-        routerAdd.setPlaceholderText("Router Type")
-
-        layout.addWidget(routerAdd,5,1)
-
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
         unitType.currentIndexChanged.connect(self.getUnitType)
 
-        layout.addWidget(unitType,5,2)
+        layout.addWidget(unitType,5,1)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
 
-        layout.addWidget(self.victronAdd,5,3)
+        layout.addWidget(self.victronAdd,5,2)
 
         addUnit = QPushButton("Add New Unit")
 
@@ -374,7 +369,7 @@ class adminMenu(QWidget):
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
-        self.setGeometry(0,0,430,180)
+        self.setGeometry(0, 0, 430, 180)
 
         layout = QVBoxLayout()
 
@@ -502,6 +497,7 @@ class userMonitoring(QWidget):
 
         self.setWindowTitle("Dashboard")
         self.setGeometry(0,0,255,600)
+        self.setStyleSheet("background-color: white;")
 
         layout = QVBoxLayout()
 
@@ -547,6 +543,7 @@ class loginUI(QMainWindow):
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
+        #self.setStyleSheet("background-color: white;")
 
         layout = QGridLayout()
 
@@ -635,12 +632,40 @@ class loginUI(QMainWindow):
             self.errorMessage.show()
 
 app = QApplication([])
-app.setStyle('GTK')
+app.setStyle('Fusion')
 window = loginUI()
+
+app.setStyleSheet("""
+    
+    QLineEdit {
+        border-radius: 10px;
+        border: 1px solid #e0e4e7;
+        background-color: #c8eacf;
+        color: #0e2515;
+        padding: 5px 15px; 
+    }
+    QComboBox {
+        border: 1px solid #000000;
+        padding: 5px 15px;
+    }
+    QPushButton {
+        border-radius: 8px;
+        color: white;
+        border: 1px solid #46a15b;
+        background-color: #358446;
+        padding: 5px 15px; 
+        
+    }
+    QPushButton:hover {
+        background-color: #358446;
+        border: 1px solid #2d683a;
+    }
+""")
 
 window.show()
 
 center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+
 geo = window.frameGeometry()
 geo.moveCenter(center)
 window.move(geo.topLeft())
