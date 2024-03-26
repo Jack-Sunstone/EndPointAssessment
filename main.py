@@ -314,6 +314,8 @@ class unitManagement(QWidget):
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
+
         self.setLayout(layout)
 
     def getUnitName(self,Name):
@@ -347,6 +349,13 @@ class unitManagement(QWidget):
 
     def getLon(self,Lon):
         self.newLon = Lon
+
+    def addNewUnit(self):
+        if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
+            SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType)
+            self.errorMessage.setText("Unit Added")
+        else:
+            self.errorMessage.setText("One or All Field Is Empty")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
