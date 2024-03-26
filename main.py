@@ -227,6 +227,7 @@ class unitManagement(QWidget):
         layout = QGridLayout()
 
         unitManagementDropdown = QComboBox()
+        unitManagementDropdown.addItems(listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
@@ -405,6 +406,7 @@ class userManagement(QWidget):
         layout = QGridLayout()
 
         userSelection = QComboBox()
+        userSelection.addItems(listOfUsers)
         userSelection.setPlaceholderText("User Selection")
 
         layout.addWidget(userSelection,0,0,1,3)
