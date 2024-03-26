@@ -31,4 +31,8 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType)
 
     cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ({str(Name)}, {str(IP)}, {int(victronID)}, {str(Location)}, {int(NoCCTV)}, {str(Company)}, {float(Lat)}, {float(Lon)}, {str(UnitType)})")
 
+def addUsers(Username, Password, Rights):
+
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Rights)})")
+
 cnxn.commit()
