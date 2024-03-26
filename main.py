@@ -199,6 +199,7 @@ class unitManagement(QWidget):
         self.newUnitName = ""
         self.newIP = ""
         self.newVictronID = ""
+        self.newLocation = ""
         self.NoCCTV = ""
         self.newCompany = ""
         self.newLat = ""
@@ -270,7 +271,7 @@ class unitManagement(QWidget):
         layout.addWidget(numCamerasAdd,4,3)
 
         IPAdd = QLineEdit()
-        IPAdd.setPlaceholderText("Unit Voltage")
+        IPAdd.setPlaceholderText("IP Address")
 
         layout.addWidget(IPAdd,5,0)
 
@@ -301,6 +302,21 @@ class unitManagement(QWidget):
         layout.addWidget(addUnit,7,0,1,4)
         self.setLayout(layout)
 
+    def getUnitName(self,Name):
+        self.newUnitName = Name
+
+    def getLocation(self, Location):
+        self.newLocation = Location
+
+    def getCompany(self, Company):
+        self.newCompany = Company
+
+    def getNumCCTV(self, Number):
+        self.NoCCTV = Number
+
+    def getIP(self,IPADDRESS):
+        self.newIP = IPADDRESS
+
     def getUnitType(self, unitIndex):
         if unitIndex == 0:
             self.newUnitType = "ARC"
@@ -308,6 +324,15 @@ class unitManagement(QWidget):
         elif unitIndex == 1:
             self.newUnitType = "IO"
             self.victronAdd.hide()
+
+    def getVictronID(self,ID):
+        self.newVictronID = ID
+
+    def getLat(self,Lat):
+        self.newLat = Lat
+
+    def getLon(self,Lon):
+        self.newLon = Lon
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
