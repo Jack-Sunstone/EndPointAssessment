@@ -445,7 +445,7 @@ class adminMonitoring(QWidget):
 
         companyTabs = QTabWidget()
 
-        placeholder = QLabel("placeholder")
+        placeholder = QPushButton("placeholder")
 
         companyTabs.addTab(placeholder, "Company")
 
