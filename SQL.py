@@ -37,7 +37,7 @@ def deleteUnits(Name):
 
 def addUsers(Username, Password, Company, Rights):
 
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Company)}, {str(Rights)})")
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ({str(Username)}, {str(Password)}, {str(Company)}, USER)")
 
 def deleteUsers(Username):
 
