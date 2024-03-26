@@ -392,6 +392,9 @@ class unitManagement(QWidget):
 
 class userManagement(QWidget):
     def __init__(self):
+        #Current Selected User
+
+        self.selectedUser = ""
 
         #New User
         self.newUsername = ""
