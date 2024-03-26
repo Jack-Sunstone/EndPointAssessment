@@ -339,23 +339,23 @@ class userManagement(QWidget):
 
         layout.addWidget(addNewUserLabel,3,0,1,3)
 
-        usernameEdit = QLineEdit()
-        usernameEdit.setPlaceholderText("Username")
-        usernameEdit.textChanged.connect(self.getNewUsername)
+        self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("Username")
+        self.usernameEdit.textChanged.connect(self.getNewUsername)
 
-        layout.addWidget(usernameEdit,4,0)
+        layout.addWidget(self.usernameEdit,4,0)
 
-        passwordAddLineEdit = QLineEdit()
-        passwordAddLineEdit.setPlaceholderText("Password")
-        passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+        self.passwordAddLineEdit = QLineEdit()
+        self.passwordAddLineEdit.setPlaceholderText("Password")
+        self. passwordAddLineEdit.textChanged.connect(self.getNewPassword)
 
-        layout.addWidget(passwordAddLineEdit,4,1)
+        layout.addWidget(self.passwordAddLineEdit,4,1)
 
-        companyLineEdit = QLineEdit()
-        companyLineEdit.setPlaceholderText("Company")
-        companyLineEdit.textChanged.connect(self.getNewCompany)
+        self.companyLineEdit = QLineEdit()
+        self.companyLineEdit.setPlaceholderText("Company")
+        self.companyLineEdit.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(companyLineEdit,4,2)
+        layout.addWidget(self.companyLineEdit,4,2)
 
         addUserButton = QPushButton("Add New User")
         addUserButton.clicked.connect(self.addUser)
@@ -380,9 +380,11 @@ class userManagement(QWidget):
         self.newCompany = Company
 
     def addUser(self):
-        
-        if "" not in (self.newUsername, self.newPassword, self.newCompany):
+
+        if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
+            self.errorMessage.setText("User Added")
             SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
+            self.
         else:
             self.errorMessage.setText("One Field Is Empty")
 
