@@ -23,10 +23,6 @@ def fetchCompanies():
     for row in cursor.fetchall():
         yield row[0]
 
-test = fetchCompanies()
-for item in test:
-    print(item)
-
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
 
     if victronID == "":
