@@ -362,6 +362,12 @@ class userManagement(QWidget):
 
         layout.addWidget(addUserButton,5,1)
 
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 6, 1)
+
         self.setLayout(layout)
 
     def getNewUsername(self, Username):
