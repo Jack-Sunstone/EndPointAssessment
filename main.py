@@ -250,35 +250,35 @@ class unitManagement(QWidget):
 
         layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
 
-        unitNameAdd = QLineEdit()
-        unitNameAdd.setPlaceholderText("Unit ID")
-        unitNameAdd.textChanged.connect(self.getUnitName)
+        self.unitNameAdd = QLineEdit()
+        self.unitNameAdd.setPlaceholderText("Unit ID")
+        self.unitNameAdd.textChanged.connect(self.getUnitName)
 
-        layout.addWidget(unitNameAdd,4,0)
+        layout.addWidget(self.unitNameAdd,4,0)
 
-        locationAdd = QLineEdit()
-        locationAdd.setPlaceholderText("Location")
-        locationAdd.textChanged.connect(self.getLocation)
+        self.locationAdd = QLineEdit()
+        self.locationAdd.setPlaceholderText("Location")
+        self.locationAdd.textChanged.connect(self.getLocation)
 
-        layout.addWidget(locationAdd,4,1)
+        layout.addWidget(self.locationAdd,4,1)
 
-        companyAdd = QLineEdit()
-        companyAdd.setPlaceholderText("Company")
-        companyAdd.textChanged.connect(self.getCompany)
+        self.companyAdd = QLineEdit()
+        self.companyAdd.setPlaceholderText("Company")
+        self.companyAdd.textChanged.connect(self.getCompany)
 
-        layout.addWidget(companyAdd,4,2)
+        layout.addWidget(self.companyAdd,4,2)
 
-        numCamerasAdd = QLineEdit()
-        numCamerasAdd.setPlaceholderText("Number of Cameras")
-        numCamerasAdd.textChanged.connect(self.getNumCCTV)
+        self.numCamerasAdd = QLineEdit()
+        self.numCamerasAdd.setPlaceholderText("Number of Cameras")
+        self.numCamerasAdd.textChanged.connect(self.getNumCCTV)
 
-        layout.addWidget(numCamerasAdd,4,3)
+        layout.addWidget(self.numCamerasAdd,4,3)
 
-        IPAdd = QLineEdit()
-        IPAdd.setPlaceholderText("IP Address")
-        IPAdd.textChanged.connect(self.getIP)
+        self.IPAdd = QLineEdit()
+        self.IPAdd.setPlaceholderText("IP Address")
+        self.IPAdd.textChanged.connect(self.getIP)
 
-        layout.addWidget(IPAdd,5,0)
+        layout.addWidget(self.IPAdd,5,0)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
@@ -293,17 +293,17 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.victronAdd,5,2)
 
-        latAdd = QLineEdit("")
-        latAdd.setPlaceholderText("Latitude")
-        latAdd.textChanged.connect(self.getLat)
+        self.latAdd = QLineEdit("")
+        self.latAdd.setPlaceholderText("Latitude")
+        self.latAdd.textChanged.connect(self.getLat)
 
-        layout.addWidget(latAdd,6,0)
+        layout.addWidget(self.latAdd,6,0)
 
-        lonAdd = QLineEdit("")
-        lonAdd.setPlaceholderText("Longitude")
-        lonAdd.textChanged.connect(self.getLon)
+        self.lonAdd = QLineEdit("")
+        self.lonAdd.setPlaceholderText("Longitude")
+        self.lonAdd.textChanged.connect(self.getLon)
 
-        layout.addWidget(lonAdd,6,1)
+        layout.addWidget(self.lonAdd,6,1)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
@@ -354,6 +354,14 @@ class unitManagement(QWidget):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
             SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType)
             self.errorMessage.setText("Unit Added")
+            self.unitNameAdd.setText("")
+            self.locationAdd.setText("")
+            self.companyAdd.setText("")
+            self. numCamerasAdd.setText("")
+            self.IPAdd.setText("")
+            self.victronAdd.setText("")
+            self.latAdd.setText("")
+            self.lonAdd.setText("")
         else:
             self.errorMessage.setText("One or All Field Is Empty")
 
