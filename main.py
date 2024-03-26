@@ -275,9 +275,19 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.victronAdd,5,2)
 
+        latAdd = QLineEdit("")
+        latAdd.setPlaceholderText("Latitude")
+
+        layout.addWidget(latAdd,6,0)
+
+        lonAdd = QLineEdit("")
+        lonAdd.setPlaceholderText("Longitude")
+
+        layout.addWidget(lonAdd,6,1)
+
         addUnit = QPushButton("Add New Unit")
 
-        layout.addWidget(addUnit,6,0,1,4)
+        layout.addWidget(addUnit,7,0,1,4)
         self.setLayout(layout)
 
     def getUnitType(self, unitIndex):
