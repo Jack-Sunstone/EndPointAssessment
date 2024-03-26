@@ -252,26 +252,31 @@ class unitManagement(QWidget):
 
         unitNameAdd = QLineEdit()
         unitNameAdd.setPlaceholderText("Unit ID")
+        unitNameAdd.textChanged.connect(self.getUnitName)
 
         layout.addWidget(unitNameAdd,4,0)
 
         locationAdd = QLineEdit()
         locationAdd.setPlaceholderText("Location")
+        locationAdd.textChanged.connect(self.getLocation)
 
         layout.addWidget(locationAdd,4,1)
 
         companyAdd = QLineEdit()
         companyAdd.setPlaceholderText("Company")
+        companyAdd.textChanged.connect(self.getCompany)
 
         layout.addWidget(companyAdd,4,2)
 
         numCamerasAdd = QLineEdit()
         numCamerasAdd.setPlaceholderText("Number of Cameras")
+        numCamerasAdd.textChanged.connect(self.getNumCCTV)
 
         layout.addWidget(numCamerasAdd,4,3)
 
         IPAdd = QLineEdit()
         IPAdd.setPlaceholderText("IP Address")
+        IPAdd.textChanged.connect(self.getIP)
 
         layout.addWidget(IPAdd,5,0)
 
@@ -284,16 +289,19 @@ class unitManagement(QWidget):
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
+        self.victronAdd.textChanged.connect(self.getVictronID)
 
         layout.addWidget(self.victronAdd,5,2)
 
         latAdd = QLineEdit("")
         latAdd.setPlaceholderText("Latitude")
+        latAdd.textChanged.connect(self.getLat)
 
         layout.addWidget(latAdd,6,0)
 
         lonAdd = QLineEdit("")
         lonAdd.setPlaceholderText("Longitude")
+        lonAdd.textChanged.connect(self.getLon)
 
         layout.addWidget(lonAdd,6,1)
 
