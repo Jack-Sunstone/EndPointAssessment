@@ -61,6 +61,12 @@ def addUsers(Username, Password, Company):
 
     cnxn.commit()
 
+def updateUser(Password, Username):
+
+    cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}' WHERE Username = '{Username}' ")
+
+    cnxn.commit()
+
 def deleteUsers(Username):
 
     cursor.execute(f"DELETE FROM dbo.Users WHERE Username = '{str(Username)}'")
