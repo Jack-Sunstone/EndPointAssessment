@@ -303,8 +303,10 @@ class unitManagement(QWidget):
 
     def getUnitType(self, unitIndex):
         if unitIndex == 0:
+            self.newUnitType = "ARC"
             self.victronAdd.show()
         elif unitIndex == 1:
+            self.newUnitType = "IO"
             self.victronAdd.hide()
 
     def closeEvent(self, event):
