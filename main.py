@@ -422,10 +422,12 @@ class userManagement(QWidget):
 
         self.passwordLineEdit = QLineEdit()
         self.passwordLineEdit.setPlaceholderText("Password")
+        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
 
         layout.addWidget(self.passwordLineEdit,1,1,1,2)
 
         changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUser)
 
         layout.addWidget(changeButton,2,1)
 
@@ -470,6 +472,9 @@ class userManagement(QWidget):
 
         self.setLayout(layout)
 
+    def getPasswordChanged(self, Password):
+        self.selectedPassword = Password
+
     def getNewUsername(self, Username):
         self.newUsername = Username
 
@@ -478,7 +483,6 @@ class userManagement(QWidget):
 
     def getNewCompany(self, Company):
         self.newCompany = Company
-
     def unitChanged(self, index):
 
         self.selectedUser = listOfUsers[index]
@@ -486,7 +490,11 @@ class userManagement(QWidget):
         self.selectedPassword = SQL.fetchPassword(self.selectedUser)
 
         self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(password)
+        self.passwordLineEdit.setText(self.selectedPassword)
+
+    def changeUser(self):
+        SQL.updateUser(self.selectedPassword, self.selectedUser)
+        self.errorMessage.setText("User Updated")
 
     def deleteUser(self):
 
