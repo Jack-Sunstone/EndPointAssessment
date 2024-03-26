@@ -23,6 +23,16 @@ def fetchCompanies():
     for row in cursor.fetchall():
         yield row[0]
 
+    cnxn.commit()
+
+def fetchUsers():
+
+    cursor.execute("SELECT Username FROM dbo.Users")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
+    cnxn.commit()
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
 
     if victronID == "":
