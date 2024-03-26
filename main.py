@@ -384,7 +384,9 @@ class userManagement(QWidget):
         if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
             self.errorMessage.setText("User Added")
             SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
-            self.
+            self.usernameEdit.setText("")
+            self.passwordAddLineEdit.setText("")
+            self.companyLineEdit.setText("")
         else:
             self.errorMessage.setText("One Field Is Empty")
 
