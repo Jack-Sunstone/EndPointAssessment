@@ -235,6 +235,7 @@ class unitManagement(QWidget):
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.addItems(listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
+        unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
 
@@ -370,6 +371,19 @@ class unitManagement(QWidget):
     def getLon(self,Lon):
         self.newLon = Lon
 
+    def unitChanged(self, index):
+
+        self.selectedUnit = listOfUnits[index]
+
+        data = SQL.fetchUnitDetails(self.selectedUnit)
+
+        for row in data:
+            altered = list(row)
+            self.selectedLocation = altered[0]
+            self.selectedCompany = altered[1]
+            self.selectedCameras = altered[2]
+
+
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
             SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType)
@@ -418,7 +432,7 @@ class userManagement(QWidget):
         userSelection = QComboBox()
         userSelection.addItems(listOfUsers)
         userSelection.setPlaceholderText("User Selection")
-        userSelection.currentIndexChanged.connect(self.unitChanged)
+        userSelection.currentIndexChanged.connect(self.userChanged)
 
         layout.addWidget(userSelection,0,0,1,3)
 
@@ -489,7 +503,7 @@ class userManagement(QWidget):
 
     def getNewCompany(self, Company):
         self.newCompany = Company
-    def unitChanged(self, index):
+    def userChanged(self, index):
 
         self.selectedUser = listOfUsers[index]
 
