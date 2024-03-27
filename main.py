@@ -239,24 +239,24 @@ class unitManagement(QWidget):
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
 
-        unitName = QLabel("Placeholder")
+        self.unitName = QLabel("Placeholder")
 
-        layout.addWidget(unitName,1,0)
+        layout.addWidget(self.unitName,1,0)
 
-        locationEdit = QLineEdit()
-        locationEdit.setPlaceholderText("Location")
+        self.locationEdit = QLineEdit()
+        self.locationEdit.setPlaceholderText("Location")
 
-        layout.addWidget(locationEdit, 1, 1)
+        layout.addWidget(self.locationEdit, 1, 1)
 
-        companyEdit = QLineEdit()
-        companyEdit.setPlaceholderText("Company")
+        self.companyEdit = QLineEdit()
+        self.companyEdit.setPlaceholderText("Company")
 
-        layout.addWidget(companyEdit, 1, 2)
+        layout.addWidget(self.companyEdit, 1, 2)
 
-        numCameras = QLineEdit()
-        numCameras.setPlaceholderText("Number of Cameras")
+        self.numCameras = QLineEdit()
+        self.numCameras.setPlaceholderText("Number of Cameras")
 
-        layout.addWidget(numCameras, 1, 3)
+        layout.addWidget(self.numCameras, 1, 3)
 
         changeButton = QPushButton("Change Details")
 
@@ -383,6 +383,7 @@ class unitManagement(QWidget):
             self.selectedCompany = altered[1]
             self.selectedCameras = altered[2]
 
+    
 
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
