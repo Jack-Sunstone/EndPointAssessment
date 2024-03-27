@@ -381,9 +381,12 @@ class unitManagement(QWidget):
             altered = list(row)
             self.selectedLocation = altered[0]
             self.selectedCompany = altered[1]
-            self.selectedCameras = altered[2]
+            self.selectedCameras = str(altered[2])
 
-    
+        self.unitName.setText(self.selectedUnit)
+        self.locationEdit.setText(self.selectedLocation)
+        self.companyEdit.setText(self.selectedCompany)
+        self.numCameras.setText(self.selectedCameras)
 
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
