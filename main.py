@@ -208,6 +208,12 @@ class arcDashboard(QWidget):
 class unitManagement(QWidget):
     def __init__(self):
 
+        #Current Selected Unit
+        self.selectedUnit = ""
+        self.selectedLocation = ""
+        self.selectedCompany = ""
+        self.selectedCameras = ""
+
         #Add new Unit
         self.newUnitName = ""
         self.newIP = ""
@@ -237,7 +243,7 @@ class unitManagement(QWidget):
         layout.addWidget(unitName,1,0)
 
         locationEdit = QLineEdit()
-        locationEdit.setPlaceholderText("Unit Location")
+        locationEdit.setPlaceholderText("Location")
 
         layout.addWidget(locationEdit, 1, 1)
 
@@ -431,7 +437,7 @@ class userManagement(QWidget):
 
         layout.addWidget(changeButton,2,1)
 
-        deleteButton = QPushButton("Delete User")
+        deleteButton = QPushButton("Delete")
         deleteButton.clicked.connect(self.deleteUser)
 
         layout.addWidget(deleteButton,2,2)
