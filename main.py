@@ -416,7 +416,7 @@ class userManagement(QWidget):
 
         layout.addWidget(userSelection,0,0,1,3)
 
-        self.usernameLabel = QLabel("PLACEHOLDER")
+        self.usernameLabel = QLabel("")
 
         layout.addWidget(self.usernameLabel,1,0.5)
 
@@ -431,7 +431,7 @@ class userManagement(QWidget):
 
         layout.addWidget(changeButton,2,1)
 
-        deleteButton = QPushButton("Delete Unit")
+        deleteButton = QPushButton("Delete User")
         deleteButton.clicked.connect(self.deleteUser)
 
         layout.addWidget(deleteButton,2,2)
