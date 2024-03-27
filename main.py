@@ -222,7 +222,7 @@ class unitManagement(QWidget):
         super().__init__()
 
         self.setWindowTitle("Unit Mangement")
-        self.setGeometry(0, 0, 600, 300)
+        self.setGeometry(0, 0, 650, 300)
 
         layout = QGridLayout()
 
@@ -405,7 +405,7 @@ class userManagement(QWidget):
         super().__init__()
 
         self.setWindowTitle("User Management")
-        self.setGeometry(0,0,300,250)
+        self.setGeometry(0,0,350,250)
 
         layout = QGridLayout()
 
