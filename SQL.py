@@ -23,6 +23,12 @@ def fetchUnitDetails(unitName):
     for row in cursor.fetchall():
         yield row
 
+def updateunit(unitName, Location, Company, CCTV):
+
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = '{CCTV}' WHERE Name = '{unitName}'")
+
+    cnxn.commit()
+
 def fetchCompanies():
 
     cursor.execute("SELECT Company FROM dbo.Units")
@@ -51,20 +57,20 @@ def fetchPassword(Username):
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType):
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{str(Name)}', '{str(IP)}', NULL, '{str(Location)}', {int(NoCCTV)}, '{str(Company)}', {float(Lat)}, {float(Lon)}, '{str(UnitType)}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}')")
     else:
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{str(Name)}', '{str(IP)}', {int(victronID)}, '{str(Location)}', {int(NoCCTV)}, '{str(Company)}', {float(Lat)}, {float(Lon)}, '{str(UnitType)}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}')")
     cnxn.commit()
 
 def deleteUnits(Name):
 
-    cursor.execute(f"DELETE FROM dbo.Units WHERE Name = '{str(Name)}'")
+    cursor.execute(f"DELETE FROM dbo.Units WHERE Name = '{Name}'")
 
     cnxn.commit()
 
 def addUsers(Username, Password, Company):
 
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{str(Username)}', '{str(Password)}', '{str(Company)}', 'USER')")
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{Username}', '{Password}', '{Company}', 'USER')")
 
     cnxn.commit()
 
@@ -76,6 +82,6 @@ def updateUser(Password, Username):
 
 def deleteUsers(Username):
 
-    cursor.execute(f"DELETE FROM dbo.Users WHERE Username = '{str(Username)}'")
+    cursor.execute(f"DELETE FROM dbo.Users WHERE Username = '{Username}'")
 
     cnxn.commit()
