@@ -794,51 +794,53 @@ class loginUI(QMainWindow):
 
     def getUser(self, Username):
         global username
-        username = Username
+        self.username = Username
         self.errorMessage.hide()
 
     def getPassword(self, Password):
         global password
-        password = Password
+        self.password = Password
         self.errorMessage.hide()
 
 
     def openMonitoring(self):
 
+        checkUsername = SQL.checkUsername(self.username)
 
-        userRights = "ADMIN" #Placeholder
-        placeholderUsername = "Jack"
-        placeholderpassword = "Password"
-
-        if username == placeholderUsername:
-            loggedIn = password == placeholderpassword
-        else:
+        if checkUsername is None:
+            print("Here")
             self.errorMessage.show()
 
-        if loggedIn:
-
-            if "ADMIN" in userRights:
-                self.adminMonitoring = adminMonitoring()
-                self.adminMonitoring.show()
-
-                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                geo = self.adminMonitoring.frameGeometry()
-                geo.moveCenter(center)
-                self.adminMonitoring.move(geo.topLeft())
-
-                self.hide()
-            elif "USER" in userRights:
-                self.userMonitoring = userMonitoring()
-                self.userMonitoring.show()
-
-                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                geo = self.userMonitoring.frameGeometry()
-                geo.moveCenter(center)
-                self.userMonitoring.move(geo.topLeft())
-
-                self.hide()
         else:
-            self.errorMessage.show()
+            checkPassword = SQL.fetchPassword(self.username)
+
+            loggedIn = self.password == checkPassword.strip()
+
+
+            if loggedIn:
+                userRights = SQL.fetchRights(self.username)
+                if "ADMIN" in userRights:
+                    self.adminMonitoring = adminMonitoring()
+                    self.adminMonitoring.show()
+
+                    center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    geo = self.adminMonitoring.frameGeometry()
+                    geo.moveCenter(center)
+                    self.adminMonitoring.move(geo.topLeft())
+
+                    self.hide()
+                elif "USER" in userRights:
+                    self.userMonitoring = userMonitoring()
+                    self.userMonitoring.show()
+
+                    center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    geo = self.userMonitoring.frameGeometry()
+                    geo.moveCenter(center)
+                    self.userMonitoring.move(geo.topLeft())
+
+                    self.hide()
+            else:
+                self.errorMessage.show()
 
 app = QApplication([])
 app.setStyle('Fusion')
