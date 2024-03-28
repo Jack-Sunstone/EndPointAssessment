@@ -6,22 +6,6 @@ from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
 import SQL
 
-username =  ""
-password =  ""
-
-listOfUnits = []
-
-fetchUnits = SQL.fetchUnits()
-for item in fetchUnits:
-   listOfUnits.append(item)
-
-listOfUsers = []
-
-fetchUsers = SQL.fetchUsers()
-
-for item in fetchUsers:
-   listOfUsers.append(item)
-
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -208,6 +192,12 @@ class arcDashboard(QWidget):
 class unitManagement(QWidget):
     def __init__(self):
 
+        self.listOfUnits = []
+
+        fetchUnits = SQL.fetchUnits()
+        for item in fetchUnits:
+            self.listOfUnits.append(item)
+
         #Current Selected Unit
         self.selectedUnit = ""
         self.selectedLocation = ""
@@ -233,7 +223,7 @@ class unitManagement(QWidget):
         layout = QGridLayout()
 
         unitManagementDropdown = QComboBox()
-        unitManagementDropdown.addItems(listOfUnits)
+        unitManagementDropdown.addItems(self.listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
         unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
@@ -386,7 +376,7 @@ class unitManagement(QWidget):
 
     def unitChanged(self, index):
 
-        self.selectedUnit = listOfUnits[index]
+        self.selectedUnit = self.listOfUnits[index]
 
         data = SQL.fetchUnitDetails(self.selectedUnit)
 
@@ -436,6 +426,13 @@ class unitManagement(QWidget):
 class userManagement(QWidget):
     def __init__(self):
 
+        self.listOfUsers = []
+
+        fetchUsers = SQL.fetchUsers()
+
+        for item in fetchUsers:
+            self.listOfUsers.append(item)
+
         #Current Selected User
         self.selectedUser = ""
         self.selectedPassword = ""
@@ -452,12 +449,12 @@ class userManagement(QWidget):
 
         layout = QGridLayout()
 
-        userSelection = QComboBox()
-        userSelection.addItems(listOfUsers)
-        userSelection.setPlaceholderText("User Selection")
-        userSelection.currentIndexChanged.connect(self.userChanged)
+        self.userSelection = QComboBox()
+        self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.setPlaceholderText("User Selection")
+        self.userSelection.currentIndexChanged.connect(self.userChanged)
 
-        layout.addWidget(userSelection,0,0,1,3)
+        layout.addWidget(self.userSelection,0,0,1,3)
 
         self.usernameLabel = QLabel("")
 
@@ -528,9 +525,9 @@ class userManagement(QWidget):
         self.newCompany = Company
     def userChanged(self, index):
 
-        self.selectedUser = listOfUsers[index]
+        self.selectedUser = self.listOfUsers[index]
 
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser)
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
 
         self.usernameLabel.setText(self.selectedUser)
         self.passwordLineEdit.setText(self.selectedPassword)
@@ -828,7 +825,7 @@ class loginUI(QMainWindow):
                     self.adminMonitoring.show()
 
                     Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    Ceo = self.adminMonitoring.frameGeometry()
+                    Geo = self.adminMonitoring.frameGeometry()
                     Geo.moveCenter(Center)
                     self.adminMonitoring.move(Geo.topLeft())
 
