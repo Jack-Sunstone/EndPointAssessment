@@ -702,15 +702,14 @@ class userMonitoring(QWidget):
 
         self.setWindowTitle("Dashboard")
         self.setGeometry(0,0,255,600)
-        self.setStyleSheet("background-color: white;")
 
         layout = QVBoxLayout()
 
         companyTabs = QTabWidget()
 
-        placeholder = QLabel("placeholder")
+        placeholder = QPushButton("placeholder")
 
-        companyTabs.addTab(placeholder,"Company")
+        companyTabs.addTab(placeholder, "Company")
 
         layout.addWidget(companyTabs)
 
