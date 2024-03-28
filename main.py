@@ -259,6 +259,7 @@ class unitManagement(QWidget):
         layout.addWidget(self.numCameras, 1, 3)
 
         changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUnit)
 
         layout.addWidget(changeButton,2,0,1,2)
 
@@ -273,56 +274,56 @@ class unitManagement(QWidget):
 
         self.unitNameAdd = QLineEdit()
         self.unitNameAdd.setPlaceholderText("Unit ID")
-        self.unitNameAdd.textChanged.connect(self.getUnitName)
+        self.unitNameAdd.textChanged.connect(self.getNewUnitName)
 
         layout.addWidget(self.unitNameAdd,4,0)
 
         self.locationAdd = QLineEdit()
         self.locationAdd.setPlaceholderText("Location")
-        self.locationAdd.textChanged.connect(self.getLocation)
+        self.locationAdd.textChanged.connect(self.getNewLocation)
 
         layout.addWidget(self.locationAdd,4,1)
 
         self.companyAdd = QLineEdit()
         self.companyAdd.setPlaceholderText("Company")
-        self.companyAdd.textChanged.connect(self.getCompany)
+        self.companyAdd.textChanged.connect(self.getNewCompany)
 
         layout.addWidget(self.companyAdd,4,2)
 
         self.numCamerasAdd = QLineEdit()
         self.numCamerasAdd.setPlaceholderText("Number of Cameras")
-        self.numCamerasAdd.textChanged.connect(self.getNumCCTV)
+        self.numCamerasAdd.textChanged.connect(self.getNewNumCCTV)
 
         layout.addWidget(self.numCamerasAdd,4,3)
 
         self.IPAdd = QLineEdit()
         self.IPAdd.setPlaceholderText("IP Address")
-        self.IPAdd.textChanged.connect(self.getIP)
+        self.IPAdd.textChanged.connect(self.getNewIP)
 
         layout.addWidget(self.IPAdd,5,0)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
-        unitType.currentIndexChanged.connect(self.getUnitType)
+        unitType.currentIndexChanged.connect(self.getNewUnitType)
 
         layout.addWidget(unitType,5,1)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
-        self.victronAdd.textChanged.connect(self.getVictronID)
+        self.victronAdd.textChanged.connect(self.getNewVictronID)
 
         layout.addWidget(self.victronAdd,5,2)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
-        self.latAdd.textChanged.connect(self.getLat)
+        self.latAdd.textChanged.connect(self.getNewLat)
 
         layout.addWidget(self.latAdd,6,0)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
-        self.lonAdd.textChanged.connect(self.getLon)
+        self.lonAdd.textChanged.connect(self.getNewLon)
 
         layout.addWidget(self.lonAdd,6,1)
 
@@ -339,22 +340,22 @@ class unitManagement(QWidget):
 
         self.setLayout(layout)
 
-    def getUnitName(self,Name):
+    def getNEwUnitName(self,Name):
         self.newUnitName = Name
 
-    def getLocation(self, Location):
+    def getNewLocation(self, Location):
         self.newLocation = Location
 
-    def getCompany(self, Company):
+    def getNewCompany(self, Company):
         self.newCompany = Company
 
-    def getNumCCTV(self, Number):
+    def getNewNumCCTV(self, Number):
         self.NoCCTV = Number
 
-    def getIP(self,IPADDRESS):
+    def getNewIP(self,IPADDRESS):
         self.newIP = IPADDRESS
 
-    def getUnitType(self, unitIndex):
+    def getNewUnitType(self, unitIndex):
         if unitIndex == 0:
             self.newUnitType = "ARC"
             self.victronAdd.show()
@@ -362,13 +363,13 @@ class unitManagement(QWidget):
             self.newUnitType = "IO"
             self.victronAdd.hide()
 
-    def getVictronID(self,ID):
+    def getNewVictronID(self,ID):
         self.newVictronID = ID
 
-    def getLat(self,Lat):
+    def getNewLat(self,Lat):
         self.newLat = Lat
 
-    def getLon(self,Lon):
+    def getNewLon(self,Lon):
         self.newLon = Lon
 
     def unitChanged(self, index):
@@ -387,6 +388,12 @@ class unitManagement(QWidget):
         self.locationEdit.setText(self.selectedLocation)
         self.companyEdit.setText(self.selectedCompany)
         self.numCameras.setText(self.selectedCameras)
+
+    def changeUnit(self):
+
+        SQL.updateunit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
+        self.errorMessage.setText("Unit Updated")
+
 
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
