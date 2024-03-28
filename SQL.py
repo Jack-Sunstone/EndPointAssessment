@@ -54,6 +54,13 @@ def fetchPassword(Username):
     for row in cursor.fetchall():
         return row[0]
 
+def fetchRights(Username):
+
+    cursor.execute(f"SELECT Rights FROM dbo.Users WHERE Username = '{Username}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
 def checkUsername(Username):
     cursor.execute(f"SELECT Username FROM dbo.Users WHERE Username = '{Username}'")
 
