@@ -692,6 +692,9 @@ class adminMonitoring(QWidget):
         geo.moveCenter(center)
         self.login.move(geo.topLeft())
 
+        self.openMapPage = interactiveMap()
+        self.openMapPage.hide()
+
         self.hide()
 class userMonitoring(QWidget):
     def __init__(self):
@@ -735,6 +738,9 @@ class userMonitoring(QWidget):
         geo = self.login.frameGeometry()
         geo.moveCenter(center)
         self.login.move(geo.topLeft())
+
+        self.openMapPage = interactiveMap()
+        self.openMapPage.hide()
 
         self.hide()
 
