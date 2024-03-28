@@ -340,7 +340,16 @@ class unitManagement(QWidget):
 
         self.setLayout(layout)
 
-    def getNEwUnitName(self,Name):
+    def getUpdatedLocation(self, Location):
+        self.selectedLocation = Location
+
+    def getUpdatedCompany(self, Company):
+        self.selectedCompany = Company
+
+    def getUpdatedNumCCTV(self, CCTV):
+        self.selectedCameras = CCTV
+
+    def getNewUnitName(self,Name):
         self.newUnitName = Name
 
     def getNewLocation(self, Location):
