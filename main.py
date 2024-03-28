@@ -741,6 +741,11 @@ class userMonitoring(QWidget):
 
 class loginUI(QMainWindow):
     def __init__(self):
+
+        self.username = ""
+        self.password = ""
+        self.rights = ""
+
         super().__init__()
 
         self.setWindowTitle("Dashboard Login")
@@ -799,6 +804,8 @@ class loginUI(QMainWindow):
 
 
     def openMonitoring(self):
+
+
         userRights = "ADMIN" #Placeholder
         placeholderUsername = "Jack"
         placeholderpassword = "Password"
