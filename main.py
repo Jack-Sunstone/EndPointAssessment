@@ -426,10 +426,10 @@ class unitManagement(QWidget):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openAdminMenu.frameGeometry()
-        geo.moveCenter(center)
-        self.openAdminMenu.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
 
@@ -559,10 +559,10 @@ class userManagement(QWidget):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openAdminMenu.frameGeometry()
-        geo.moveCenter(center)
-        self.openAdminMenu.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
 
@@ -591,10 +591,10 @@ class adminMenu(QWidget):
         self.openUserManagement = userManagement()
         self.openUserManagement.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openUserManagement.frameGeometry()
-        geo.moveCenter(center)
-        self.openUserManagement.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openUserManagement.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openUserManagement.move(Geo.topLeft())
 
         self.hide()
 
@@ -602,10 +602,10 @@ class adminMenu(QWidget):
         self.openUnitManagement = unitManagement()
         self.openUnitManagement.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openUnitManagement.frameGeometry()
-        geo.moveCenter(center)
-        self.openUnitManagement.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openUnitManagement.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openUnitManagement.move(Geo.topLeft())
 
         self.hide()
 
@@ -613,10 +613,10 @@ class adminMenu(QWidget):
         self.openMonitoring = adminMonitoring()
         self.openMonitoring.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openMonitoring.frameGeometry()
-        geo.moveCenter(center)
-        self.openMonitoring.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openMonitoring.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openMonitoring.move(Geo.topLeft())
 
         self.hide()
 
@@ -667,19 +667,19 @@ class adminMonitoring(QWidget):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openMapPage.frameGeometry()
-        geo.moveCenter(center)
-        self.openMapPage.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openMapPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openMapPage.move(Geo.topLeft())
 
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openAdminMenu.frameGeometry()
-        geo.moveCenter(center)
-        self.openAdminMenu.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
 
@@ -687,10 +687,10 @@ class adminMonitoring(QWidget):
         self.login = loginUI()
         self.login.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.login.frameGeometry()
-        geo.moveCenter(center)
-        self.login.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.login.frameGeometry()
+        Geo.moveCenter(Center)
+        self.login.move(Geo.topLeft())
 
         self.openMapPage = interactiveMap()
         self.openMapPage.hide()
@@ -724,19 +724,19 @@ class userMonitoring(QWidget):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.openMapPage.frameGeometry()
-        geo.moveCenter(center)
-        self.openMapPage.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openMapPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openMapPage.move(Geo.topLeft())
 
     def closeEvent(self, event):
         self.login = loginUI()
         self.login.show()
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.login.frameGeometry()
-        geo.moveCenter(center)
-        self.login.move(geo.topLeft())
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.login.frameGeometry()
+        Geo.moveCenter(Center)
+        self.login.move(Geo.topLeft())
 
         self.openMapPage = interactiveMap()
         self.openMapPage.hide()
@@ -755,7 +755,6 @@ class loginUI(QMainWindow):
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
-        #self.setStyleSheet("background-color: white;")
 
         layout = QGridLayout()
 
@@ -828,19 +827,19 @@ class loginUI(QMainWindow):
                     self.adminMonitoring = adminMonitoring()
                     self.adminMonitoring.show()
 
-                    center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    geo = self.adminMonitoring.frameGeometry()
-                    geo.moveCenter(center)
-                    self.adminMonitoring.move(geo.topLeft())
+                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    Ceo = self.adminMonitoring.frameGeometry()
+                    Geo.moveCenter(Center)
+                    self.adminMonitoring.move(Geo.topLeft())
 
                     self.hide()
                 elif "USER" in userRights:
                     self.userMonitoring = userMonitoring()
                     self.userMonitoring.show()
 
-                    center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    geo = self.userMonitoring.frameGeometry()
-                    geo.moveCenter(center)
+                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    Geo = self.userMonitoring.frameGeometry()
+                    Geo.moveCenter(Center)
                     self.userMonitoring.move(geo.topLeft())
 
                     self.hide()
