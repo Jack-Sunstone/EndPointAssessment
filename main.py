@@ -245,16 +245,19 @@ class unitManagement(QWidget):
 
         self.locationEdit = QLineEdit()
         self.locationEdit.setPlaceholderText("Location")
+        self.locationEdit.textChanged.connect(self.getUpdatedLocation)
 
         layout.addWidget(self.locationEdit, 1, 1)
 
         self.companyEdit = QLineEdit()
         self.companyEdit.setPlaceholderText("Company")
+        self.companyEdit.textChanged.connect(self.getUpdatedCompany)
 
         layout.addWidget(self.companyEdit, 1, 2)
 
         self.numCameras = QLineEdit()
         self.numCameras.setPlaceholderText("Number of Cameras")
+        self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
 
         layout.addWidget(self.numCameras, 1, 3)
 
