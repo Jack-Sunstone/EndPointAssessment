@@ -25,7 +25,7 @@ def fetchUnitDetails(unitName):
 
 def updateunit(unitName, Location, Company, CCTV):
 
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = '{CCTV}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = {CCTV} WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
