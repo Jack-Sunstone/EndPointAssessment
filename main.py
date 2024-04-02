@@ -39,6 +39,7 @@ unitVoltage = ""
 unitLoad = ""
 
 def getVictronValues():
+
     # Defining login details to access Sites
     login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
     login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
@@ -46,6 +47,10 @@ def getVictronValues():
     response = requests.post(login_url, login_string)
     token = json.loads(response.text).get("token")
     headers = {"X-Authorization": 'Bearer ' + token}
+
+    diags_url = "https://vrmapi.victronenergy.com/v2/installations/{}/diagnostics?count=1000".format(selectedVictron)
+    response = requests.get(diags_url, headers=headers)
+    data = response.json().get("records")
 
 class ioDashboard(QWidget):
     def __init__(self):
