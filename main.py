@@ -5,6 +5,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
 import SQL
+import requests
+import json
 
 def resourcePath(relativePath):
     try:
@@ -31,6 +33,19 @@ selectedCCTV = ""
 selectedUnitType = ""
 
 userRights = ""
+
+unitSolar = ""
+unitVoltage = ""
+unitLoad = ""
+
+def getVictronValues():
+    # Defining login details to access Sites
+    login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
+    login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
+    # Stores and loads Json request to the login URL
+    response = requests.post(login_url, login_string)
+    token = json.loads(response.text).get("token")
+    headers = {"X-Authorization": 'Bearer ' + token}
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -923,7 +938,6 @@ class userMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
-
 
 class loginUI(QMainWindow):
     def __init__(self):
