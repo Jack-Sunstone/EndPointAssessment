@@ -38,6 +38,14 @@ def fetchCompanies():
 
     cnxn.commit()
 
+def fetchUnitType(unitName):
+    cursor.execute(f"SELECT UnitType FROM dbo.Units WHERE Name = '{unitName}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
+    cnxn.commit()
+
 def fetchUsers():
 
     cursor.execute("SELECT Username FROM dbo.Users")
