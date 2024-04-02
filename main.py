@@ -30,6 +30,8 @@ selectedVictron = ""
 selectedCCTV = ""
 selectedUnitType = ""
 
+userRights = ""
+
 class ioDashboard(QWidget):
     def __init__(self):
         super().__init__()
@@ -867,6 +869,8 @@ class loginUI(QMainWindow):
 
 
     def openMonitoring(self):
+
+        global userRights
 
         checkUsername = SQL.checkUsername(self.username)
 
