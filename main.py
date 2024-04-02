@@ -565,6 +565,7 @@ class userManagement(QWidget):
 
 class adminMenu(QWidget):
     def __init__(self):
+
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
@@ -633,18 +634,27 @@ class interactiveMap(QWidget):
 
 class adminMonitoring(QWidget):
     def __init__(self):
+
+        self.listOfUnits = []
+        self.listOfCompanies = []
+
+        fetchUnits = SQL.fetchUnits()
+        for item in fetchUnits:
+            self.listOfUnits.append(item)
+
+        fetchCompanies = SQL.fetchCompanies()
+        for item in fetchCompanies:
+            self.listOfCompanies.append(item)
+
+        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
+
         super().__init__()
 
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0, 0, 255, 600)
 
         layout = QVBoxLayout()
-
         companyTabs = QTabWidget()
-
-        placeholder = QPushButton("placeholder")
-
-        companyTabs.addTab(placeholder, "Company")
 
         layout.addWidget(companyTabs)
 
