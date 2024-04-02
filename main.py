@@ -711,7 +711,16 @@ class adminMonitoring(QWidget):
             self.openARCDashboard.move(Geo.topLeft())
 
             self.hide()
+        elif str(unitType) == "IO":
+            self.openIODashboard = ioDashboard()
+            self.openIODashboard.show()
 
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openIODashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openIODashboard.move(Geo.topLeft())
+
+            self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
