@@ -396,6 +396,9 @@ class unitManagement(QWidget):
         SQL.updateunit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
         self.errorMessage.setText("Unit Updated")
 
+    def deleteUnit(self):
+        SQL.deleteUnits(self.selectedUnit)
+        self.errorMessage.setText("Unit Deleted")
 
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
