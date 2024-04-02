@@ -434,9 +434,9 @@ class unitManagement(QWidget):
 
         for row in data:
             altered = list(row)
-            self.selectedLocation = altered[0]
-            self.selectedCompany = altered[1]
-            self.selectedCameras = str(altered[2])
+            self.selectedLocation = altered[2]
+            self.selectedCompany = altered[3]
+            self.selectedCameras = str(altered[4])
 
         self.unitName.setText(self.selectedUnit)
         self.locationEdit.setText(self.selectedLocation)
@@ -801,6 +801,7 @@ class adminMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
+
 class userMonitoring(QWidget):
     def __init__(self):
         self.listOfUnits = []

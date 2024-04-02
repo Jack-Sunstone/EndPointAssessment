@@ -18,7 +18,7 @@ def fetchUnits():
 
 def fetchUnitDetails(unitName):
 
-    cursor.execute(f"SELECT Location, Company, NoCCTV FROM dbo.Units WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV FROM dbo.Units WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row
