@@ -803,27 +803,72 @@ class adminMonitoring(QWidget):
         self.hide()
 class userMonitoring(QWidget):
     def __init__(self):
+        self.listOfUnits = []
+        self.listOfCompanies = []
+
+        fetchUnits = SQL.fetchUnits()
+        for item in fetchUnits:
+            self.listOfUnits.append(item)
+
+        fetchCompanies = SQL.fetchCompanies()
+        for item in fetchCompanies:
+            self.listOfCompanies.append(item)
+
+        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
+
         super().__init__()
 
-        self.setWindowTitle("Dashboard")
-        self.setGeometry(0,0,255,600)
+        self.setWindowTitle("User Dashboard")
+        self.setGeometry(0, 0, 255, 600)
 
-        layout = QVBoxLayout()
+        mainLayout = QVBoxLayout()
 
-        companyTabs = QTabWidget()
+        unitsLayout = QVBoxLayout()
 
-        placeholder = QPushButton("placeholder")
+        groupBox = QGroupBox()
 
-        companyTabs.addTab(placeholder, "Company")
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(i))
 
-        layout.addWidget(companyTabs)
+            buttonText = self.testButton.text()
 
-        mapButton = QPushButton("Interactive Map")
-        mapButton.clicked.connect(self.openMap)
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
-        layout.addWidget(mapButton)
+            unitsLayout.addWidget(self.testButton)
 
-        self.setLayout(layout)
+        groupBox.setLayout(unitsLayout)
+
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(groupBox)
+        scrollArea.setWidgetResizable(True)
+
+        mainLayout.addWidget(scrollArea)
+
+        self.setLayout(mainLayout)
+
+    def openUnitDashboard(self,unitName):
+        unitType = SQL.fetchUnitType(unitName).strip()
+
+        if str(unitType) == "ARC":
+            self.openARCDashboard = arcDashboard()
+            self.openARCDashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openARCDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openARCDashboard.move(Geo.topLeft())
+
+            self.hide()
+        elif str(unitType) == "IO":
+            self.openIODashboard = ioDashboard()
+            self.openIODashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openIODashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openIODashboard.move(Geo.topLeft())
+
+            self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
