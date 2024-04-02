@@ -746,6 +746,16 @@ class adminMonitoring(QWidget):
 
     def openUnitDashboard(self,unitName):
         unitType = SQL.fetchUnitType(unitName).strip()
+        data = SQL.fetchUnitDetails(unitName)
+        selectedUnit = unitName
+        selectedUnitType = unitType
+
+        for row in data:
+            altered = list(row)
+            selectedIP = altered[0]
+            selectedVictron = altered[1]
+            selectedCCTV = altered[4]
+
 
         if str(unitType) == "ARC":
             self.openARCDashboard = arcDashboard()
