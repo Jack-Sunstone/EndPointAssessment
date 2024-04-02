@@ -653,22 +653,34 @@ class adminMonitoring(QWidget):
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0, 0, 255, 600)
 
-        layout = QVBoxLayout()
-        companyTabs = QTabWidget()
+        mainLayout = QVBoxLayout()
 
-        layout.addWidget(companyTabs)
+        unitsLayout = QVBoxLayout()
+
+        groupBox = QGroupBox()
+
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(i))
+            unitsLayout.addWidget(self.testButton)
+
+        groupBox.setLayout(unitsLayout)
+
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(groupBox)
+
+        mainLayout.addWidget(scrollArea)
 
         mapButton = QPushButton("Interactive Map")
         mapButton.clicked.connect(self.openMap)
 
-        layout.addWidget(mapButton)
+        mainLayout.addWidget(mapButton)
 
         adminButton = QPushButton("Admin Menu")
         adminButton.clicked.connect(self.openAdmin)
 
-        layout.addWidget(adminButton)
+        mainLayout.addWidget(adminButton)
 
-        self.setLayout(layout)
+        self.setLayout(mainLayout)
 
     def openMap(self):
         self.openMapPage = interactiveMap()
