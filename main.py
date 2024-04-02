@@ -24,6 +24,12 @@ batteryPath = resourcePath("Assets/Images/fullBattery.png")
 
 loadPath = resourcePath("Assets/Images/Load.png")
 
+selectedUnit = ""
+selectedIP = ""
+selectedVictron = ""
+selectedCCTV = ""
+selectedUnitType = ""
+
 class ioDashboard(QWidget):
     def __init__(self):
         super().__init__()
@@ -663,7 +669,13 @@ class adminMonitoring(QWidget):
         groupBox = QGroupBox()
 
         for i in self.listOfUnits:
+
             self.testButton = QPushButton(str(i))
+
+            buttonText = self.testButton.text()
+
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
+
             unitsLayout.addWidget(self.testButton)
 
         groupBox.setLayout(unitsLayout)
@@ -685,6 +697,21 @@ class adminMonitoring(QWidget):
         mainLayout.addWidget(adminButton)
 
         self.setLayout(mainLayout)
+
+    def openUnitDashboard(self,unitName):
+        unitType = SQL.fetchUnitType(unitName).strip()
+
+        if str(unitType) == "ARC":
+            self.openARCDashboard = arcDashboard()
+            self.openARCDashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openARCDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openARCDashboard.move(Geo.topLeft())
+
+            self.hide()
+
 
     def openMap(self):
         self.openMapPage = interactiveMap()
