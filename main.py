@@ -745,6 +745,11 @@ class adminMonitoring(QWidget):
         self.setLayout(mainLayout)
 
     def openUnitDashboard(self,unitName):
+        global selectedUnit
+        global selectedUnitType
+        global selectedIP
+        global selectedVictron
+        global selectedCCTV
         unitType = SQL.fetchUnitType(unitName).strip()
         data = SQL.fetchUnitDetails(unitName)
         selectedUnit = unitName
