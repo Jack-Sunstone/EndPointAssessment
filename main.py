@@ -880,26 +880,26 @@ class userMonitoring(QWidget):
             selectedVictron = altered[1]
             selectedCCTV = altered[4]
 
-    if str(unitType) == "ARC":
-            self.openARCDashboard = arcDashboard()
-            self.openARCDashboard.show()
+        if str(unitType) == "ARC":
+                self.openARCDashboard = arcDashboard()
+                self.openARCDashboard.show()
 
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openARCDashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openARCDashboard.move(Geo.topLeft())
+                Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                Geo = self.openARCDashboard.frameGeometry()
+                Geo.moveCenter(Center)
+                self.openARCDashboard.move(Geo.topLeft())
 
-            self.hide()
+                self.hide()
         elif str(unitType) == "IO":
-            self.openIODashboard = ioDashboard()
-            self.openIODashboard.show()
+                self.openIODashboard = ioDashboard()
+                self.openIODashboard.show()
 
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openIODashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openIODashboard.move(Geo.topLeft())
+                Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                Geo = self.openIODashboard.frameGeometry()
+                Geo.moveCenter(Center)
+                self.openIODashboard.move(Geo.topLeft())
 
-            self.hide()
+                self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
