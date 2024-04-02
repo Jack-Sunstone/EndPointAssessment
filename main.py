@@ -94,6 +94,28 @@ class ioDashboard(QWidget):
 
         self.setLayout(layout)
 
+    def closeEvent(self, event):
+        if userRights == "ADMIN":
+            self.openMonitoring = adminMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "USER":
+            self.openMonitoring = userMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+
 class arcDashboard(QWidget):
     def __init__(self):
         super().__init__()
@@ -196,6 +218,28 @@ class arcDashboard(QWidget):
         layout.addWidget(efoyButton, 5, 3)
 
         self.setLayout(layout)
+
+    def closeEvent(self, event):
+        if userRights == "ADMIN":
+            self.openMonitoring = adminMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "USER":
+            self.openMonitoring = userMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
 
 class unitManagement(QWidget):
     def __init__(self):
