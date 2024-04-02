@@ -670,6 +670,7 @@ class adminMonitoring(QWidget):
 
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
+        scrollArea.setWidgetResizable(True)
 
         mainLayout.addWidget(scrollArea)
 
