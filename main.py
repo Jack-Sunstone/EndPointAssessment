@@ -199,7 +199,7 @@ class arcDashboard(QWidget):
         elif unitSolar >= 200 and unitSolar < 400:
             sunPath = resourcePath("Assets/Images/Sun.png")
         elif unitSolar >= 100 and unitSolar < 200:
-            sunpath = resourcePath("Assets/Images/cloudy.png")
+            sunPath = resourcePath("Assets/Images/cloudy.png")
         elif unitSolar < 100:
             sunPath = resourcePath("Assets/Images/cloud.png")
 
