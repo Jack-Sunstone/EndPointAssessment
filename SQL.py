@@ -18,7 +18,7 @@ def fetchUnits():
 
 def fetchUnitDetails(unitName):
 
-    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV FROM dbo.Units WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, efoyID FROM dbo.Units WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row
@@ -76,12 +76,12 @@ def checkUsername(Username):
         return row[0]
 
 
-def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType):
+def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, EfoyID):
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', '{EfoyID}')")
     cnxn.commit()
 
 def deleteUnits(Name):

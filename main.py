@@ -396,6 +396,7 @@ class unitManagement(QWidget):
         self.newCameraType = ""
         self.newIP = ""
         self.newVictronID = ""
+        self.newEfoy = ""
         self.newLocation = ""
         self.NoCCTV = ""
         self.newCompany = ""
@@ -502,17 +503,23 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.victronAdd,5,3)
 
+        self.efoyAdd = QLineEdit()
+        self.efoyAdd.setPlaceholderText("Efoy ID")
+        self.efoyAdd.textChanged.connect(self.getNewEfoy)
+
+        layout.addWidget(self.efoyAdd,6,0)
+
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
         self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd,6,0)
+        layout.addWidget(self.latAdd,6,1)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
         self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd,6,1)
+        layout.addWidget(self.lonAdd,6,2)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
@@ -558,12 +565,17 @@ class unitManagement(QWidget):
         if unitIndex == 0:
             self.newUnitType = "ARC"
             self.victronAdd.show()
+            self.efoyAdd.show()
         elif unitIndex == 1:
             self.newUnitType = "IO"
             self.victronAdd.hide()
+            self.efoyAdd.hide()
 
     def getNewVictronID(self,ID):
         self.newVictronID = ID
+
+    def getNewEfoy(self, EFOY):
+        self.newEfoy = EFOY
 
     def getNewLat(self,Lat):
         self.newLat = Lat
@@ -599,7 +611,7 @@ class unitManagement(QWidget):
 
     def addNewUnit(self):
         if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType) if x == ""]:
-            SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType)
+            SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
@@ -608,6 +620,7 @@ class unitManagement(QWidget):
             self.cameratypeAdd.setText("")
             self.IPAdd.setText("")
             self.victronAdd.setText("")
+            self.efoyAdd.setText("")
             self.latAdd.setText("")
             self.lonAdd.setText("")
         else:
