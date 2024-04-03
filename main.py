@@ -151,10 +151,14 @@ class ioDashboard(QWidget):
             camera4Button.hide()
 
         routerButton = QPushButton("Router Webpage")
+        routerButton.clicked.connect(self.openRouter)
 
         layout.addWidget(routerButton,3,1,1,3)
 
         self.setLayout(layout)
+
+    def openRouter(self):
+        webbrowser.open(f"https://{selectedIP}:64430/")
 
     def closeEvent(self, event):
         if userRights == "ADMIN":
