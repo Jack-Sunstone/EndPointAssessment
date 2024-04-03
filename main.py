@@ -1,5 +1,7 @@
 import sys
 import os
+import webbrowser
+
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
@@ -326,6 +328,7 @@ class arcDashboard(QWidget):
             camera4Button.hide()
 
         victronButton = QPushButton("Victron Webpage")
+        victronButton.clicked.connect(self.openVictron)
 
         layout.addWidget(victronButton, 6, 1)
 
@@ -338,6 +341,9 @@ class arcDashboard(QWidget):
         layout.addWidget(efoyButton, 6, 3)
 
         self.setLayout(layout)
+
+    def openVictron(self):
+        webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
     def closeEvent(self, event):
         if userRights == "ADMIN":
