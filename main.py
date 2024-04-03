@@ -333,6 +333,7 @@ class arcDashboard(QWidget):
         layout.addWidget(victronButton, 6, 1)
 
         routerButton = QPushButton("Router Webpage")
+        routerButton.clicked.connect(self.openRouter)
 
         layout.addWidget(routerButton, 6, 2)
 
@@ -344,6 +345,9 @@ class arcDashboard(QWidget):
 
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
+
+    def openRouter(self):
+        webbrowser.open(f"https://{selectedIP}:64430/")
 
     def closeEvent(self, event):
         if userRights == "ADMIN":
