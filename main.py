@@ -27,6 +27,7 @@ selectedIP = ""
 selectedVictron = ""
 selectedCCTV = ""
 selectedUnitType = ""
+selectedEfoyID = ""
 
 userRights = ""
 
@@ -338,6 +339,7 @@ class arcDashboard(QWidget):
         layout.addWidget(routerButton, 6, 2)
 
         efoyButton = QPushButton("Efoy Webpage")
+        efoyButton.clicked.connect(self.openEfoy)
 
         layout.addWidget(efoyButton, 6, 3)
 
@@ -348,6 +350,9 @@ class arcDashboard(QWidget):
 
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
+
+    def openEfoy(self):
+        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
 
     def closeEvent(self, event):
         if userRights == "ADMIN":
