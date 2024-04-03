@@ -1,7 +1,7 @@
 import sys
 import os
 import webbrowser
-
+import cv2
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
@@ -10,6 +10,23 @@ import SQL
 import requests
 import json
 
+def axisPath(password,IPaddress, cameraNumber):
+
+    Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
+
+    return Axis
+
+def hikPath(password, IPaddress, cameraNumber):
+
+    Hik = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
+
+    return Hik
+
+def hanwhaPath(password, IPaddress, cameraNumber):
+
+    Hanwha = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/profile2/media.smp"
+
+    return Hanwha
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -36,6 +53,9 @@ formattedSolar = ""
 unitVoltage = ""
 unitLoad = ""
 formattedLoad = ""
+
+sunstonePassword = "(10GIN$t0n3)"
+wjPassword = "12Sunstone34"
 
 def getVictronValues():
 
