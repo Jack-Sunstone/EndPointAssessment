@@ -11,7 +11,7 @@ cursor = cnxn.cursor()
 
 def fetchUnits():
 
-    cursor.execute("SELECT Name FROM dbo.Units")
+    cursor.execute("SELECT Name FROM dbo.Units ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
