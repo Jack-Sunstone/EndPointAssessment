@@ -378,6 +378,7 @@ class unitManagement(QWidget):
 
         #Add new Unit
         self.newUnitName = ""
+        self.newCameraType = ""
         self.newIP = ""
         self.newVictronID = ""
         self.newLocation = ""
@@ -461,24 +462,30 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.numCamerasAdd,4,3)
 
+        self.cameratypeAdd = QLineEdit()
+        self.cameratypeAdd.setPlaceholderText("Camera Manufacturer")
+        self.cameratypeAdd.textChanged.connect(self.getCameraType)
+
+        layout.addWidget(self.cameratypeAdd, 5, 0)
+
         self.IPAdd = QLineEdit()
         self.IPAdd.setPlaceholderText("IP Address")
         self.IPAdd.textChanged.connect(self.getNewIP)
 
-        layout.addWidget(self.IPAdd,5,0)
+        layout.addWidget(self.IPAdd,5,1)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
         unitType.currentIndexChanged.connect(self.getNewUnitType)
 
-        layout.addWidget(unitType,5,1)
+        layout.addWidget(unitType,5,2)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd,5,2)
+        layout.addWidget(self.victronAdd,5,3)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
@@ -525,6 +532,9 @@ class unitManagement(QWidget):
 
     def getNewNumCCTV(self, Number):
         self.NoCCTV = Number
+
+    def getCameraType(self, Type):
+        self.newCameraType = Type
 
     def getNewIP(self,IPADDRESS):
         self.newIP = IPADDRESS
@@ -573,13 +583,14 @@ class unitManagement(QWidget):
         self.errorMessage.setText("Unit Deleted")
 
     def addNewUnit(self):
-        if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType) if x == ""]:
-            SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType)
+        if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType) if x == ""]:
+            SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
             self.companyAdd.setText("")
             self. numCamerasAdd.setText("")
+            self.cameratypeAdd.setText("")
             self.IPAdd.setText("")
             self.victronAdd.setText("")
             self.latAdd.setText("")
