@@ -60,7 +60,7 @@ def getVictronValues():
 
     unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
 
-    unitLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
+    unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -118,6 +118,30 @@ class ioDashboard(QWidget):
         layout.addWidget(self.Camera4, 0, 4)
         layout.addWidget(camera4Button, 1, 4)
 
+        if selectedCCTV == 1:
+
+            self.Camera4.hide()
+            camera4Button.hide()
+
+            self.Camera3.hide()
+            camera3Button.hide()
+
+            self.Camera2.hide()
+            camera2Button.hide()
+
+        elif selectedCCTV == 2:
+
+            self.Camera4.hide()
+            camera4Button.hide()
+
+            self.Camera3.hide()
+            camera3Button.hide()
+
+        elif selectedCCTV == 3:
+
+            self.Camera4.hide()
+            camera4Button.hide()
+
         routerButton = QPushButton("Router Webpage")
 
         layout.addWidget(routerButton,2,1,1,3)
@@ -151,7 +175,7 @@ class arcDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle("ARC Dashboard")
-        self.setGeometry(0,0,760,300)
+        self.setGeometry(0,0,600,300)
 
         layout = QGridLayout()
 
@@ -164,8 +188,8 @@ class arcDashboard(QWidget):
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        solarPower = QLabel("Placeholder")
-        solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        solarPower = QLabel(unitSolar + "W")
+
 
         layout.addWidget(self.sunImage, 0, 0)
         layout.addWidget(solarPower, 0, 1)
@@ -174,8 +198,8 @@ class arcDashboard(QWidget):
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        batteryVoltage = QLabel("Placeholder")
-        batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        batteryVoltage = QLabel(unitVoltage + "V")
+
 
         layout.addWidget(self.batteryImage, 1, 0)
         layout.addWidget(batteryVoltage, 1, 1)
@@ -184,8 +208,8 @@ class arcDashboard(QWidget):
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loadDraw = QLabel("Placeholder")
-        loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        loadDraw = QLabel(unitLoad + "W")
+
 
         layout.addWidget(self.loadImage, 2, 0)
         layout.addWidget(loadDraw, 2, 1)
@@ -234,6 +258,30 @@ class arcDashboard(QWidget):
 
         layout.addWidget(self.Camera4, 3, 4)
         layout.addWidget(camera4Button, 4, 4)
+
+        if selectedCCTV == 1:
+
+            self.Camera4.hide()
+            camera4Button.hide()
+
+            self.Camera3.hide()
+            camera3Button.hide()
+
+            self.Camera2.hide()
+            camera2Button.hide()
+
+        elif selectedCCTV == 2:
+
+            self.Camera4.hide()
+            camera4Button.hide()
+
+            self.Camera3.hide()
+            camera3Button.hide()
+
+        elif selectedCCTV == 3:
+
+            self.Camera4.hide()
+            camera4Button.hide()
 
         victronButton = QPushButton("Victron Webpage")
 
@@ -793,6 +841,8 @@ class adminMonitoring(QWidget):
 
 
         if str(unitType) == "ARC":
+            getVictronValues()
+
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
 
