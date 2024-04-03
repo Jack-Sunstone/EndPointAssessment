@@ -22,9 +22,6 @@ cameraPath = resourcePath("Assets/Images/CCTV.png")
 
 sunPath = resourcePath("Assets/Images/Sun.png")
 
-batteryPath = resourcePath("Assets/Images/fullBattery.png")
-
-loadPath = resourcePath("Assets/Images/Load.png")
 
 selectedUnit = ""
 selectedIP = ""
@@ -172,6 +169,37 @@ class ioDashboard(QWidget):
 
 class arcDashboard(QWidget):
     def __init__(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        unitVoltage = float(unitVoltage)
+        unitLoad = float(unitLoad)
+        unitSolar = float(unitSolar)
+
+        if unitVoltage >= 25.5:
+            batteryPath = resourcePath("Assets/Images/fullBattery.png")
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            batteryPath = resourcePath("Assets/Images/half_battery.png")
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            batteryPath = resourcePath("Assets/Images/low_battery.png")
+        elif unitVoltage < 23.6:
+            batteryPath = resourcePath("Assets/Images/battery.png")
+
+        if unitLoad <= 0:
+            loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+        else:
+            loadPath = resourcePath("Assets/Images/Load.png")
+
+        if unitSolar >= 400:
+            sunPath = resourcePath("Assets/Images/very_sunny.png")
+        elif unitSolar >= 200 and unitSolar < 400:
+            sunPath = resourcePath("Assets/Images/Sun.png")
+        elif unitSolar >= 100 and unitSolar < 200:
+            sunpath = resourcePath("Assets/Images/cloudy.png")
+        elif unitSolar < 100:
+            sunPath = resourcePath("Assets/Images/cloud.png")
+
         super().__init__()
 
         self.setWindowTitle("ARC Dashboard")
@@ -188,7 +216,7 @@ class arcDashboard(QWidget):
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        solarPower = QLabel(unitSolar + "W")
+        solarPower = QLabel(str(unitSolar) + "W")
 
 
         layout.addWidget(self.sunImage, 0, 0)
@@ -198,7 +226,7 @@ class arcDashboard(QWidget):
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        batteryVoltage = QLabel(unitVoltage + "V")
+        batteryVoltage = QLabel(str(unitVoltage) + "V")
 
 
         layout.addWidget(self.batteryImage, 1, 0)
@@ -208,7 +236,7 @@ class arcDashboard(QWidget):
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loadDraw = QLabel(unitLoad + "W")
+        loadDraw = QLabel(str(unitLoad) + "W")
 
 
         layout.addWidget(self.loadImage, 2, 0)
