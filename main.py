@@ -10,6 +10,25 @@ import SQL
 import requests
 import json
 
+selectedUnit = ""
+selectedIP = ""
+selectedVictron = ""
+selectedCCTV = ""
+selectedUnitType = ""
+selectedCamera = ""
+selectedEfoyID = ""
+
+userRights = ""
+
+unitSolar = ""
+formattedSolar = ""
+unitVoltage = ""
+unitLoad = ""
+formattedLoad = ""
+
+sunstonePassword = "(10GIN$t0n3)"
+wjPassword = "12Sunstone34"
+
 def axisPath(password,IPaddress, cameraNumber):
 
     Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
@@ -27,6 +46,7 @@ def hanwhaPath(password, IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
+
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -34,28 +54,6 @@ def resourcePath(relativePath):
         basePath = os.path.abspath(".")
 
     return os.path.join(basePath, relativePath)
-
-logoPath = resourcePath("Assets/Images/sunstone.png")
-
-cameraPath = resourcePath("Assets/Images/CCTV.png")
-
-selectedUnit = ""
-selectedIP = ""
-selectedVictron = ""
-selectedCCTV = ""
-selectedUnitType = ""
-selectedEfoyID = ""
-
-userRights = ""
-
-unitSolar = ""
-formattedSolar = ""
-unitVoltage = ""
-unitLoad = ""
-formattedLoad = ""
-
-sunstonePassword = "(10GIN$t0n3)"
-wjPassword = "12Sunstone34"
 
 def getVictronValues():
 
@@ -87,6 +85,9 @@ def getVictronValues():
 
 class ioDashboard(QWidget):
     def __init__(self):
+
+        cameraPath = resourcePath("Assets/Images/CCTV.png")
+
         super().__init__()
 
         self.setWindowTitle("IO Box Dashboard")
@@ -207,6 +208,8 @@ class arcDashboard(QWidget):
         global unitVoltage
         global unitLoad
         global unitSolar
+
+        cameraPath = resourcePath("Assets/Images/CCTV.png")
 
         unitVoltage = float(unitVoltage)
         unitLoad = float(unitLoad)
@@ -369,6 +372,8 @@ class arcDashboard(QWidget):
 
         self.setLayout(layout)
 
+    def viewCamera1(self):
+        print("Hello ")
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
@@ -934,6 +939,7 @@ class adminMonitoring(QWidget):
         global selectedVictron
         global selectedCCTV
         global selectedEfoyID
+        global selectedCamera
 
         unitType = SQL.fetchUnitType(unitName).strip()
         data = SQL.fetchUnitDetails(unitName)
@@ -945,7 +951,8 @@ class adminMonitoring(QWidget):
             selectedIP = altered[0]
             selectedVictron = altered[1]
             selectedCCTV = altered[4]
-            selectedEfoyID = altered[5]
+            selectedCamera = altered[5]
+            selectedEfoyID = altered[6]
 
 
         if str(unitType) == "ARC":
@@ -1056,6 +1063,8 @@ class userMonitoring(QWidget):
         global selectedIP
         global selectedVictron
         global selectedCCTV
+        global selectedEfoyID
+        global selectedCamera
 
         unitType = SQL.fetchUnitType(unitName).strip()
         data = SQL.fetchUnitDetails(unitName)
@@ -1067,27 +1076,31 @@ class userMonitoring(QWidget):
             selectedIP = altered[0]
             selectedVictron = altered[1]
             selectedCCTV = altered[4]
+            selectedCamera = altered[5]
+            selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-                self.openARCDashboard = arcDashboard()
-                self.openARCDashboard.show()
+            getVictronValues()
 
-                Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                Geo = self.openARCDashboard.frameGeometry()
-                Geo.moveCenter(Center)
-                self.openARCDashboard.move(Geo.topLeft())
+            self.openARCDashboard = arcDashboard()
+            self.openARCDashboard.show()
 
-                self.hide()
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openARCDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openARCDashboard.move(Geo.topLeft())
+
+            self.hide()
         elif str(unitType) == "IO":
-                self.openIODashboard = ioDashboard()
-                self.openIODashboard.show()
+            self.openIODashboard = ioDashboard()
+            self.openIODashboard.show()
 
-                Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                Geo = self.openIODashboard.frameGeometry()
-                Geo.moveCenter(Center)
-                self.openIODashboard.move(Geo.topLeft())
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openIODashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openIODashboard.move(Geo.topLeft())
 
-                self.hide()
+            self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
@@ -1114,6 +1127,8 @@ class userMonitoring(QWidget):
 
 class loginUI(QMainWindow):
     def __init__(self):
+
+        logoPath = resourcePath("Assets/Images/sunstone.png")
 
         self.username = ""
         self.password = ""
