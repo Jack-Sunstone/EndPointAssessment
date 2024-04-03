@@ -71,6 +71,11 @@ class ioDashboard(QWidget):
 
         layout = QGridLayout()
 
+        unitLabel = QLabel(selectedUnit)
+        unitLabel.setStyleSheet("font: bold 14px;")
+        layout.addWidget(unitLabel, 0, 2)
+        unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         pixmap = QPixmap(cameraPath)
 
         self.allCameras = QLabel()
@@ -79,8 +84,8 @@ class ioDashboard(QWidget):
 
         allCamerasButton = QPushButton("All Cameras")
 
-        layout.addWidget(self.allCameras, 0, 0)
-        layout.addWidget(allCamerasButton,1,0)
+        layout.addWidget(self.allCameras, 1, 0)
+        layout.addWidget(allCamerasButton,2,0)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
@@ -88,8 +93,8 @@ class ioDashboard(QWidget):
 
         camera1Button = QPushButton("Camera 1")
 
-        layout.addWidget(self.Camera1, 0, 1)
-        layout.addWidget(camera1Button, 1, 1)
+        layout.addWidget(self.Camera1,1, 1)
+        layout.addWidget(camera1Button,2, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
@@ -97,8 +102,8 @@ class ioDashboard(QWidget):
 
         camera2Button = QPushButton("Camera 2")
 
-        layout.addWidget(self.Camera2, 0, 2)
-        layout.addWidget(camera2Button, 1, 2)
+        layout.addWidget(self.Camera2, 1, 2)
+        layout.addWidget(camera2Button, 2, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(pixmap)
@@ -106,8 +111,8 @@ class ioDashboard(QWidget):
 
         camera3Button = QPushButton("Camera 3")
 
-        layout.addWidget(self.Camera3, 0, 3)
-        layout.addWidget(camera3Button, 1, 3)
+        layout.addWidget(self.Camera3, 1, 3)
+        layout.addWidget(camera3Button, 2, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(pixmap)
@@ -115,8 +120,8 @@ class ioDashboard(QWidget):
 
         camera4Button = QPushButton("Camera 4")
 
-        layout.addWidget(self.Camera4, 0, 4)
-        layout.addWidget(camera4Button, 1, 4)
+        layout.addWidget(self.Camera4, 1, 4)
+        layout.addWidget(camera4Button, 2, 4)
 
         if selectedCCTV == 1:
 
@@ -144,7 +149,7 @@ class ioDashboard(QWidget):
 
         routerButton = QPushButton("Router Webpage")
 
-        layout.addWidget(routerButton,2,1,1,3)
+        layout.addWidget(routerButton,3,1,1,3)
 
         self.setLayout(layout)
 
@@ -210,6 +215,12 @@ class arcDashboard(QWidget):
 
         layout = QGridLayout()
 
+        unitLabel = QLabel(selectedUnit)
+        unitLabel.setStyleSheet("font: bold 14px;")
+        layout.addWidget(unitLabel,0,2)
+        unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+
         sunPixmap = QPixmap(sunPath)
         batteryPixmap = QPixmap(batteryPath)
         loadPixmap = QPixmap(loadPath)
@@ -222,8 +233,8 @@ class arcDashboard(QWidget):
         solarPower = QLabel(formattedSolar)
 
 
-        layout.addWidget(self.sunImage, 0, 0)
-        layout.addWidget(solarPower, 0, 1)
+        layout.addWidget(self.sunImage, 1, 0)
+        layout.addWidget(solarPower, 1, 1)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
@@ -232,8 +243,8 @@ class arcDashboard(QWidget):
         batteryVoltage = QLabel(str(unitVoltage) + " V")
 
 
-        layout.addWidget(self.batteryImage, 1, 0)
-        layout.addWidget(batteryVoltage, 1, 1)
+        layout.addWidget(self.batteryImage, 2, 0)
+        layout.addWidget(batteryVoltage, 2, 1)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
@@ -242,8 +253,8 @@ class arcDashboard(QWidget):
         loadDraw = QLabel(formattedLoad)
 
 
-        layout.addWidget(self.loadImage, 2, 0)
-        layout.addWidget(loadDraw, 2, 1)
+        layout.addWidget(self.loadImage, 3, 0)
+        layout.addWidget(loadDraw, 3, 1)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
@@ -251,8 +262,8 @@ class arcDashboard(QWidget):
 
         allCamerasButton = QPushButton("All Cameras")
 
-        layout.addWidget(self.allCameras, 3, 0)
-        layout.addWidget(allCamerasButton, 4, 0)
+        layout.addWidget(self.allCameras, 4, 0)
+        layout.addWidget(allCamerasButton, 5, 0)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
@@ -260,8 +271,8 @@ class arcDashboard(QWidget):
 
         camera1Button = QPushButton("Camera 1")
 
-        layout.addWidget(self.Camera1, 3, 1)
-        layout.addWidget(camera1Button, 4, 1)
+        layout.addWidget(self.Camera1, 4, 1)
+        layout.addWidget(camera1Button, 5, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(cameraPixmap)
@@ -269,8 +280,8 @@ class arcDashboard(QWidget):
 
         camera2Button = QPushButton("Camera 2")
 
-        layout.addWidget(self.Camera2, 3, 2)
-        layout.addWidget(camera2Button, 4, 2)
+        layout.addWidget(self.Camera2, 4, 2)
+        layout.addWidget(camera2Button, 5, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(cameraPixmap)
@@ -278,8 +289,8 @@ class arcDashboard(QWidget):
 
         camera3Button = QPushButton("Camera 3")
 
-        layout.addWidget(self.Camera3, 3, 3)
-        layout.addWidget(camera3Button, 4, 3)
+        layout.addWidget(self.Camera3, 4, 3)
+        layout.addWidget(camera3Button, 5, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(cameraPixmap)
@@ -287,8 +298,8 @@ class arcDashboard(QWidget):
 
         camera4Button = QPushButton("Camera 4")
 
-        layout.addWidget(self.Camera4, 3, 4)
-        layout.addWidget(camera4Button, 4, 4)
+        layout.addWidget(self.Camera4, 4, 4)
+        layout.addWidget(camera4Button, 5, 4)
 
         if selectedCCTV == 1:
 
@@ -316,15 +327,15 @@ class arcDashboard(QWidget):
 
         victronButton = QPushButton("Victron Webpage")
 
-        layout.addWidget(victronButton, 5, 1)
+        layout.addWidget(victronButton, 6, 1)
 
         routerButton = QPushButton("Router Webpage")
 
-        layout.addWidget(routerButton, 5, 2)
+        layout.addWidget(routerButton, 6, 2)
 
         efoyButton = QPushButton("Efoy Webpage")
 
-        layout.addWidget(efoyButton, 5, 3)
+        layout.addWidget(efoyButton, 6, 3)
 
         self.setLayout(layout)
 
