@@ -20,9 +20,6 @@ logoPath = resourcePath("Assets/Images/sunstone.png")
 
 cameraPath = resourcePath("Assets/Images/CCTV.png")
 
-sunPath = resourcePath("Assets/Images/Sun.png")
-
-
 selectedUnit = ""
 selectedIP = ""
 selectedVictron = ""
@@ -32,14 +29,18 @@ selectedUnitType = ""
 userRights = ""
 
 unitSolar = ""
+formattedSolar = ""
 unitVoltage = ""
 unitLoad = ""
+formattedLoad = ""
 
 def getVictronValues():
 
     global unitSolar
     global unitVoltage
     global unitLoad
+    global formattedLoad
+    global formattedSolar
 
     # Defining login details to access Sites
     login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
@@ -54,10 +55,12 @@ def getVictronValues():
     data = response.json().get("records")
 
     unitSolar = str([element['rawValue'] for element in data if element['code'] == "PVP"][0])
+    formattedSolar = str([element['formattedValue'] for element in data if element['code'] == "PVP"][0])
 
     unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
 
     unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
+    formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -216,7 +219,7 @@ class arcDashboard(QWidget):
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        solarPower = QLabel(str(unitSolar) + "W")
+        solarPower = QLabel(formattedSolar)
 
 
         layout.addWidget(self.sunImage, 0, 0)
@@ -226,7 +229,7 @@ class arcDashboard(QWidget):
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        batteryVoltage = QLabel(str(unitVoltage) + "V")
+        batteryVoltage = QLabel(str(unitVoltage) + " V")
 
 
         layout.addWidget(self.batteryImage, 1, 0)
@@ -236,7 +239,7 @@ class arcDashboard(QWidget):
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loadDraw = QLabel(str(unitLoad) + "W")
+        loadDraw = QLabel(formattedLoad)
 
 
         layout.addWidget(self.loadImage, 2, 0)
