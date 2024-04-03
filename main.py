@@ -909,6 +909,8 @@ class adminMonitoring(QWidget):
         global selectedIP
         global selectedVictron
         global selectedCCTV
+        global selectedEfoyID
+
         unitType = SQL.fetchUnitType(unitName).strip()
         data = SQL.fetchUnitDetails(unitName)
         selectedUnit = unitName
@@ -919,6 +921,7 @@ class adminMonitoring(QWidget):
             selectedIP = altered[0]
             selectedVictron = altered[1]
             selectedCCTV = altered[4]
+            selectedEfoyID = altered[5]
 
 
         if str(unitType) == "ARC":
