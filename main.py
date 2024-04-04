@@ -429,6 +429,7 @@ class arcDashboard(QWidget):
         efoyButton = QPushButton("Efoy Webpage")
         efoyButton.clicked.connect(self.openEfoy)
 
+        self.errorMessage = QLabel()
 
         if selectedCCTV == 1:
 
@@ -453,6 +454,8 @@ class arcDashboard(QWidget):
             layout.addWidget(routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
+            layout.addWidget(self.errorMessage, 7, 1)
+
         elif selectedCCTV == 2:
 
             layout.addWidget(unitLabel, 0, 2)
@@ -473,6 +476,8 @@ class arcDashboard(QWidget):
             layout.addWidget(routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
 
+            layout.addWidget(self.errorMessage, 7, 1)
+
 
         elif selectedCCTV == 3:
 
@@ -491,6 +496,8 @@ class arcDashboard(QWidget):
             layout.addWidget(routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
+            layout.addWidget(self.errorMessage, 7, 1)
+
         else:
 
             layout.addWidget(unitLabel, 0, 2)
@@ -504,6 +511,10 @@ class arcDashboard(QWidget):
             layout.addWidget(victronButton, 6, 1)
             layout.addWidget(routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
+
+            layout.addWidget(self.errorMessage, 7, 2)
+
+
 
         self.setLayout(layout)
 
@@ -525,6 +536,7 @@ class arcDashboard(QWidget):
             else:
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
+    def checkUnitStatus(self):
 
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
