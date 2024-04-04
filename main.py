@@ -360,6 +360,17 @@ class arcDashboard(QWidget):
         layout.addWidget(self.Camera4, 4, 4)
         layout.addWidget(camera4Button, 5, 4)
 
+        victronButton = QPushButton("Victron Webpage")
+        victronButton.clicked.connect(self.openVictron)
+
+        routerButton = QPushButton("Router Webpage")
+        routerButton.clicked.connect(self.openRouter)
+
+
+        efoyButton = QPushButton("Efoy Webpage")
+        efoyButton.clicked.connect(self.openEfoy)
+
+
         if selectedCCTV == 1:
 
             self.Camera4.hide()
@@ -377,6 +388,10 @@ class arcDashboard(QWidget):
             layout.addWidget(self.Camera1, 4,0)
             layout.addWidget(camera1Button,5, 0)
 
+            layout.addWidget(victronButton, 6, 0)
+            layout.addWidget(routerButton, 6, 1)
+            layout.addWidget(efoyButton, 6, 2)
+
         elif selectedCCTV == 2:
 
             self.Camera4.hide()
@@ -387,8 +402,14 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton,5, 0)
+            
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(camera1Button, 5, 1)
+
+            layout.addWidget(victronButton, 6, 1)
+            layout.addWidget(routerButton, 6, 2)
+            layout.addWidget(efoyButton, 6, 3)
+
 
         elif selectedCCTV == 3:
 
@@ -397,29 +418,24 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton, 5, 0)
+
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(camera1Button, 5, 1)
+
+            layout.addWidget(victronButton, 6, 1)
+            layout.addWidget(routerButton, 6, 2)
+            layout.addWidget(efoyButton, 6, 3)
 
         else:
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton, 5, 0)
+
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(camera1Button, 5, 1)
 
-        victronButton = QPushButton("Victron Webpage")
-        victronButton.clicked.connect(self.openVictron)
-
-        layout.addWidget(victronButton, 6, 1)
-
-        routerButton = QPushButton("Router Webpage")
-        routerButton.clicked.connect(self.openRouter)
-
-        layout.addWidget(routerButton, 6, 2)
-
-        efoyButton = QPushButton("Efoy Webpage")
-        efoyButton.clicked.connect(self.openEfoy)
-
-        layout.addWidget(efoyButton, 6, 3)
+            layout.addWidget(victronButton, 6, 1)
+            layout.addWidget(routerButton, 6, 2)
+            layout.addWidget(efoyButton, 6, 3)
 
         self.setLayout(layout)
 
