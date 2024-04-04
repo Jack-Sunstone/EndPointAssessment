@@ -128,7 +128,6 @@ class ioDashboard(QWidget):
 
         unitLabel = QLabel(selectedUnit)
         unitLabel.setStyleSheet("font: bold 14px;")
-        layout.addWidget(unitLabel, 0, 2)
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         pixmap = QPixmap(cameraPath)
@@ -139,17 +138,11 @@ class ioDashboard(QWidget):
 
         allCamerasButton = QPushButton("All Cameras")
 
-        layout.addWidget(self.allCameras, 1, 0)
-        layout.addWidget(allCamerasButton,2,0)
-
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
-
-        layout.addWidget(self.Camera1,1, 1)
-        layout.addWidget(camera1Button,2, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
@@ -178,6 +171,9 @@ class ioDashboard(QWidget):
         layout.addWidget(self.Camera4, 1, 4)
         layout.addWidget(camera4Button, 2, 4)
 
+        routerButton = QPushButton("Router Webpage")
+        routerButton.clicked.connect(self.openRouter)
+
         if selectedCCTV == 1:
 
             self.Camera4.hide()
@@ -189,6 +185,16 @@ class ioDashboard(QWidget):
             self.Camera2.hide()
             camera2Button.hide()
 
+            self.allCameras.hide()
+            allCamerasButton.hide()
+
+            layout.addWidget(unitLabel, 0, 0)
+
+            layout.addWidget(self.Camera1, 1, 0)
+            layout.addWidget(camera1Button, 2, 0)
+
+            layout.addWidget(routerButton, 3, 0)
+
         elif selectedCCTV == 2:
 
             self.Camera4.hide()
@@ -197,15 +203,43 @@ class ioDashboard(QWidget):
             self.Camera3.hide()
             camera3Button.hide()
 
+            layout.addWidget(unitLabel, 0, 2)
+
+            layout.addWidget(self.allCameras, 1, 0)
+            layout.addWidget(allCamerasButton, 2, 0)
+
+            layout.addWidget(self.Camera1, 1, 1)
+            layout.addWidget(camera1Button, 2, 1)
+
+            layout.addWidget(routerButton, 3, 1, 1, 3)
+
+
         elif selectedCCTV == 3:
 
             self.Camera4.hide()
             camera4Button.hide()
 
-        routerButton = QPushButton("Router Webpage")
-        routerButton.clicked.connect(self.openRouter)
+            layout.addWidget(unitLabel, 0, 0)
 
-        layout.addWidget(routerButton,3,1,1,3)
+            layout.addWidget(self.allCameras, 1, 0)
+            layout.addWidget(allCamerasButton, 2, 0)
+
+            layout.addWidget(self.Camera1, 1, 1)
+            layout.addWidget(camera1Button, 2, 1)
+
+            layout.addWidget(routerButton, 3, 1, 1, 2)
+
+        else:
+
+            layout.addWidget(unitLabel, 0, 2)
+
+            layout.addWidget(self.allCameras, 1, 0)
+            layout.addWidget(allCamerasButton, 2, 0)
+
+            layout.addWidget(self.Camera1, 1, 1)
+            layout.addWidget(camera1Button, 2, 1)
+
+            layout.addWidget(routerButton, 3, 1, 1, 3)
 
         self.setLayout(layout)
 
@@ -278,7 +312,6 @@ class arcDashboard(QWidget):
 
         unitLabel = QLabel(selectedUnit)
         unitLabel.setStyleSheet("font: bold 14px;")
-        layout.addWidget(unitLabel,0,2)
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
@@ -385,6 +418,8 @@ class arcDashboard(QWidget):
             self.allCameras.hide()
             allCamerasButton.hide()
 
+            layout.addWidget(unitLabel, 0, 1)
+
             layout.addWidget(self.Camera1, 4,0)
             layout.addWidget(camera1Button,5, 0)
 
@@ -394,6 +429,8 @@ class arcDashboard(QWidget):
 
         elif selectedCCTV == 2:
 
+            layout.addWidget(unitLabel, 0, 2)
+
             self.Camera4.hide()
             camera4Button.hide()
 
@@ -402,7 +439,7 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton,5, 0)
-            
+
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(camera1Button, 5, 1)
 
@@ -413,6 +450,8 @@ class arcDashboard(QWidget):
 
         elif selectedCCTV == 3:
 
+            layout.addWidget(unitLabel, 0, 2)
+
             self.Camera4.hide()
             camera4Button.hide()
 
@@ -422,11 +461,14 @@ class arcDashboard(QWidget):
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(camera1Button, 5, 1)
 
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
+            layout.addWidget(victronButton, 6, 0)
+            layout.addWidget(routerButton, 6, 1)
+            layout.addWidget(efoyButton, 6, 2)
 
         else:
+
+            layout.addWidget(unitLabel, 0, 2)
+
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton, 5, 0)
 
