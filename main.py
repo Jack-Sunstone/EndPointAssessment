@@ -143,6 +143,7 @@ class ioDashboard(QWidget):
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
+        camera1Button.clicked.connect(self.viewCamera1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
@@ -242,6 +243,25 @@ class ioDashboard(QWidget):
             layout.addWidget(routerButton, 3, 1, 1, 3)
 
         self.setLayout(layout)
+
+    def viewCamera1(self):
+        if selectedCamera == "Axis":
+            if selectedCompany == "WJ":
+                cameraURL = axisPath(wjPassword, selectedIP, 1)
+                threading1Camera(str(cameraURL))
+            else:
+                cameraURL = axisPath(sunstonePassword, selectedIP, 1)
+                threading1Camera(cameraURL)
+        elif selectedCamera == "Hik":
+            cameraURL = hikPath(selectedIP, 1)
+            threading1Camera(cameraURL)
+        elif selectedCamera == "Hanwha":
+            if selectedCompany == "WJ":
+                cameraURL = hanwhaPath(wjPassword, selectedIP, 1)
+                threading1Camera(cameraURL)
+            else:
+                cameraURL = hanwhaPath(sunstonePassword, selectedIP, 1)
+                threading1Camera(cameraURL)
 
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
@@ -499,6 +519,7 @@ class arcDashboard(QWidget):
             else:
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, 1)
                 threading1Camera(cameraURL)
+
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
