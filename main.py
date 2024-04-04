@@ -178,8 +178,8 @@ class ioDashboard(QWidget):
         layout.addWidget(self.Camera4, 1, 4)
         layout.addWidget(self.camera4Button, 2, 4)
 
-        routerButton = QPushButton("Router Webpage")
-        routerButton.clicked.connect(self.openRouter)
+        self.routerButton = QPushButton("Router Webpage")
+        self.routerButton.clicked.connect(self.openRouter)
 
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -203,7 +203,7 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 0)
             layout.addWidget(self.camera1Button, 2, 0)
 
-            layout.addWidget(routerButton, 3, 0)
+            layout.addWidget(self.routerButton, 3, 0)
 
             layout.addWidget(self.errorMessage,4, 0)
 
@@ -223,7 +223,7 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(routerButton, 3, 1, 1, 1)
+            layout.addWidget(self.routerButton, 3, 1, 1, 1)
 
             layout.addWidget(self.errorMessage, 4, 0)
 
@@ -241,7 +241,7 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(routerButton, 3, 1, 1, 2)
+            layout.addWidget(self.routerButton, 3, 1, 1, 2)
 
             layout.addWidget(self.errorMessage, 4, 1, 1, 2)
 
@@ -256,7 +256,7 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(routerButton, 3, 1, 1, 3)
+            layout.addWidget(self.routerButton, 3, 1, 1, 3)
 
             layout.addWidget(self.errorMessage, 4, 2)
 
@@ -286,6 +286,9 @@ class ioDashboard(QWidget):
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
         if status == 0:
+
+            cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
+
             self.errorMessage.setText("Unit Offline")
             self.errorMessage.setStyleSheet("color: red;"
                                             "font: bold 14px;")
@@ -295,6 +298,13 @@ class ioDashboard(QWidget):
             self.camera2Button.setEnabled(False)
             self.camera3Button.setEnabled(False)
             self.camera4Button.setEnabled(False)
+            self.routerButton.setEnabled(False)
+            self.allCameras.setPixmap(cameraPath)
+            self.Camera1.setPixmap(cameraPath)
+            self.Camera2.setPixmap(cameraPath)
+            self.Camera3.setPixmap(cameraPath)
+            self.Camera4.setPixmap(cameraPath)
+
         else:
             self.errorMessage.setText("Unit Online")
             self.errorMessage.setStyleSheet("color: green;"
@@ -457,9 +467,8 @@ class arcDashboard(QWidget):
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
 
-        routerButton = QPushButton("Router Webpage")
-        routerButton.clicked.connect(self.openRouter)
-
+        self.routerButton = QPushButton("Router Webpage")
+        self.routerButton.clicked.connect(self.openRouter)
 
         efoyButton = QPushButton("Efoy Webpage")
         efoyButton.clicked.connect(self.openEfoy)
@@ -487,7 +496,7 @@ class arcDashboard(QWidget):
             layout.addWidget(self.camera1Button,5, 0)
 
             layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(routerButton, 6, 1)
+            layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
             layout.addWidget(self.errorMessage, 7, 1)
@@ -509,7 +518,7 @@ class arcDashboard(QWidget):
             layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(routerButton, 6, 2)
+            layout.addWidget(self.routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
 
             layout.addWidget(self.errorMessage, 7, 1)
@@ -528,7 +537,7 @@ class arcDashboard(QWidget):
             layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(routerButton, 6, 1)
+            layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
             layout.addWidget(self.errorMessage, 7, 0)
@@ -544,7 +553,7 @@ class arcDashboard(QWidget):
             layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(routerButton, 6, 2)
+            layout.addWidget(self.routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
 
             layout.addWidget(self.errorMessage, 7, 2)
@@ -575,6 +584,9 @@ class arcDashboard(QWidget):
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
         if status == 0:
+
+            cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
+
             self.errorMessage.setText("Unit Offline")
             self.errorMessage.setStyleSheet("color: red;"
                                             "font: bold 14px;")
@@ -584,6 +596,14 @@ class arcDashboard(QWidget):
             self.camera2Button.setEnabled(False)
             self.camera3Button.setEnabled(False)
             self.camera4Button.setEnabled(False)
+            self.routerButton.setEnabled(False)
+
+            self.allCameras.setPixmap(cameraPath)
+            self.Camera1.setPixmap(cameraPath)
+            self.Camera2.setPixmap(cameraPath)
+            self.Camera3.setPixmap(cameraPath)
+            self.Camera4.setPixmap(cameraPath)
+
         else:
             self.errorMessage.setText("Unit Online")
             self.errorMessage.setStyleSheet("color: green;"
