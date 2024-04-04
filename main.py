@@ -136,114 +136,128 @@ class ioDashboard(QWidget):
         self.allCameras.setPixmap(pixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        allCamerasButton = QPushButton("All Cameras")
+        self.allCamerasButton = QPushButton("All Cameras")
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera1Button = QPushButton("Camera 1")
-        camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
+        self.camera1Button = QPushButton("Camera 1")
+        self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera2Button = QPushButton("Camera 2")
-        camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
+        self.camera2Button = QPushButton("Camera 2")
+        self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera2, 1, 2)
-        layout.addWidget(camera2Button, 2, 2)
+        layout.addWidget(self.camera2Button, 2, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(pixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera3Button = QPushButton("Camera 3")
-        camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
+        self.camera3Button = QPushButton("Camera 3")
+        self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera3, 1, 3)
-        layout.addWidget(camera3Button, 2, 3)
+        layout.addWidget(self.camera3Button, 2, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(pixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera4Button = QPushButton("Camera 4")
-        camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
+        self.camera4Button = QPushButton("Camera 4")
+        self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera4, 1, 4)
-        layout.addWidget(camera4Button, 2, 4)
+        layout.addWidget(self.camera4Button, 2, 4)
 
         routerButton = QPushButton("Router Webpage")
         routerButton.clicked.connect(self.openRouter)
 
+        self.errorMessage = QLabel()
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
         if selectedCCTV == 1:
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             self.Camera3.hide()
-            camera3Button.hide()
+            self.camera3Button.hide()
 
             self.Camera2.hide()
-            camera2Button.hide()
+            self.camera2Button.hide()
 
             self.allCameras.hide()
-            allCamerasButton.hide()
+            self.allCamerasButton.hide()
 
             layout.addWidget(unitLabel, 0, 0)
 
             layout.addWidget(self.Camera1, 1, 0)
-            layout.addWidget(camera1Button, 2, 0)
+            layout.addWidget(self.camera1Button, 2, 0)
 
             layout.addWidget(routerButton, 3, 0)
+
+            layout.addWidget(self.errorMessage,4, 0)
 
         elif selectedCCTV == 2:
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             self.Camera3.hide()
-            camera3Button.hide()
+            self.camera3Button.hide()
 
             layout.addWidget(unitLabel, 0, 2)
 
             layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(allCamerasButton, 2, 0)
+            layout.addWidget(self.allCamerasButton, 2, 0)
 
             layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(camera1Button, 2, 1)
+            layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(routerButton, 3, 1, 1, 3)
+            layout.addWidget(routerButton, 3, 1, 1, 1)
+
+            layout.addWidget(self.errorMessage, 4, 0)
 
 
         elif selectedCCTV == 3:
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             layout.addWidget(unitLabel, 0, 0)
 
             layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(allCamerasButton, 2, 0)
+            layout.addWidget(self.allCamerasButton, 2, 0)
 
             layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(camera1Button, 2, 1)
+            layout.addWidget(self.camera1Button, 2, 1)
 
             layout.addWidget(routerButton, 3, 1, 1, 2)
+
+            layout.addWidget(self.errorMessage, 4, 1, 1, 2)
+
 
         else:
 
             layout.addWidget(unitLabel, 0, 2)
 
             layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(allCamerasButton, 2, 0)
+            layout.addWidget(self.allCamerasButton, 2, 0)
 
             layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(camera1Button, 2, 1)
+            layout.addWidget(self.camera1Button, 2, 1)
 
             layout.addWidget(routerButton, 3, 1, 1, 3)
+
+            layout.addWidget(self.errorMessage, 4, 2)
+
+        self.checkUnitStatus()
 
         self.setLayout(layout)
 
@@ -265,6 +279,23 @@ class ioDashboard(QWidget):
             else:
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
+
+    def checkUnitStatus(self):
+        status = checkURL(selectedIP, 64430, 1)
+        if status == 0:
+            self.errorMessage.setText("Unit Offline")
+            self.errorMessage.setStyleSheet("color: red;"
+                                            "font: bold 14px;")
+
+            self.allCamerasButton.setEnabled(False)
+            self.camera1Button.setEnabled(False)
+            self.camera2Button.setEnabled(False)
+            self.camera3Button.setEnabled(False)
+            self.camera4Button.setEnabled(False)
+        else:
+            self.errorMessage.setText("Unit Online")
+            self.errorMessage.setStyleSheet("color: green;"
+                                            "font: bold 14px;")
 
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
@@ -377,9 +408,7 @@ class arcDashboard(QWidget):
         self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        allCamerasButton = QPushButton("All Cameras")
-
-        layout.addWidget(allCamerasButton, 5, 0)
+        self.allCamerasButton = QPushButton("All Cameras")
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
@@ -444,7 +473,7 @@ class arcDashboard(QWidget):
             self.camera2Button.hide()
 
             self.allCameras.hide()
-            allCamerasButton.hide()
+            self.allCamerasButton.hide()
 
             layout.addWidget(unitLabel, 0, 1)
 
@@ -468,7 +497,7 @@ class arcDashboard(QWidget):
             self.camera3Button.hide()
 
             layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(allCamerasButton,5, 0)
+            layout.addWidget(self.allCamerasButton,5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(self.camera1Button, 5, 1)
@@ -487,7 +516,7 @@ class arcDashboard(QWidget):
             self.camera4Button.hide()
 
             layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(allCamerasButton, 5, 0)
+            layout.addWidget(self.allCamerasButton, 5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(self.camera1Button, 5, 1)
@@ -503,7 +532,7 @@ class arcDashboard(QWidget):
             layout.addWidget(unitLabel, 0, 2)
 
             layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(allCamerasButton, 5, 0)
+            layout.addWidget(self.allCamerasButton, 5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(self.camera1Button, 5, 1)
@@ -536,6 +565,7 @@ class arcDashboard(QWidget):
             else:
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
+
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
         if status == 0:
@@ -543,6 +573,7 @@ class arcDashboard(QWidget):
             self.errorMessage.setStyleSheet("color: red;"
                                             "font: bold 14px;")
 
+            self.allCamerasButton.setEnabled(False)
             self.camera1Button.setEnabled(False)
             self.camera2Button.setEnabled(False)
             self.camera3Button.setEnabled(False)
