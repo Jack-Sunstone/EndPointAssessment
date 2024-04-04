@@ -349,27 +349,27 @@ class arcDashboard(QWidget):
         unitSolar = float(unitSolar)
 
         if unitVoltage >= 25.5:
-            batteryPath = resourcePath("Assets/Images/fullBattery.png")
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
         elif unitVoltage >= 24 and unitVoltage < 25.5:
-            batteryPath = resourcePath("Assets/Images/half_battery.png")
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
         elif unitVoltage < 24 and unitVoltage >= 23.6:
-            batteryPath = resourcePath("Assets/Images/low_battery.png")
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
         elif unitVoltage < 23.6:
-            batteryPath = resourcePath("Assets/Images/battery.png")
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
 
         if unitLoad <= 0:
-            loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
         else:
-            loadPath = resourcePath("Assets/Images/Load.png")
+            self.loadPath = resourcePath("Assets/Images/Load.png")
 
         if unitSolar >= 400:
-            sunPath = resourcePath("Assets/Images/very_sunny.png")
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
         elif unitSolar >= 200 and unitSolar < 400:
-            sunPath = resourcePath("Assets/Images/Sun.png")
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
         elif unitSolar >= 100 and unitSolar < 200:
-            sunPath = resourcePath("Assets/Images/cloudy.png")
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
         elif unitSolar < 100:
-            sunPath = resourcePath("Assets/Images/cloud.png")
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
 
         super().__init__()
 
@@ -385,9 +385,9 @@ class arcDashboard(QWidget):
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
-        sunPixmap = QPixmap(sunPath)
-        batteryPixmap = QPixmap(batteryPath)
-        loadPixmap = QPixmap(loadPath)
+        sunPixmap = QPixmap(self.sunPath)
+        batteryPixmap = QPixmap(self.batteryPath)
+        loadPixmap = QPixmap(self.loadPath)
         cameraPixmap = QPixmap(cameraPath)
 
         self.sunImage = QLabel()
@@ -424,7 +424,6 @@ class arcDashboard(QWidget):
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.allCamerasButton = QPushButton("All Cameras")
-        self.allCamerasButton.clicked.connect(self.updateData)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
@@ -614,16 +613,54 @@ class arcDashboard(QWidget):
                                             "font: bold 14px;")
 
     def updateData(self):
-
         global unitVoltage
+        global unitLoad
+        global unitSolar
         global formattedLoad
         global formattedSolar
 
         getVictronValues()
 
+        unitVoltage = float(unitVoltage)
+        unitLoad = float(unitLoad)
+        unitSolar = float(unitSolar)
+
         self.batteryVoltage.setText(str(unitVoltage) + " V")
         self.loadDraw.setText(formattedLoad)
         self.solarPower.setText(formattedSolar)
+
+        if unitVoltage >= 25.5:
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 23.6:
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+
+        if unitLoad <= 0:
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+        else:
+            self.loadPath = resourcePath("Assets/Images/Load.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+
+        if unitSolar >= 400:
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 200 and unitSolar < 400:
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 100 and unitSolar < 200:
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar < 100:
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
 
 
     def openVictron(self):
