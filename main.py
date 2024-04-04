@@ -117,12 +117,15 @@ def getVictronValues():
 class ioDashboard(QWidget):
     def __init__(self):
 
+        ioBoxIcon = resourcePath("Assets/Images/IOBox.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
 
         super().__init__()
 
         self.setWindowTitle("IO Box Dashboard")
         self.setGeometry(0,0,760,200)
+        self.setWindowIcon(QIcon(ioBoxIcon))
+        self.setWindowIconText("IO Box")
 
         layout = QGridLayout()
 
@@ -328,6 +331,7 @@ class arcDashboard(QWidget):
         global unitLoad
         global unitSolar
 
+        windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
 
         unitVoltage = float(unitVoltage)
@@ -361,6 +365,8 @@ class arcDashboard(QWidget):
 
         self.setWindowTitle("ARC Dashboard")
         self.setGeometry(0,0,600,300)
+        self.setWindowIcon(QIcon(windowIcon))
+        self.setWindowIconText("ARC")
 
         layout = QGridLayout()
 
@@ -616,6 +622,8 @@ class arcDashboard(QWidget):
 class unitManagement(QWidget):
     def __init__(self):
 
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
         self.listOfUnits = []
 
         fetchUnits = SQL.fetchUnits()
@@ -645,6 +653,8 @@ class unitManagement(QWidget):
 
         self.setWindowTitle("Unit Mangement")
         self.setGeometry(0, 0, 650, 300)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
@@ -877,6 +887,8 @@ class unitManagement(QWidget):
 class userManagement(QWidget):
     def __init__(self):
 
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
         self.listOfUsers = []
 
         fetchUsers = SQL.fetchUsers()
@@ -897,6 +909,8 @@ class userManagement(QWidget):
 
         self.setWindowTitle("User Management")
         self.setGeometry(0,0,350,250)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
@@ -1017,10 +1031,14 @@ class userManagement(QWidget):
 class adminMenu(QWidget):
     def __init__(self):
 
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
         self.setGeometry(0, 0, 430, 180)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         layout = QVBoxLayout()
 
@@ -1071,10 +1089,15 @@ class adminMenu(QWidget):
 
 class interactiveMap(QWidget):
     def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
         super().__init__()
 
         self.setWindowTitle("Interactive Unit Map")
         self.setGeometry(0,0,550,550)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
@@ -1085,6 +1108,8 @@ class interactiveMap(QWidget):
 
 class adminMonitoring(QWidget):
     def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
         self.listOfUnits = []
         self.listOfCompanies = []
@@ -1103,6 +1128,8 @@ class adminMonitoring(QWidget):
 
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0, 0, 255, 600)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         mainLayout = QVBoxLayout()
 
@@ -1224,6 +1251,9 @@ class adminMonitoring(QWidget):
 
 class userMonitoring(QWidget):
     def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
         self.listOfUnits = []
         self.listOfCompanies = []
 
@@ -1241,6 +1271,8 @@ class userMonitoring(QWidget):
 
         self.setWindowTitle("User Dashboard")
         self.setGeometry(0, 0, 255, 600)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         mainLayout = QVBoxLayout()
 
@@ -1340,6 +1372,7 @@ class userMonitoring(QWidget):
 class loginUI(QMainWindow):
     def __init__(self):
 
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
         logoPath = resourcePath("Assets/Images/sunstone.png")
 
         self.username = ""
@@ -1350,6 +1383,8 @@ class loginUI(QMainWindow):
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
