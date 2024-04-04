@@ -77,11 +77,10 @@ def checkUsername(Username):
 
 
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, EfoyID):
-
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', NULL)")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', '{EfoyID}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', '{EfoyID}')")
     cnxn.commit()
 
 def deleteUnits(Name):
