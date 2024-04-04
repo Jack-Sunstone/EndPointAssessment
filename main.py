@@ -394,37 +394,37 @@ class arcDashboard(QWidget):
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        solarPower = QLabel(formattedSolar)
+        self.solarPower = QLabel(formattedSolar)
 
 
         layout.addWidget(self.sunImage, 1, 0)
-        layout.addWidget(solarPower, 1, 1)
+        layout.addWidget(self.solarPower, 1, 1)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        batteryVoltage = QLabel(str(unitVoltage) + " V")
+        self.batteryVoltage = QLabel(str(unitVoltage) + " V")
 
 
         layout.addWidget(self.batteryImage, 2, 0)
-        layout.addWidget(batteryVoltage, 2, 1)
+        layout.addWidget(self.batteryVoltage, 2, 1)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        loadDraw = QLabel(formattedLoad)
-
+        self.loadDraw = QLabel(formattedLoad)
 
         layout.addWidget(self.loadImage, 3, 0)
-        layout.addWidget(loadDraw, 3, 1)
+        layout.addWidget(self.loadDraw, 3, 1)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.allCamerasButton = QPushButton("All Cameras")
+        self.allCamerasButton.clicked.connect(self.updateData)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
@@ -608,6 +608,20 @@ class arcDashboard(QWidget):
             self.errorMessage.setText("Unit Online")
             self.errorMessage.setStyleSheet("color: green;"
                                             "font: bold 14px;")
+
+    def updateData(self):
+
+        global unitVoltage
+        global formattedLoad
+        global formattedSolar
+
+        getVictronValues()
+
+        self.batteryVoltage.setText(str(unitVoltage) + " V")
+        self.loadDraw.setText(formattedLoad)
+        self.solarPower.setText(formattedSolar)
+
+
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
