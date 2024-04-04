@@ -385,39 +385,39 @@ class arcDashboard(QWidget):
         self.Camera1.setPixmap(cameraPixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera1Button = QPushButton("Camera 1")
-        camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
+        self.camera1Button = QPushButton("Camera 1")
+        self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
 
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(cameraPixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera2Button = QPushButton("Camera 2")
-        camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
+        self.camera2Button = QPushButton("Camera 2")
+        self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera2, 4, 2)
-        layout.addWidget(camera2Button, 5, 2)
+        layout.addWidget(self.camera2Button, 5, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(cameraPixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera3Button = QPushButton("Camera 3")
-        camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
+        self.camera3Button = QPushButton("Camera 3")
+        self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera3, 4, 3)
-        layout.addWidget(camera3Button, 5, 3)
+        layout.addWidget(self.camera3Button, 5, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(cameraPixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        camera4Button = QPushButton("Camera 4")
-        camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
+        self.camera4Button = QPushButton("Camera 4")
+        self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera4, 4, 4)
-        layout.addWidget(camera4Button, 5, 4)
+        layout.addWidget(self.camera4Button, 5, 4)
 
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
@@ -430,17 +430,18 @@ class arcDashboard(QWidget):
         efoyButton.clicked.connect(self.openEfoy)
 
         self.errorMessage = QLabel()
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if selectedCCTV == 1:
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             self.Camera3.hide()
-            camera3Button.hide()
+            self.camera3Button.hide()
 
             self.Camera2.hide()
-            camera2Button.hide()
+            self.camera2Button.hide()
 
             self.allCameras.hide()
             allCamerasButton.hide()
@@ -448,7 +449,7 @@ class arcDashboard(QWidget):
             layout.addWidget(unitLabel, 0, 1)
 
             layout.addWidget(self.Camera1, 4,0)
-            layout.addWidget(camera1Button,5, 0)
+            layout.addWidget(self.camera1Button,5, 0)
 
             layout.addWidget(victronButton, 6, 0)
             layout.addWidget(routerButton, 6, 1)
@@ -461,16 +462,16 @@ class arcDashboard(QWidget):
             layout.addWidget(unitLabel, 0, 2)
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             self.Camera3.hide()
-            camera3Button.hide()
+            self.camera3Button.hide()
 
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton,5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(camera1Button, 5, 1)
+            layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 1)
             layout.addWidget(routerButton, 6, 2)
@@ -478,25 +479,24 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.errorMessage, 7, 1)
 
-
         elif selectedCCTV == 3:
 
             layout.addWidget(unitLabel, 0, 2)
 
             self.Camera4.hide()
-            camera4Button.hide()
+            self.camera4Button.hide()
 
             layout.addWidget(self.allCameras, 4, 0)
             layout.addWidget(allCamerasButton, 5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(camera1Button, 5, 1)
+            layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 0)
             layout.addWidget(routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 1)
+            layout.addWidget(self.errorMessage, 7, 0)
 
         else:
 
@@ -506,7 +506,7 @@ class arcDashboard(QWidget):
             layout.addWidget(allCamerasButton, 5, 0)
 
             layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(camera1Button, 5, 1)
+            layout.addWidget(self.camera1Button, 5, 1)
 
             layout.addWidget(victronButton, 6, 1)
             layout.addWidget(routerButton, 6, 2)
@@ -514,7 +514,7 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.errorMessage, 7, 2)
 
-
+        self.checkUnitStatus()
 
         self.setLayout(layout)
 
@@ -537,7 +537,20 @@ class arcDashboard(QWidget):
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
     def checkUnitStatus(self):
+        status = checkURL(selectedIP, 64430, 1)
+        if status == 0:
+            self.errorMessage.setText("Unit Offline")
+            self.errorMessage.setStyleSheet("color: red;"
+                                            "font: bold 14px;")
 
+            self.camera1Button.setEnabled(False)
+            self.camera2Button.setEnabled(False)
+            self.camera3Button.setEnabled(False)
+            self.camera4Button.setEnabled(False)
+        else:
+            self.errorMessage.setText("Unit Online")
+            self.errorMessage.setStyleSheet("color: green;"
+                                            "font: bold 14px;")
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
