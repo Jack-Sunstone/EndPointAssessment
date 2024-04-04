@@ -9,10 +9,12 @@ from PySide6 import QtWebEngineWidgets
 import SQL
 import requests
 import json
+import threading
 
 selectedUnit = ""
 selectedIP = ""
 selectedVictron = ""
+selectedCompany = ""
 selectedCCTV = ""
 selectedUnitType = ""
 selectedCamera = ""
@@ -35,9 +37,9 @@ def axisPath(password,IPaddress, cameraNumber):
 
     return Axis
 
-def hikPath(password, IPaddress, cameraNumber):
+def hikPath(IPaddress, cameraNumber):
 
-    Hik = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
+    Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
 
@@ -46,6 +48,23 @@ def hanwhaPath(password, IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
+
+def cameraOne(cap):
+    cap = cv2.VideoCapture(str(cap))
+    if cap is None or not cap.isOpened():
+        print("Camera Not Available")
+    else:
+        while (True):
+            ret, Cam1 = cap.read()
+            cv2.imshow("Camera Live View", Cam1)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+def threading1Camera(cameraURL):
+    thread1 = threading.Thread(target=cameraOne, args=(cameraURL,))
+    thread1.start()
+    thread1.join()
+    cv2.destroyAllWindows()
 
 def resourcePath(relativePath):
     try:
@@ -300,6 +319,7 @@ class arcDashboard(QWidget):
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
+        camera1Button.clicked.connect(self.viewCamera1)
 
         layout.addWidget(self.Camera1, 4, 1)
         layout.addWidget(camera1Button, 5, 1)
@@ -373,7 +393,23 @@ class arcDashboard(QWidget):
         self.setLayout(layout)
 
     def viewCamera1(self):
-        print("Hello ")
+        if selectedCamera == "Axis":
+            if selectedCompany == "WJ":
+                cameraURL = axisPath(wjPassword, selectedIP, 1)
+                threading1Camera(str(cameraURL))
+            else:
+                cameraURL = axisPath(sunstonePassword, selectedIP, 1)
+                threading1Camera(cameraURL)
+        elif selectedCamera == "Hik":
+            cameraURL = hikPath(selectedIP, 1)
+            threading1Camera(cameraURL)
+        elif selectedCamera == "Hanwha":
+            if selectedCompany == "WJ":
+                cameraURL = hanwhaPath(wjPassword, selectedIP, 1)
+                threading1Camera(cameraURL)
+            else:
+                cameraURL = hanwhaPath(sunstonePassword, selectedIP, 1)
+                threading1Camera(cameraURL)
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
@@ -940,6 +976,7 @@ class adminMonitoring(QWidget):
         global selectedCCTV
         global selectedEfoyID
         global selectedCamera
+        global selectedCompany
 
         unitType = SQL.fetchUnitType(unitName).strip()
         data = SQL.fetchUnitDetails(unitName)
@@ -950,6 +987,7 @@ class adminMonitoring(QWidget):
             altered = list(row)
             selectedIP = altered[0]
             selectedVictron = altered[1]
+            selectedCompany = altered[3]
             selectedCCTV = altered[4]
             selectedCamera = altered[5]
             selectedEfoyID = altered[6]
@@ -1062,6 +1100,7 @@ class userMonitoring(QWidget):
         global selectedUnitType
         global selectedIP
         global selectedVictron
+        global selectedCompany
         global selectedCCTV
         global selectedEfoyID
         global selectedCamera
@@ -1075,6 +1114,7 @@ class userMonitoring(QWidget):
             altered = list(row)
             selectedIP = altered[0]
             selectedVictron = altered[1]
+            selectedCompany = altered[3]
             selectedCCTV = altered[4]
             selectedCamera = altered[5]
             selectedEfoyID = altered[6]
