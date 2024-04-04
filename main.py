@@ -10,6 +10,7 @@ import SQL
 import requests
 import json
 import threading
+import socket
 
 selectedUnit = ""
 selectedIP = ""
@@ -73,6 +74,17 @@ def resourcePath(relativePath):
         basePath = os.path.abspath(".")
 
     return os.path.join(basePath, relativePath)
+
+def checkURL(IPAddress, Port, Timeout):
+    socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socketOpen.settimeout(Timeout)
+    try:
+        socketOpen.connect((IPAddress, Port))
+    except:
+        return 0
+    else:
+        socketOpen.close()
+        return 1
 
 def getVictronValues():
 
