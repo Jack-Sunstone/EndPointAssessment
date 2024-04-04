@@ -386,7 +386,7 @@ class arcDashboard(QWidget):
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera1Button = QPushButton("Camera 1")
-        camera1Button.clicked.connect(self.viewCamera1)
+        camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
 
 
         self.Camera2 = QLabel()
@@ -394,6 +394,7 @@ class arcDashboard(QWidget):
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera2Button = QPushButton("Camera 2")
+        camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera2, 4, 2)
         layout.addWidget(camera2Button, 5, 2)
@@ -403,6 +404,7 @@ class arcDashboard(QWidget):
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera3Button = QPushButton("Camera 3")
+        camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera3, 4, 3)
         layout.addWidget(camera3Button, 5, 3)
@@ -412,6 +414,7 @@ class arcDashboard(QWidget):
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         camera4Button = QPushButton("Camera 4")
+        camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
 
         layout.addWidget(self.Camera4, 4, 4)
         layout.addWidget(camera4Button, 5, 4)
@@ -504,23 +507,23 @@ class arcDashboard(QWidget):
 
         self.setLayout(layout)
 
-    def viewCamera1(self):
+    def viewIndividualCamera(self, cameraNumber):
         if selectedCamera == "Axis":
             if selectedCompany == "WJ":
-                cameraURL = axisPath(wjPassword, selectedIP, 1)
+                cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(str(cameraURL))
             else:
-                cameraURL = axisPath(sunstonePassword, selectedIP, 1)
+                cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
         elif selectedCamera == "Hik":
-            cameraURL = hikPath(selectedIP, 1)
+            cameraURL = hikPath(selectedIP, cameraNumber)
             threading1Camera(cameraURL)
         elif selectedCamera == "Hanwha":
             if selectedCompany == "WJ":
-                cameraURL = hanwhaPath(wjPassword, selectedIP, 1)
+                cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
             else:
-                cameraURL = hanwhaPath(sunstonePassword, selectedIP, 1)
+                cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
 
     def openVictron(self):
