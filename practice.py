@@ -10,4 +10,4 @@ def checkURL(IPAddress, Port, Timeout):
         socketOpen.close()
         return 1
 
-print(checkURL('000.000.000.000',0000,timeout=1))
+print(checkURL('000.000.000.000',0000,1))

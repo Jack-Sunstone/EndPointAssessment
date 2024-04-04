@@ -323,7 +323,6 @@ class arcDashboard(QWidget):
 
         allCamerasButton = QPushButton("All Cameras")
 
-        layout.addWidget(self.allCameras, 4, 0)
         layout.addWidget(allCamerasButton, 5, 0)
 
         self.Camera1 = QLabel()
@@ -333,8 +332,6 @@ class arcDashboard(QWidget):
         camera1Button = QPushButton("Camera 1")
         camera1Button.clicked.connect(self.viewCamera1)
 
-        layout.addWidget(self.Camera1, 4, 1)
-        layout.addWidget(camera1Button, 5, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(cameraPixmap)
@@ -374,6 +371,12 @@ class arcDashboard(QWidget):
             self.Camera2.hide()
             camera2Button.hide()
 
+            self.allCameras.hide()
+            allCamerasButton.hide()
+
+            layout.addWidget(self.Camera1, 4,0)
+            layout.addWidget(camera1Button,5, 0)
+
         elif selectedCCTV == 2:
 
             self.Camera4.hide()
@@ -382,10 +385,26 @@ class arcDashboard(QWidget):
             self.Camera3.hide()
             camera3Button.hide()
 
+            layout.addWidget(self.allCameras, 4, 0)
+            layout.addWidget(allCamerasButton,5, 0)
+            layout.addWidget(self.Camera1, 4, 1)
+            layout.addWidget(camera1Button, 5, 1)
+
         elif selectedCCTV == 3:
 
             self.Camera4.hide()
             camera4Button.hide()
+
+            layout.addWidget(self.allCameras, 4, 0)
+            layout.addWidget(allCamerasButton, 5, 0)
+            layout.addWidget(self.Camera1, 4, 1)
+            layout.addWidget(camera1Button, 5, 1)
+
+        else:
+            layout.addWidget(self.allCameras, 4, 0)
+            layout.addWidget(allCamerasButton, 5, 0)
+            layout.addWidget(self.Camera1, 4, 1)
+            layout.addWidget(camera1Button, 5, 1)
 
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
