@@ -562,6 +562,10 @@ class arcDashboard(QWidget):
 
         self.setLayout(layout)
 
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.updateData)
+        self.timer.start(30000)
+
     def viewIndividualCamera(self, cameraNumber):
         if selectedCamera == "Axis":
             if selectedCompany == "WJ":
