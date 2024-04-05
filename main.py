@@ -1193,6 +1193,22 @@ class interactiveMap(QWidget):
 
         self.setLayout(layout)
 
+    def importMap(self):
+        names = []
+
+        lat = []
+
+        lon = []
+
+        data = SQL.fetchLocations()
+
+        for row in data:
+            altered = list(row)
+            names.append(altered[0])
+            lat.append(altered[1])
+            lon.append(altered[2])
+
+
 class adminMonitoring(QWidget):
     def __init__(self):
 
