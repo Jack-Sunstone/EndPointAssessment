@@ -1576,41 +1576,52 @@ class loginUI(QMainWindow):
 
         global userRights
 
-        checkUsername = SQL.checkUsername(self.username)
 
-        if checkUsername is None:
+        socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socketOpen.settimeout(2)
+        try:
+            socketOpen.connect(("google.com", 80))
+        except:
             self.errorMessage.show()
-
+            self.errorMessage.setText("You are not connected to the internet")
         else:
-            checkPassword = SQL.fetchPassword(self.username)
+            socketOpen.close()
 
-            loggedIn = self.password == checkPassword.strip()
+            checkUsername = SQL.checkUsername(self.username)
 
-
-            if loggedIn:
-                userRights = SQL.fetchRights(self.username)
-                if "ADMIN" in userRights:
-                    self.adminMonitoring = adminMonitoring()
-                    self.adminMonitoring.show()
-
-                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    Geo = self.adminMonitoring.frameGeometry()
-                    Geo.moveCenter(Center)
-                    self.adminMonitoring.move(Geo.topLeft())
-
-                    self.hide()
-                elif "USER" in userRights:
-                    self.userMonitoring = userMonitoring()
-                    self.userMonitoring.show()
-
-                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    Geo = self.userMonitoring.frameGeometry()
-                    Geo.moveCenter(Center)
-                    self.userMonitoring.move(geo.topLeft())
-
-                    self.hide()
-            else:
+            if checkUsername is None:
                 self.errorMessage.show()
+
+            else:
+                checkPassword = SQL.fetchPassword(self.username)
+
+                loggedIn = self.password == checkPassword.strip()
+
+
+                if loggedIn:
+                    userRights = SQL.fetchRights(self.username)
+                    if "ADMIN" in userRights:
+                        self.adminMonitoring = adminMonitoring()
+                        self.adminMonitoring.show()
+
+                        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                        Geo = self.adminMonitoring.frameGeometry()
+                        Geo.moveCenter(Center)
+                        self.adminMonitoring.move(Geo.topLeft())
+
+                        self.hide()
+                    elif "USER" in userRights:
+                        self.userMonitoring = userMonitoring()
+                        self.userMonitoring.show()
+
+                        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                        Geo = self.userMonitoring.frameGeometry()
+                        Geo.moveCenter(Center)
+                        self.userMonitoring.move(geo.topLeft())
+
+                        self.hide()
+                else:
+                    self.errorMessage.show()
 
 app = QApplication([])
 app.setStyle('Fusion')
