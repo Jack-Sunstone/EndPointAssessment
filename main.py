@@ -1427,6 +1427,11 @@ class userMonitoring(QWidget):
 
         mainLayout.addWidget(scrollArea)
 
+        mapButton = QPushButton("Interactive Map")
+        mapButton.clicked.connect(self.openMap)
+
+        mainLayout.addWidget(mapButton)
+
         self.setLayout(mainLayout)
 
     def openUnitDashboard(self,unitName):
