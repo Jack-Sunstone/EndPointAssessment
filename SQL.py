@@ -75,7 +75,12 @@ def checkUsername(Username):
     for row in cursor.fetchall():
         return row[0]
 
+def checkUnits(Name):
+    cursor.execute(f"SELECT Username FROM dbo.Units WHERE Name = '{Name}'")
 
+    for row in cursor.fetchall():
+        return row[0]
+    
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, EfoyID):
     if victronID == "":
         cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', NULL)")
