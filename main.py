@@ -1082,16 +1082,19 @@ class userManagement(QWidget):
         self.errorMessage.setText("User Deleted")
 
     def addUser(self):
+        checkUsername = SQL.checkUsername(self.newUsername)
 
-        if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
-            self.errorMessage.setText("User Added")
-            SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
-            self.usernameEdit.setText("")
-            self.passwordAddLineEdit.setText("")
-            self.companyLineEdit.setText("")
+        if checkUsername is None:
+            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
+                self.errorMessage.setText("User Added")
+                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
+                self.usernameEdit.setText("")
+                self.passwordAddLineEdit.setText("")
+                self.companyLineEdit.setText("")
+            else:
+                self.errorMessage.setText("One or All Field Is Empty")
         else:
-            self.errorMessage.setText("One or All Field Is Empty")
-
+            self.errorMessage.setText("Username Already Exists")
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
@@ -1519,7 +1522,6 @@ class loginUI(QMainWindow):
         checkUsername = SQL.checkUsername(self.username)
 
         if checkUsername is None:
-            print("Here")
             self.errorMessage.show()
 
         else:
