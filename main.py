@@ -1184,7 +1184,7 @@ class interactiveMap(QWidget):
         super().__init__()
 
         self.setWindowTitle("Interactive Unit Map")
-        self.setGeometry(0,0,550,550)
+        self.setGeometry(0,0,700,700)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
@@ -1192,6 +1192,8 @@ class interactiveMap(QWidget):
 
         self.mapBrowser = QtWebEngineWidgets.QWebEngineView(self)
         layout.addWidget(self.mapBrowser, 0, 0)
+
+        self.importMap()
 
         self.setLayout(layout)
 
@@ -1210,6 +1212,29 @@ class interactiveMap(QWidget):
             lat.append(altered[1])
             lon.append(altered[2])
 
+        fig = go.Figure(go.Scattermapbox(
+            lat=lat,
+            lon=lon,
+            mode='markers',
+            marker=go.scattermapbox.Marker(size=10),
+            text=names,
+        ))
+        fig.update_layout(
+            autosize=True,
+            hovermode='closest',
+            mapbox=dict(
+                accesstoken=mapboxAccessToken,
+                bearing=0,
+                center=dict(
+                    lat=54.628,
+                    lon=-2.150,
+                ),
+                pitch=0,
+                zoom=4.4,
+            ),
+        )
+        fig.update_traces()
+        self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn'))
 
 class adminMonitoring(QWidget):
     def __init__(self):
