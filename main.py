@@ -33,6 +33,8 @@ formattedLoad = ""
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
+mapboxAccessToken = open(".mapbox_token").read()
+
 def axisPath(password,IPaddress, cameraNumber):
 
     Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
