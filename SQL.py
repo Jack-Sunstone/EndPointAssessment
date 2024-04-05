@@ -23,6 +23,13 @@ def fetchUnitDetails(unitName):
     for row in cursor.fetchall():
         yield row
 
+def fetchLocations():
+
+    cursor.execute("SELECT Name, Lat, Lon FROM dbo.Units")
+
+    for row in cursor.fetchall():
+        yield row
+
 def updateunit(unitName, Location, Company, CCTV):
 
     cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = {CCTV} WHERE Name = '{unitName}'")
