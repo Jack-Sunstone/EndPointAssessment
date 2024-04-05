@@ -11,6 +11,7 @@ import requests
 import json
 import threading
 import socket
+import plotly.graph_objects as go
 
 selectedUnit = ""
 selectedIP = ""
