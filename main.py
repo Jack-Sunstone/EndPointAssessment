@@ -268,18 +268,18 @@ class ioDashboard(QWidget):
         self.setLayout(layout)
 
     def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera == "Axis":
-            if selectedCompany == "WJ":
+        if selectedCamera.lower() == "axis":
+            if selectedCompany.lower() == "wj":
                 cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(str(cameraURL))
             else:
                 cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
-        elif selectedCamera == "Hik":
+        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
             cameraURL = hikPath(selectedIP, cameraNumber)
             threading1Camera(cameraURL)
-        elif selectedCamera == "Hanwha":
-            if selectedCompany == "WJ":
+        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
+            if selectedCompany.lower() == "wj":
                 cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
             else:
@@ -569,18 +569,18 @@ class arcDashboard(QWidget):
         self.timer.start(30000)
 
     def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera == "Axis":
-            if selectedCompany == "WJ":
+        if selectedCamera.lower() == "axis":
+            if selectedCompany.lower() == "wj":
                 cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(str(cameraURL))
             else:
                 cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
-        elif selectedCamera == "Hik":
+        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
             cameraURL = hikPath(selectedIP, cameraNumber)
             threading1Camera(cameraURL)
-        elif selectedCamera == "Hanwha":
-            if selectedCompany == "WJ":
+        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
+            if selectedCompany.lower() == "wj":
                 cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
             else:

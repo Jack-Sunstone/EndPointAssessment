@@ -109,7 +109,7 @@ def checkUnit(Name):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Username FROM dbo.Units WHERE Name = '{Name}'")
+    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Name = '{Name}'")
 
     for row in cursor.fetchall():
         return row[0]
@@ -119,9 +119,9 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
     cursor = cnxn.cursor()
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name}', '{IP}', NULL, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', NULL)")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name}', '{IP}', {victronID}, '{Location}', {NoCCTV}, '{Company}', {Lat}, {Lon}, '{UnitType}', '{CameraType}', '{EfoyID}')")
+        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
     cnxn.commit()
 
 def deleteUnits(Name):
@@ -134,7 +134,7 @@ def deleteUnits(Name):
 def addUsers(Username, Password, Company):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{Username}', '{Password}', '{Company}', 'USER')")
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{Username.strip()}', '{Password.strip()}', '{Company.strip()}', 'USER')")
 
     cnxn.commit()
 
