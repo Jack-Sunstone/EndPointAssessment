@@ -1577,55 +1577,66 @@ class loginUI(QMainWindow):
         global userRights
 
 
-        socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socketOpen.settimeout(2)
-        try:
-            socketOpen.connect(("google.com", 80))
-        except:
+
+        checkUsername = SQL.checkUsername(self.username)
+
+        if checkUsername is None:
             self.errorMessage.show()
-            self.errorMessage.setText("You are not connected to the internet")
+
         else:
-            socketOpen.close()
+            checkPassword = SQL.fetchPassword(self.username)
 
-            checkUsername = SQL.checkUsername(self.username)
+            loggedIn = self.password == checkPassword.strip()
 
-            if checkUsername is None:
+
+            if loggedIn:
+                userRights = SQL.fetchRights(self.username)
+                if "ADMIN" in userRights:
+                    self.adminMonitoring = adminMonitoring()
+                    self.adminMonitoring.show()
+
+                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    Geo = self.adminMonitoring.frameGeometry()
+                    Geo.moveCenter(Center)
+                    self.adminMonitoring.move(Geo.topLeft())
+
+                    self.hide()
+                elif "USER" in userRights:
+                    self.userMonitoring = userMonitoring()
+                    self.userMonitoring.show()
+
+                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                    Geo = self.userMonitoring.frameGeometry()
+                    Geo.moveCenter(Center)
+                    self.userMonitoring.move(geo.topLeft())
+
+                    self.hide()
+            else:
                 self.errorMessage.show()
 
-            else:
-                checkPassword = SQL.fetchPassword(self.username)
 
-                loggedIn = self.password == checkPassword.strip()
+class errorMessage(QMainWindow):
 
+    def __init__(self):
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
-                if loggedIn:
-                    userRights = SQL.fetchRights(self.username)
-                    if "ADMIN" in userRights:
-                        self.adminMonitoring = adminMonitoring()
-                        self.adminMonitoring.show()
+        super().__init__()
 
-                        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                        Geo = self.adminMonitoring.frameGeometry()
-                        Geo.moveCenter(Center)
-                        self.adminMonitoring.move(Geo.topLeft())
+        self.setGeometry(0, 0,300, 300)
+        self.setWindowTitle("Connection Error")
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
 
-                        self.hide()
-                    elif "USER" in userRights:
-                        self.userMonitoring = userMonitoring()
-                        self.userMonitoring.show()
+        layout = QHBoxLayout()
 
-                        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                        Geo = self.userMonitoring.frameGeometry()
-                        Geo.moveCenter(Center)
-                        self.userMonitoring.move(geo.topLeft())
+        errorLabel = QLabel("You are not connected to the Internet")
 
-                        self.hide()
-                else:
-                    self.errorMessage.show()
+        layout.addWidget(errorLabel)
+
+        self.setLayout(layout)
 
 app = QApplication([])
 app.setStyle('Fusion')
-window = loginUI()
 
 app.setStyleSheet("""
     
@@ -1654,7 +1665,19 @@ app.setStyleSheet("""
     }
 """)
 
-window.show()
+socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socketOpen.settimeout(2)
+try:
+    socketOpen.connect(("google.com", 80))
+except:
+    window = errorMessage()
+
+    window.show()
+
+else:
+    window = loginUI()
+    window.show()
+    socketOpen.close()
 
 center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
 
