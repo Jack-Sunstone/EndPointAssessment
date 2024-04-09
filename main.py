@@ -1622,18 +1622,23 @@ class errorMessage(QMainWindow):
 
         super().__init__()
 
-        self.setGeometry(0, 0,300, 300)
         self.setWindowTitle("Connection Error")
+        self.setGeometry(0, 0,300, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
-        layout = QHBoxLayout()
+        layout = QVBoxLayout()
 
         errorLabel = QLabel("You are not connected to the Internet")
+        errorLabel.setStyleSheet("color: red;"
+                                        "font: bold 14px;")
+        errorLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(errorLabel)
 
-        self.setLayout(layout)
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
 
 app = QApplication([])
 app.setStyle('Fusion')
