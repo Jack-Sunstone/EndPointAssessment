@@ -124,7 +124,6 @@ class CameraWidget(QWidget):
     def __init__(self, Width, Height, streamLink=0):
         super(CameraWidget, self).__init__()
 
-        # Initialize deque used to store frames read from the stream
         self.Deque = deque(maxlen=1)
 
         self.screenWidth = Width - 16
@@ -133,22 +132,19 @@ class CameraWidget(QWidget):
 
         self.cameraStreamLink = streamLink
 
-        # Flag to check if camera is valid/working
         self.Online = False
         self.Capture = None
         self.videoFrame = QLabel()
 
         self.loadNetworkStream()
 
-        # Start background frame grabbing
-        self.get_frame_thread = Thread(target=self.getFrame, args=())
-        self.get_frame_thread.daemon = True
-        self.get_frame_thread.start()
+        self.getFrameThread = Thread(target=self.getFrame, args=())
+        self.getFrameThread.daemon = True
+        self.getFrameThread.start()
 
-        # Periodically set video frame to display
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.setFrame)
-        self.timer.start(.5)
+        self.Timer = QTimer()
+        self.Timer.timeout.connect(self.setFrame)
+        self.Timer.start(.5)
 
     def loadNetworkStream(self):
 
@@ -296,6 +292,7 @@ class allCamerasView(QWidget):
             layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
             layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
             layout.addWidget(self.cameraFour.getVideoFrame(), 1, 1, 1, 1)
+
         elif selectedCCTV == 3:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
@@ -304,6 +301,7 @@ class allCamerasView(QWidget):
             layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
             layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
             layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
+
         elif selectedCCTV == 2:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
