@@ -9,9 +9,11 @@ from PySide6 import QtWebEngineWidgets
 import SQL
 import requests
 import json
-import threading
+from threading import *
 import socket
 import plotly.graph_objects as go
+from collections import deque
+import time
 
 selectedUnit = ""
 selectedIP = ""
@@ -65,7 +67,7 @@ def cameraOne(cap):
                 break
 
 def threading1Camera(cameraURL):
-    thread1 = threading.Thread(target=cameraOne, args=(cameraURL,))
+    thread1 = Thread(target=cameraOne, args=(cameraURL,))
     thread1.start()
     thread1.join()
     cv2.destroyAllWindows()
@@ -117,11 +119,14 @@ def getVictronValues():
     unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
     formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
 
+
+
 class ioDashboard(QWidget):
     def __init__(self):
 
         ioBoxIcon = resourcePath("Assets/Images/IOBox.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
+
 
         super().__init__()
 
@@ -143,6 +148,7 @@ class ioDashboard(QWidget):
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.allCamerasButton = QPushButton("All Cameras")
+        self.allCamerasButton.clicked.connect(self.viewAllCameras)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
@@ -266,6 +272,16 @@ class ioDashboard(QWidget):
         self.checkUnitStatus()
 
         self.setLayout(layout)
+
+    def viewAllCameras(self):
+
+        self.allCameras = allCamerasView()
+        self.allCameras.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.allCameras.frameGeometry()
+        Geo.moveCenter(Center)
+        self.allCameras.move(Geo.topLeft())
 
     def viewIndividualCamera(self, cameraNumber):
         if selectedCamera.lower() == "axis":
@@ -427,6 +443,7 @@ class arcDashboard(QWidget):
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.allCamerasButton = QPushButton("All Cameras")
+        self.allCamerasButton.clicked.connect(self.viewAllCameras)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
@@ -586,6 +603,16 @@ class arcDashboard(QWidget):
             else:
                 cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
                 threading1Camera(cameraURL)
+
+    def viewAllCameras(self):
+
+        self.allCameras = allCamerasView()
+        self.allCameras.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.allCameras.frameGeometry()
+        Geo.moveCenter(Center)
+        self.allCameras.move(Geo.topLeft())
 
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
@@ -1576,8 +1603,6 @@ class loginUI(QMainWindow):
 
         global userRights
 
-
-
         checkUsername = SQL.checkUsername(self.username)
 
         if checkUsername is None:
@@ -1623,7 +1648,7 @@ class errorMessage(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Connection Error")
-        self.setGeometry(0, 0,300, 300)
+        self.setGeometry(0, 0, 300, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
@@ -1672,8 +1697,10 @@ app.setStyleSheet("""
 
 socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socketOpen.settimeout(2)
+
 try:
     socketOpen.connect(("google.com", 80))
+
 except:
     window = errorMessage()
 
