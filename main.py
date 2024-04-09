@@ -119,6 +119,107 @@ def getVictronValues():
     unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
     formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
 
+class CameraWidget(QWidget):
+
+    def __init__(self, Width, Height, streamLink=0):
+        super(CameraWidget, self).__init__()
+
+        # Initialize deque used to store frames read from the stream
+        self.Deque = deque(maxlen=1)
+
+        self.screenWidth = Width - 16
+        self.screenHeight = Height - 16
+
+
+        self.cameraStreamLink = streamLink
+
+        # Flag to check if camera is valid/working
+        self.Online = False
+        self.Capture = None
+        self.videoFrame = QLabel()
+
+        self.loadNetworkStream()
+
+        # Start background frame grabbing
+        self.get_frame_thread = Thread(target=self.getFrame, args=())
+        self.get_frame_thread.daemon = True
+        self.get_frame_thread.start()
+
+        # Periodically set video frame to display
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.setFrame)
+        self.timer.start(.5)
+
+    def loadNetworkStream(self):
+
+        def loadNetworkStreamThread():
+            if self.verifyNetworkStream(self.cameraStreamLink):
+                self.Capture = cv2.VideoCapture(self.cameraStreamLink)
+                self.Online = True
+
+        self.loadStreamThread = Thread(target=loadNetworkStreamThread, args=())
+        self.loadStreamThread.daemon = True
+        self.loadStreamThread.start()
+
+    def verifyNetworkStream(self, Link):
+        """Attempts to receive a frame from given link"""
+
+        Cap = cv2.VideoCapture(Link)
+        if not Cap.isOpened():
+            return False
+        Cap.release()
+        return True
+
+    def getFrame(self):
+        """Reads frame, resizes, and converts image to pixmap"""
+
+        while True:
+            try:
+                if self.Capture.isOpened() and self.Online:
+                    # Read next frame from stream and insert into deque
+                    Status, Frame = self.Capture.read()
+                    if Status:
+                        self.Deque.append(Frame)
+                    else:
+                        self.Capture.release()
+                        self.Online = False
+                else:
+                    # Attempt to reconnect
+                    print('attempting to reconnect', self.cameraStreamLink)
+                    self.loadNetworkStream()
+                    self.Spin(2)
+                self.Spin(.001)
+            except AttributeError:
+                pass
+
+    def Spin(self, seconds):
+        """Pause for set amount of seconds, replaces time.sleep so program doesnt stall"""
+
+        timeEnd = time.time() + seconds
+        while time.time() < timeEnd:
+            QApplication.processEvents()
+
+    def setFrame(self):
+        """Sets pixmap image to video frame"""
+
+        if not self.Online:
+            self.Spin(1)
+            return
+
+        if self.Deque and self.Online:
+            # Grab latest frame
+            Frame = self.Deque[-1]
+
+            self.Frame = cv2.resize(Frame, (self.screenWidth, self.screenHeight))
+
+            # Convert to pixmap and set to video frame
+            self.Image = QImage(self.Frame, self.Frame.shape[1], self.Frame.shape[0],QImage.Format_RGB888).rgbSwapped()
+            self.Pixmap = QPixmap.fromImage(self.Image)
+            self.videoFrame.setPixmap(self.Pixmap)
+
+    def getVideoFrame(self):
+        return self.videoFrame
+
 class allCamerasView(QWidget):
     def __init__(self):
 
