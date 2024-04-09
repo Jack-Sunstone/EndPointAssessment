@@ -119,7 +119,105 @@ def getVictronValues():
     unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
     formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
 
+class allCamerasView(QWidget):
+    def __init__(self):
 
+        cameraIcon = resourcePath("Assets/Images/CCTV.png")
+
+        super().__init__()
+
+        self.setWindowTitle("View All Cameras")
+        self.setGeometry(0, 0, 1280, 720)
+        self.setWindowIcon(QIcon(cameraIcon))
+        self.setWindowIconText("Camera")
+
+        layout = QGridLayout()
+
+        if selectedCamera.lower() == "axis":
+
+            if selectedCCTV == 4:
+                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
+                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
+                cameraFourLink = axisPath(sunstonePassword, selectedIP, 4)
+
+
+            if selectedCCTV == 3:
+                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
+                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
+
+            if selectedCCTV == 2:
+                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
+
+        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
+
+            if selectedCCTV == 4:
+                cameraOneLink = hikPath(selectedIP, 1)
+                cameraTwoLink = hikPath(selectedIP, 2)
+                cameraThreeLink = hikPath(selectedIP, 3)
+                cameraFourLink = hikPath(selectedIP, 4)
+
+            if selectedCCTV == 3:
+                cameraOneLink = hikPath(selectedIP, 1)
+                cameraTwoLink = hikPath(selectedIP, 2)
+                cameraThreeLink = hikPath(selectedIP, 3)
+
+            if selectedCCTV == 2:
+                cameraOneLink = hikPath(selectedIP, 1)
+                cameraTwoLink = hikPath(selectedIP, 2)
+
+        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
+
+            if selectedCCTV == 4:
+                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
+                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
+                cameraFourLink = hanwhaPath(sunstonePassword, selectedIP, 4)
+
+            if selectedCCTV == 3:
+                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
+                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
+
+            if selectedCCTV == 2:
+                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
+                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
+
+        if selectedCCTV == 4:
+            self.cameraOne = CameraWidget(640,360, cameraOneLink)
+            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
+            self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
+            self.cameraFour = CameraWidget(640, 360, cameraFourLink)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
+            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
+            layout.addWidget(self.cameraFour.getVideoFrame(), 1, 1, 1, 1)
+        elif selectedCCTV == 3:
+            self.cameraOne = CameraWidget(640, 360, cameraOneLink)
+            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
+            self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
+            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
+        elif selectedCCTV == 2:
+            self.cameraOne = CameraWidget(640, 360, cameraOneLink)
+            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+
+        for camera in [self.cameraOne, self.cameraTwo, self.cameraThree, self.cameraFour][:selectedCCTV]:
+            camera.close()
+
+        self.close()
 
 class ioDashboard(QWidget):
     def __init__(self):
