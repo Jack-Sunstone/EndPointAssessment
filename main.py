@@ -92,32 +92,34 @@ def checkURL(IPAddress, Port, Timeout):
         return 1
 
 def getVictronValues():
+    if selectedVictron == None:
+        pass
+    else:
+        global unitSolar
+        global unitVoltage
+        global unitLoad
+        global formattedLoad
+        global formattedSolar
 
-    global unitSolar
-    global unitVoltage
-    global unitLoad
-    global formattedLoad
-    global formattedSolar
+        # Defining login details to access Sites
+        login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
+        login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
+        # Stores and loads Json request to the login URL
+        response = requests.post(login_url, login_string)
+        token = json.loads(response.text).get("token")
+        headers = {"X-Authorization": 'Bearer ' + token}
 
-    # Defining login details to access Sites
-    login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
-    login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
-    # Stores and loads Json request to the login URL
-    response = requests.post(login_url, login_string)
-    token = json.loads(response.text).get("token")
-    headers = {"X-Authorization": 'Bearer ' + token}
+        diags_url = "https://vrmapi.victronenergy.com/v2/installations/{}/diagnostics?count=1000".format(selectedVictron)
+        response = requests.get(diags_url, headers=headers)
+        data = response.json().get("records")
 
-    diags_url = "https://vrmapi.victronenergy.com/v2/installations/{}/diagnostics?count=1000".format(selectedVictron)
-    response = requests.get(diags_url, headers=headers)
-    data = response.json().get("records")
+        unitSolar = str([element['rawValue'] for element in data if element['code'] == "PVP"][0])
+        formattedSolar = str([element['formattedValue'] for element in data if element['code'] == "PVP"][0])
 
-    unitSolar = str([element['rawValue'] for element in data if element['code'] == "PVP"][0])
-    formattedSolar = str([element['formattedValue'] for element in data if element['code'] == "PVP"][0])
+        unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
 
-    unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
-
-    unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
-    formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
+        unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
+        formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
 
 class CameraWidget(QWidget):
 
@@ -158,7 +160,7 @@ class CameraWidget(QWidget):
         self.loadStreamThread.start()
 
     def verifyNetworkStream(self, Link):
-        """Attempts to receive a frame from given link"""
+        #Attempts to get a frame from the given RTSP Stream
 
         Cap = cv2.VideoCapture(Link)
         if not Cap.isOpened():
@@ -167,7 +169,7 @@ class CameraWidget(QWidget):
         return True
 
     def getFrame(self):
-        """Reads frame, resizes, and converts image to pixmap"""
+        #Function reads the frame -> resizes and then converts the image stored to a pixmap to be used in window
 
         while True:
             try:
@@ -189,14 +191,14 @@ class CameraWidget(QWidget):
                 pass
 
     def Spin(self, seconds):
-        """Pause for set amount of seconds, replaces time.sleep so program doesnt stall"""
+        #Pauses stream so program stays alive
 
         timeEnd = time.time() + seconds
         while time.time() < timeEnd:
             QApplication.processEvents()
 
     def setFrame(self):
-        """Sets pixmap image to video frame"""
+        #setting Pixmap Image to a video frame
 
         if not self.Online:
             self.Spin(1)
