@@ -36,7 +36,7 @@ def fetchLocations():
     for row in cursor.fetchall():
         yield row
 
-def updateunit(unitName, Location, Company, CCTV):
+def updateUnit(unitName, Location, Company, CCTV):
     connection()
     cursor = cnxn.cursor()
 
