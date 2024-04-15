@@ -1153,7 +1153,7 @@ class unitManagement(QWidget):
 
     def changeUnit(self):
 
-        SQL.updateunit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
+        SQL.updateUnit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
         self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):
