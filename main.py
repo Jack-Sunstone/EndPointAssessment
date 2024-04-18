@@ -36,7 +36,7 @@ formattedLoad = ""
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
-mapboxAccessToken = open("mapbox_token").read()
+mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTViajJqbjI0N3RuOGhhOCJ9.Kl6jwZjBEtGoM1C_5NyLJg"
 
 def axisPath(password,IPaddress, cameraNumber):
 
@@ -147,7 +147,7 @@ class CameraWidget(QWidget):
 
         self.Timer = QTimer()
         self.Timer.timeout.connect(self.setFrame)
-        self.Timer.start(.5)
+        self.Timer.start(1)
 
     def loadNetworkStream(self):
 
@@ -1235,7 +1235,7 @@ class userManagement(QWidget):
 
         self.usernameLabel = QLabel("")
 
-        layout.addWidget(self.usernameLabel,1,0.5)
+        layout.addWidget(self.usernameLabel,1,1)
 
         self.passwordLineEdit = QLineEdit()
         self.passwordLineEdit.setPlaceholderText("Password")
