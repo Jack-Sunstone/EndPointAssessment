@@ -1,11 +1,12 @@
+import ctypes
 import sys
 import os
 import webbrowser
 import cv2
-from PySide6.QtCore import *
-from PySide6.QtWidgets import *
-from PySide6.QtGui import *
-from PySide6 import QtWebEngineWidgets
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import QtWebEngineWidgets
 import SQL
 import requests
 import json
@@ -35,7 +36,7 @@ formattedLoad = ""
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
-mapboxAccessToken = open(".mapbox_token").read()
+mapboxAccessToken = open("mapbox_token").read()
 
 def axisPath(password,IPaddress, cameraNumber):
 
@@ -1756,7 +1757,6 @@ class loginUI(QMainWindow):
 
         layout.addWidget(self.Logo, 0,0)
 
-
         usernameEntry = QLineEdit()
         usernameEntry.setPlaceholderText("Username")
         usernameEntry.textChanged.connect(self.getUser)
@@ -1848,6 +1848,7 @@ class errorMessage(QMainWindow):
 
         self.setWindowTitle("Connection Error")
         self.setGeometry(0, 0, 300, 300)
+
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
@@ -1864,8 +1865,19 @@ class errorMessage(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
+if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
 app = QApplication([])
-app.setStyle('Fusion')
+
+if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+    app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
 app.setStyleSheet("""
     
@@ -1893,6 +1905,9 @@ app.setStyleSheet("""
         border: 1px solid #2d683a;
     }
 """)
+
+app.setStyle('Fusion')
+
 
 socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socketOpen.settimeout(2)
