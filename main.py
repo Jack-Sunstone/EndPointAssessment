@@ -998,19 +998,21 @@ class unitManagement(QWidget):
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
 
-        self.unitName = QLabel("Placeholder")
+        self.unitName = QLabel("")
 
         layout.addWidget(self.unitName,1,0)
 
         self.locationEdit = QLineEdit()
         self.locationEdit.setPlaceholderText("Location")
         self.locationEdit.textChanged.connect(self.getUpdatedLocation)
+        self.locationEdit.hide()
 
         layout.addWidget(self.locationEdit, 1, 1)
 
         self.companyEdit = QLineEdit()
         self.companyEdit.setPlaceholderText("Company")
         self.companyEdit.textChanged.connect(self.getUpdatedCompany)
+        self.companyEdit.hide()
 
         layout.addWidget(self.companyEdit, 1, 2)
 
@@ -1018,6 +1020,7 @@ class unitManagement(QWidget):
         self.numCameras.setMinimum(1)
         self.numCameras.setMaximum(4)
         self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
+        self.numCameras.hide()
 
         layout.addWidget(self.numCameras, 1, 3)
 
@@ -1177,10 +1180,14 @@ class unitManagement(QWidget):
             self.selectedCompany = altered[3]
             self.selectedCameras = str(altered[4])
 
+        self.locationEdit.show()
+        self.companyEdit.show()
+        self.numCameras.show()
+
         self.unitName.setText(self.selectedUnit)
         self.locationEdit.setText(self.selectedLocation)
         self.companyEdit.setText(self.selectedCompany)
-        self.numCameras.setText(self.selectedCameras)
+        self.numCameras.setSpecialValueText(self.selectedCameras)
 
     def changeUnit(self):
 
