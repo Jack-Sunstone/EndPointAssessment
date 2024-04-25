@@ -33,6 +33,8 @@ unitVoltage = ""
 unitLoad = ""
 formattedLoad = ""
 
+username  = ""
+
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
@@ -1363,8 +1365,11 @@ class userManagement(QWidget):
 
     def deleteUser(self):
 
-        SQL.deleteUsers(self.selectedUser)
-        self.errorMessage.setText("User Deleted")
+        if username == self.selectedUser:
+            self.errorMessage.setText("You cannot delete your own account")
+        else:
+            SQL.deleteUsers(self.selectedUser)
+            self.errorMessage.setText("User Deleted")
 
     def addUser(self):
         checkUsername = SQL.checkUsername(self.newUsername)
@@ -1837,6 +1842,7 @@ class loginUI(QMainWindow):
 
     def getUser(self, Username):
         global username
+        username = Username
         self.username = Username
         self.errorMessage.hide()
 
