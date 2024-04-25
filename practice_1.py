@@ -1,6 +1,6 @@
-name = "ARB0019"
+name = "0.0.0.12"
 
-if "ARC" in name or "IO" in name:
+if len(name) >= 8:
     print("Correct")
 else:
     print("nob")
