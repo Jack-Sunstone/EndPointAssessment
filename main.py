@@ -222,7 +222,7 @@ class CameraWidget(QWidget):
 class allCamerasView(QWidget):
     def __init__(self):
 
-        cameraIcon = resourcePath("Assets/Images/CCTV.png")
+        cameraIcon = resourcePath("Assets/Images/CCTV.png") #importing camera Icon
 
         super().__init__()
 
