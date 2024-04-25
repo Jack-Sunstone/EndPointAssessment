@@ -1,6 +1,6 @@
-name = "0.0.0.12"
+name = "Axsis"
 
-if len(name) >= 8:
+if name.lower() in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
     print("Correct")
 else:
     print("nob")
