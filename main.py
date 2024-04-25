@@ -1167,21 +1167,23 @@ class unitManagement(QWidget):
         checkUnit = SQL.checkUnit(self.newUnitName)
 
         if checkUnit is None:
-
-            if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType) if x == ""]:
-                SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
-                self.errorMessage.setText("Unit Added")
-                self.unitNameAdd.setText("")
-                self.locationAdd.setText("")
-                self.companyAdd.setText("")
-                self.cameratypeAdd.setText("")
-                self.IPAdd.setText("")
-                self.victronAdd.setText("")
-                self.efoyAdd.setText("")
-                self.latAdd.setText("")
-                self.lonAdd.setText("")
+            if "ARC" in self.newUnitName or "IO" in self.newUnitName:
+                if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType) if x == ""]:
+                    SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
+                    self.errorMessage.setText("Unit Added")
+                    self.unitNameAdd.setText("")
+                    self.locationAdd.setText("")
+                    self.companyAdd.setText("")
+                    self.cameratypeAdd.setText("")
+                    self.IPAdd.setText("")
+                    self.victronAdd.setText("")
+                    self.efoyAdd.setText("")
+                    self.latAdd.setText("")
+                    self.lonAdd.setText("")
+                else:
+                    self.errorMessage.setText("One or All Field Is Empty")
             else:
-                self.errorMessage.setText("One or All Field Is Empty")
+                self.errorMessage.setText("Unit Name Incorrect")
         else:
 
             self.errorMessage.setText("Unit already in database")
