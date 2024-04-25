@@ -228,6 +228,7 @@ class allCamerasView(QWidget):
 
         self.setWindowTitle("View All Cameras")
         self.setGeometry(0, 0, 1280, 720)
+        self.setFixedSize(1280,720)
         self.setWindowIcon(QIcon(cameraIcon))
         self.setWindowIconText("Camera")
 
