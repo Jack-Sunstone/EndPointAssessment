@@ -1,6 +1,6 @@
-name = "Axsis"
+name = "3"
 
-if name.lower() in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+if int(name) >= 1 and int(name) <= 4:
     print("Correct")
 else:
     print("nob")

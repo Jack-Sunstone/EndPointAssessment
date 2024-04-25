@@ -1016,9 +1016,7 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.companyEdit, 1, 2)
 
-        self.numCameras = QSpinBox()
-        self.numCameras.setMinimum(1)
-        self.numCameras.setMaximum(4)
+        self.numCameras = QLineEdit()
         self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
         self.numCameras.hide()
 
@@ -1030,6 +1028,7 @@ class unitManagement(QWidget):
         layout.addWidget(changeButton,2,0,1,2)
 
         deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUnit)
 
         layout.addWidget(deleteButton, 2, 2,1,2)
 
@@ -1187,12 +1186,14 @@ class unitManagement(QWidget):
         self.unitName.setText(self.selectedUnit)
         self.locationEdit.setText(self.selectedLocation)
         self.companyEdit.setText(self.selectedCompany)
-        self.numCameras.setSpecialValueText(self.selectedCameras)
+        self.numCameras.setText(self.selectedCameras)
 
     def changeUnit(self):
-
-        SQL.updateUnit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
-        self.errorMessage.setText("Unit Updated")
+        if int(self.selectedCameras) >= 1 and int(self.selectedCameras) <= 4:
+            SQL.updateUnit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
+            self.errorMessage.setText("Unit Updated")
+        else:
+            self.errorMessage.setText("Number of Cameras should be between 1-4")
 
     def deleteUnit(self):
         SQL.deleteUnits(self.selectedUnit)
