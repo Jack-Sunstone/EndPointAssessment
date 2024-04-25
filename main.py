@@ -986,8 +986,9 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.companyEdit, 1, 2)
 
-        self.numCameras = QLineEdit()
-        self.numCameras.setPlaceholderText("Number of Cameras")
+        self.numCameras = QSpinBox()
+        self.numCameras.setMinimum(1)
+        self.numCameras.setMaximum(4)
         self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
 
         layout.addWidget(self.numCameras, 1, 3)
@@ -1024,8 +1025,9 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.companyAdd,4,2)
 
-        self.numCamerasAdd = QLineEdit()
-        self.numCamerasAdd.setPlaceholderText("Number of Cameras")
+        self.numCamerasAdd = QSpinBox()
+        self.numCamerasAdd.setMinimum(1)
+        self.numCamerasAdd.setMaximum(4)
         self.numCamerasAdd.textChanged.connect(self.getNewNumCCTV)
 
         layout.addWidget(self.numCamerasAdd,4,3)
@@ -1172,7 +1174,6 @@ class unitManagement(QWidget):
                 self.unitNameAdd.setText("")
                 self.locationAdd.setText("")
                 self.companyAdd.setText("")
-                self. numCamerasAdd.setText("")
                 self.cameratypeAdd.setText("")
                 self.IPAdd.setText("")
                 self.victronAdd.setText("")
@@ -1904,10 +1905,17 @@ app.setStyleSheet("""
         background-color: #358446;
         border: 1px solid #2d683a;
     }
+    QSpinBox {
+        border: 1px solid #e0e4e7;
+        background-color: #c8eacf;
+        color: #0e2515;
+        padding: 5px 15px; 
+    
+    }
+    
 """)
 
 app.setStyle('Fusion')
-
 
 socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socketOpen.settimeout(2)
