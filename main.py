@@ -321,6 +321,29 @@ class allCamerasView(QWidget):
 
         self.close()
 
+        if str(selectedUnitType) == "ARC":
+            getVictronValues()
+
+            self.openARCDashboard = arcDashboard()
+            self.openARCDashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openARCDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openARCDashboard.move(Geo.topLeft())
+
+            self.hide()
+        elif str(selectedUnitType) == "IO":
+            self.openIODashboard = ioDashboard()
+            self.openIODashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openIODashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openIODashboard.move(Geo.topLeft())
+
+            self.hide()
+
 class ioDashboard(QWidget):
     def __init__(self):
 
@@ -474,6 +497,8 @@ class ioDashboard(QWidget):
         self.setLayout(layout)
 
     def viewAllCameras(self):
+
+        self.hide()
 
         self.allCameras = allCamerasView()
         self.allCameras.show()
@@ -806,6 +831,8 @@ class arcDashboard(QWidget):
 
     def viewAllCameras(self):
 
+        self.hide()
+
         self.allCameras = allCamerasView()
         self.allCameras.show()
 
@@ -813,6 +840,7 @@ class arcDashboard(QWidget):
         Geo = self.allCameras.frameGeometry()
         Geo.moveCenter(Center)
         self.allCameras.move(Geo.topLeft())
+
 
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
