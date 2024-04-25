@@ -1282,11 +1282,13 @@ class userManagement(QWidget):
         self.passwordLineEdit = QLineEdit()
         self.passwordLineEdit.setPlaceholderText("Password")
         self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        self.passwordLineEdit.hide()
 
         layout.addWidget(self.passwordLineEdit,1,1,1,2)
 
         changeButton = QPushButton("Change Details")
         changeButton.clicked.connect(self.changeUser)
+
 
         layout.addWidget(changeButton,2,1)
 
@@ -1347,6 +1349,8 @@ class userManagement(QWidget):
         self.selectedUser = self.listOfUsers[index]
 
         self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+
+        self.passwordLineEdit.show()
 
         self.usernameLabel.setText(self.selectedUser)
         self.passwordLineEdit.setText(self.selectedPassword)
