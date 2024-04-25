@@ -1,76 +1,12 @@
 import sys
 import os
-import webbrowser
-import cv2
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
-import SQL
-import requests
-import json
-from threading import *
-import socket
-import plotly.graph_objects as go
-from collections import deque
-import time
 
-selectedUnit = ""
-selectedIP = ""
-selectedVictron = ""
-selectedCompany = ""
-selectedCCTV = ""
-selectedUnitType = ""
-selectedCamera = ""
-selectedEfoyID = ""
-
-userRights = ""
-
-unitSolar = ""
-formattedSolar = ""
-unitVoltage = ""
-unitLoad = ""
-formattedLoad = ""
-
-sunstonePassword = "(10GIN$t0n3)"
-wjPassword = "12Sunstone34"
-
-mapboxAccessToken = open(".mapbox_token").read()
-
-def axisPath(password,IPaddress, cameraNumber):
-
-    Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
-
-    return Axis
-
-def hikPath(IPaddress, cameraNumber):
-
-    Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
-
-    return Hik
-
-def hanwhaPath(password, IPaddress, cameraNumber):
-
-    Hanwha = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/profile2/media.smp"
-
-    return Hanwha
-
-def cameraOne(cap):
-    cap = cv2.VideoCapture(str(cap))
-    if cap is None or not cap.isOpened():
-        print("Camera Not Available")
-    else:
-        while (True):
-            ret, Cam1 = cap.read()
-            cv2.imshow("Camera Live View", Cam1)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-def threading1Camera(cameraURL):
-    thread1 = Thread(target=cameraOne, args=(cameraURL,))
-    thread1.start()
-    thread1.join()
-    cv2.destroyAllWindows()
+username =  ""
+password =  ""
 
 def resourcePath(relativePath):
     try:
@@ -80,265 +16,24 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
-def checkURL(IPAddress, Port, Timeout):
-    socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    socketOpen.settimeout(Timeout)
-    try:
-        socketOpen.connect((IPAddress, Port))
-    except:
-        return 0
-    else:
-        socketOpen.close()
-        return 1
+logoPath = resourcePath("Assets/Images/sunstone.png")
 
-def getVictronValues():
-    if selectedVictron == None:
-        pass
-    else:
-        global unitSolar
-        global unitVoltage
-        global unitLoad
-        global formattedLoad
-        global formattedSolar
+cameraPath = resourcePath("Assets/Images/CCTV.png")
 
-        # Defining login details to access Sites
-        login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
-        login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
-        # Stores and loads Json request to the login URL
-        response = requests.post(login_url, login_string)
-        token = json.loads(response.text).get("token")
-        headers = {"X-Authorization": 'Bearer ' + token}
+sunPath = resourcePath("Assets/Images/Sun.png")
 
-        diags_url = "https://vrmapi.victronenergy.com/v2/installations/{}/diagnostics?count=1000".format(selectedVictron)
-        response = requests.get(diags_url, headers=headers)
-        data = response.json().get("records")
+batteryPath = resourcePath("Assets/Images/fullBattery.png")
 
-        unitSolar = str([element['rawValue'] for element in data if element['code'] == "PVP"][0])
-        formattedSolar = str([element['formattedValue'] for element in data if element['code'] == "PVP"][0])
-
-        unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
-
-        unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
-        formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
-
-class CameraWidget(QWidget):
-
-    def __init__(self, Width, Height, streamLink=0):
-        super(CameraWidget, self).__init__()
-
-        self.Deque = deque(maxlen=1)
-
-        self.screenWidth = Width - 16
-        self.screenHeight = Height - 16
-
-
-        self.cameraStreamLink = streamLink
-
-        self.Online = False
-        self.Capture = None
-        self.videoFrame = QLabel()
-
-        self.loadNetworkStream()
-
-        self.getFrameThread = Thread(target=self.getFrame, args=())
-        self.getFrameThread.daemon = True
-        self.getFrameThread.start()
-
-        self.Timer = QTimer()
-        self.Timer.timeout.connect(self.setFrame)
-        self.Timer.start(.5)
-
-    def loadNetworkStream(self):
-
-        def loadNetworkStreamThread():
-            if self.verifyNetworkStream(self.cameraStreamLink):
-                self.Capture = cv2.VideoCapture(self.cameraStreamLink)
-                self.Online = True
-
-        self.loadStreamThread = Thread(target=loadNetworkStreamThread, args=())
-        self.loadStreamThread.daemon = True
-        self.loadStreamThread.start()
-
-    def verifyNetworkStream(self, Link):
-        #Attempts to get a frame from the given RTSP Stream
-
-        Cap = cv2.VideoCapture(Link)
-        if not Cap.isOpened():
-            return False
-        Cap.release()
-        return True
-
-    def getFrame(self):
-        #Function reads the frame -> resizes and then converts the image stored to a pixmap to be used in window
-
-        while True:
-            try:
-                if self.Capture.isOpened() and self.Online:
-                    # Read next frame from stream and insert into deque
-                    Status, Frame = self.Capture.read()
-                    if Status:
-                        self.Deque.append(Frame)
-                    else:
-                        self.Capture.release()
-                        self.Online = False
-                else:
-                    # Attempt to reconnect
-                    print('attempting to reconnect', self.cameraStreamLink)
-                    self.loadNetworkStream()
-                    self.Spin(2)
-                self.Spin(.001)
-            except AttributeError:
-                pass
-
-    def Spin(self, seconds):
-        #Pauses stream so program stays alive
-
-        timeEnd = time.time() + seconds
-        while time.time() < timeEnd:
-            QApplication.processEvents()
-
-    def setFrame(self):
-        #setting Pixmap Image to a video frame
-
-        if not self.Online:
-            self.Spin(1)
-            return
-
-        if self.Deque and self.Online:
-            # Grab latest frame
-            Frame = self.Deque[-1]
-
-            self.Frame = cv2.resize(Frame, (self.screenWidth, self.screenHeight))
-
-            # Convert to pixmap and set to video frame
-            self.Image = QImage(self.Frame, self.Frame.shape[1], self.Frame.shape[0],QImage.Format_RGB888).rgbSwapped()
-            self.Pixmap = QPixmap.fromImage(self.Image)
-            self.videoFrame.setPixmap(self.Pixmap)
-
-    def getVideoFrame(self):
-        return self.videoFrame
-
-class allCamerasView(QWidget):
-    def __init__(self):
-
-        cameraIcon = resourcePath("Assets/Images/CCTV.png")
-
-        super().__init__()
-
-        self.setWindowTitle("View All Cameras")
-        self.setGeometry(0, 0, 1280, 720)
-        self.setWindowIcon(QIcon(cameraIcon))
-        self.setWindowIconText("Camera")
-
-        layout = QGridLayout()
-
-        if selectedCamera.lower() == "axis":
-
-            if selectedCCTV == 4:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
-                cameraFourLink = axisPath(sunstonePassword, selectedIP, 4)
-
-
-            if selectedCCTV == 3:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
-
-            if selectedCCTV == 2:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
-
-        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
-
-            if selectedCCTV == 4:
-                cameraOneLink = hikPath(selectedIP, 1)
-                cameraTwoLink = hikPath(selectedIP, 2)
-                cameraThreeLink = hikPath(selectedIP, 3)
-                cameraFourLink = hikPath(selectedIP, 4)
-
-            if selectedCCTV == 3:
-                cameraOneLink = hikPath(selectedIP, 1)
-                cameraTwoLink = hikPath(selectedIP, 2)
-                cameraThreeLink = hikPath(selectedIP, 3)
-
-            if selectedCCTV == 2:
-                cameraOneLink = hikPath(selectedIP, 1)
-                cameraTwoLink = hikPath(selectedIP, 2)
-
-        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
-
-            if selectedCCTV == 4:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
-                cameraFourLink = hanwhaPath(sunstonePassword, selectedIP, 4)
-
-            if selectedCCTV == 3:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
-
-            if selectedCCTV == 2:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
-
-        if selectedCCTV == 4:
-            self.cameraOne = CameraWidget(640,360, cameraOneLink)
-            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
-            self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
-            self.cameraFour = CameraWidget(640, 360, cameraFourLink)
-
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
-            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
-            layout.addWidget(self.cameraFour.getVideoFrame(), 1, 1, 1, 1)
-
-        elif selectedCCTV == 3:
-            self.cameraOne = CameraWidget(640, 360, cameraOneLink)
-            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
-            self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
-
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
-            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
-
-        elif selectedCCTV == 2:
-            self.cameraOne = CameraWidget(640, 360, cameraOneLink)
-            self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
-
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
-
-        self.setLayout(layout)
-
-    def closeEvent(self, event):
-
-        for camera in [self.cameraOne, self.cameraTwo, self.cameraThree, self.cameraFour][:selectedCCTV]:
-            camera.close()
-
-        self.close()
+loadPath = resourcePath("Assets/Images/Load.png")
 
 class ioDashboard(QWidget):
     def __init__(self):
-
-        ioBoxIcon = resourcePath("Assets/Images/IOBox.png")
-        cameraPath = resourcePath("Assets/Images/CCTV.png")
-
-
         super().__init__()
 
         self.setWindowTitle("IO Box Dashboard")
         self.setGeometry(0,0,760,200)
-        self.setWindowIcon(QIcon(ioBoxIcon))
-        self.setWindowIconText("IO Box")
 
         layout = QGridLayout()
-
-        unitLabel = QLabel(selectedUnit)
-        unitLabel.setStyleSheet("font: bold 14px;")
-        unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         pixmap = QPixmap(cameraPath)
 
@@ -346,653 +41,190 @@ class ioDashboard(QWidget):
         self.allCameras.setPixmap(pixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.allCamerasButton = QPushButton("All Cameras")
-        self.allCamerasButton.clicked.connect(self.viewAllCameras)
+        allCamerasButton = QPushButton("All Cameras")
+
+        layout.addWidget(self.allCameras, 0, 0)
+        layout.addWidget(allCamerasButton,1,0)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera1Button = QPushButton("Camera 1")
-        self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
+        camera1Button = QPushButton("Camera 1")
+
+        layout.addWidget(self.Camera1, 0, 1)
+        layout.addWidget(camera1Button, 1, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera2Button = QPushButton("Camera 2")
-        self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
+        camera2Button = QPushButton("Camera 2")
 
-        layout.addWidget(self.Camera2, 1, 2)
-        layout.addWidget(self.camera2Button, 2, 2)
+        layout.addWidget(self.Camera2, 0, 2)
+        layout.addWidget(camera2Button, 1, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(pixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera3Button = QPushButton("Camera 3")
-        self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
+        camera3Button = QPushButton("Camera 3")
 
-        layout.addWidget(self.Camera3, 1, 3)
-        layout.addWidget(self.camera3Button, 2, 3)
+        layout.addWidget(self.Camera3, 0, 3)
+        layout.addWidget(camera3Button, 1, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(pixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera4Button = QPushButton("Camera 4")
-        self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
+        camera4Button = QPushButton("Camera 4")
 
-        layout.addWidget(self.Camera4, 1, 4)
-        layout.addWidget(self.camera4Button, 2, 4)
+        layout.addWidget(self.Camera4, 0, 4)
+        layout.addWidget(camera4Button, 1, 4)
 
-        self.routerButton = QPushButton("Router Webpage")
-        self.routerButton.clicked.connect(self.openRouter)
+        routerButton = QPushButton("Router Webpage")
 
-        self.errorMessage = QLabel()
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        if selectedCCTV == 1:
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            self.Camera3.hide()
-            self.camera3Button.hide()
-
-            self.Camera2.hide()
-            self.camera2Button.hide()
-
-            self.allCameras.hide()
-            self.allCamerasButton.hide()
-
-            layout.addWidget(unitLabel, 0, 0)
-
-            layout.addWidget(self.Camera1, 1, 0)
-            layout.addWidget(self.camera1Button, 2, 0)
-
-            layout.addWidget(self.routerButton, 3, 0)
-
-            layout.addWidget(self.errorMessage,4, 0)
-
-        elif selectedCCTV == 2:
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            self.Camera3.hide()
-            self.camera3Button.hide()
-
-            layout.addWidget(unitLabel, 0, 2)
-
-            layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(self.allCamerasButton, 2, 0)
-
-            layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(self.camera1Button, 2, 1)
-
-            layout.addWidget(self.routerButton, 3, 1, 1, 1)
-
-            layout.addWidget(self.errorMessage, 4, 0)
-
-
-        elif selectedCCTV == 3:
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            layout.addWidget(unitLabel, 0, 0)
-
-            layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(self.allCamerasButton, 2, 0)
-
-            layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(self.camera1Button, 2, 1)
-
-            layout.addWidget(self.routerButton, 3, 1, 1, 2)
-
-            layout.addWidget(self.errorMessage, 4, 1, 1, 2)
-
-
-        else:
-
-            layout.addWidget(unitLabel, 0, 2)
-
-            layout.addWidget(self.allCameras, 1, 0)
-            layout.addWidget(self.allCamerasButton, 2, 0)
-
-            layout.addWidget(self.Camera1, 1, 1)
-            layout.addWidget(self.camera1Button, 2, 1)
-
-            layout.addWidget(self.routerButton, 3, 1, 1, 3)
-
-            layout.addWidget(self.errorMessage, 4, 2)
-
-        self.checkUnitStatus()
+        layout.addWidget(routerButton,2,1,1,3)
 
         self.setLayout(layout)
 
-    def viewAllCameras(self):
-
-        self.allCameras = allCamerasView()
-        self.allCameras.show()
-
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.allCameras.frameGeometry()
-        Geo.moveCenter(Center)
-        self.allCameras.move(Geo.topLeft())
-
-    def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera.lower() == "axis":
-            if selectedCompany.lower() == "wj":
-                cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(str(cameraURL))
-            else:
-                cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
-            cameraURL = hikPath(selectedIP, cameraNumber)
-            threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
-            if selectedCompany.lower() == "wj":
-                cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-            else:
-                cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-
-    def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
-        if status == 0:
-
-            cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
-
-            self.errorMessage.setText("Unit Offline")
-            self.errorMessage.setStyleSheet("color: red;"
-                                            "font: bold 14px;")
-
-            self.allCamerasButton.setEnabled(False)
-            self.camera1Button.setEnabled(False)
-            self.camera2Button.setEnabled(False)
-            self.camera3Button.setEnabled(False)
-            self.camera4Button.setEnabled(False)
-            self.routerButton.setEnabled(False)
-            self.allCameras.setPixmap(cameraPath)
-            self.Camera1.setPixmap(cameraPath)
-            self.Camera2.setPixmap(cameraPath)
-            self.Camera3.setPixmap(cameraPath)
-            self.Camera4.setPixmap(cameraPath)
-
-        else:
-            self.errorMessage.setText("Unit Online")
-            self.errorMessage.setStyleSheet("color: green;"
-                                            "font: bold 14px;")
-
-    def openRouter(self):
-        webbrowser.open(f"https://{selectedIP}:64430/")
-
-    def closeEvent(self, event):
-        if userRights == "ADMIN":
-            self.openMonitoring = adminMonitoring()
-            self.openMonitoring.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openMonitoring.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openMonitoring.move(Geo.topLeft())
-
-            self.hide()
-        elif userRights == "USER":
-            self.openMonitoring = userMonitoring()
-            self.openMonitoring.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openMonitoring.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openMonitoring.move(Geo.topLeft())
-
-            self.hide()
-
 class arcDashboard(QWidget):
     def __init__(self):
-        global unitVoltage
-        global unitLoad
-        global unitSolar
-
-        windowIcon = resourcePath("Assets/Images/ARCunit.png")
-        cameraPath = resourcePath("Assets/Images/CCTV.png")
-
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
-
-        if unitVoltage >= 25.5:
-            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
-        elif unitVoltage >= 24 and unitVoltage < 25.5:
-            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
-        elif unitVoltage < 24 and unitVoltage >= 23.6:
-            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
-        elif unitVoltage < 23.6:
-            self.batteryPath = resourcePath("Assets/Images/battery.png")
-
-        if unitLoad <= 0:
-            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
-        else:
-            self.loadPath = resourcePath("Assets/Images/Load.png")
-
-        if unitSolar >= 400:
-            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
-        elif unitSolar >= 200 and unitSolar < 400:
-            self.sunPath = resourcePath("Assets/Images/Sun.png")
-        elif unitSolar >= 100 and unitSolar < 200:
-            self.sunPath = resourcePath("Assets/Images/cloudy.png")
-        elif unitSolar < 100:
-            self.sunPath = resourcePath("Assets/Images/cloud.png")
-
         super().__init__()
 
         self.setWindowTitle("ARC Dashboard")
-        self.setGeometry(0,0,600,300)
-        self.setWindowIcon(QIcon(windowIcon))
-        self.setWindowIconText("ARC")
+        self.setGeometry(0,0,760,300)
 
         layout = QGridLayout()
 
-        unitLabel = QLabel(selectedUnit)
-        unitLabel.setStyleSheet("font: bold 14px;")
-        unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-
-        sunPixmap = QPixmap(self.sunPath)
-        batteryPixmap = QPixmap(self.batteryPath)
-        loadPixmap = QPixmap(self.loadPath)
+        sunPixmap = QPixmap(sunPath)
+        batteryPixmap = QPixmap(batteryPath)
+        loadPixmap = QPixmap(loadPath)
         cameraPixmap = QPixmap(cameraPath)
 
         self.sunImage = QLabel()
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.solarPower = QLabel(formattedSolar)
+        solarPower = QLabel("Placeholder")
+        solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-
-        layout.addWidget(self.sunImage, 1, 0)
-        layout.addWidget(self.solarPower, 1, 1)
+        layout.addWidget(self.sunImage, 0, 0)
+        layout.addWidget(solarPower, 0, 1)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+        batteryVoltage = QLabel("Placeholder")
+        batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-
-        layout.addWidget(self.batteryImage, 2, 0)
-        layout.addWidget(self.batteryVoltage, 2, 1)
+        layout.addWidget(self.batteryImage, 1, 0)
+        layout.addWidget(batteryVoltage, 1, 1)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.loadDraw = QLabel(formattedLoad)
+        loadDraw = QLabel("Placeholder")
+        loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.loadImage, 3, 0)
-        layout.addWidget(self.loadDraw, 3, 1)
+        layout.addWidget(self.loadImage, 2, 0)
+        layout.addWidget(loadDraw, 2, 1)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.allCamerasButton = QPushButton("All Cameras")
-        self.allCamerasButton.clicked.connect(self.viewAllCameras)
+        allCamerasButton = QPushButton("All Cameras")
+
+        layout.addWidget(self.allCameras, 3, 0)
+        layout.addWidget(allCamerasButton, 4, 0)
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera1Button = QPushButton("Camera 1")
-        self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
+        camera1Button = QPushButton("Camera 1")
 
+        layout.addWidget(self.Camera1, 3, 1)
+        layout.addWidget(camera1Button, 4, 1)
 
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(cameraPixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera2Button = QPushButton("Camera 2")
-        self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
+        camera2Button = QPushButton("Camera 2")
 
-        layout.addWidget(self.Camera2, 4, 2)
-        layout.addWidget(self.camera2Button, 5, 2)
+        layout.addWidget(self.Camera2, 3, 2)
+        layout.addWidget(camera2Button, 4, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(cameraPixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera3Button = QPushButton("Camera 3")
-        self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
+        camera3Button = QPushButton("Camera 3")
 
-        layout.addWidget(self.Camera3, 4, 3)
-        layout.addWidget(self.camera3Button, 5, 3)
+        layout.addWidget(self.Camera3, 3, 3)
+        layout.addWidget(camera3Button, 4, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(cameraPixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.camera4Button = QPushButton("Camera 4")
-        self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
+        camera4Button = QPushButton("Camera 4")
 
-        layout.addWidget(self.Camera4, 4, 4)
-        layout.addWidget(self.camera4Button, 5, 4)
+        layout.addWidget(self.Camera4, 3, 4)
+        layout.addWidget(camera4Button, 4, 4)
 
         victronButton = QPushButton("Victron Webpage")
-        victronButton.clicked.connect(self.openVictron)
 
-        self.routerButton = QPushButton("Router Webpage")
-        self.routerButton.clicked.connect(self.openRouter)
+        layout.addWidget(victronButton, 5, 1)
+
+        routerButton = QPushButton("Router Webpage")
+
+        layout.addWidget(routerButton, 5, 2)
 
         efoyButton = QPushButton("Efoy Webpage")
-        efoyButton.clicked.connect(self.openEfoy)
 
-        self.errorMessage = QLabel()
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        if selectedCCTV == 1:
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            self.Camera3.hide()
-            self.camera3Button.hide()
-
-            self.Camera2.hide()
-            self.camera2Button.hide()
-
-            self.allCameras.hide()
-            self.allCamerasButton.hide()
-
-            layout.addWidget(unitLabel, 0, 1)
-
-            layout.addWidget(self.Camera1, 4,0)
-            layout.addWidget(self.camera1Button,5, 0)
-
-            layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(self.routerButton, 6, 1)
-            layout.addWidget(efoyButton, 6, 2)
-
-            layout.addWidget(self.errorMessage, 7, 1)
-
-        elif selectedCCTV == 2:
-
-            layout.addWidget(unitLabel, 0, 2)
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            self.Camera3.hide()
-            self.camera3Button.hide()
-
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton,5, 0)
-
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
-
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(self.routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
-
-            layout.addWidget(self.errorMessage, 7, 1)
-
-        elif selectedCCTV == 3:
-
-            layout.addWidget(unitLabel, 0, 2)
-
-            self.Camera4.hide()
-            self.camera4Button.hide()
-
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton, 5, 0)
-
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
-
-            layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(self.routerButton, 6, 1)
-            layout.addWidget(efoyButton, 6, 2)
-
-            layout.addWidget(self.errorMessage, 7, 0)
-
-        else:
-
-            layout.addWidget(unitLabel, 0, 2)
-
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton, 5, 0)
-
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
-
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(self.routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
-
-            layout.addWidget(self.errorMessage, 7, 2)
-
-        self.checkUnitStatus()
+        layout.addWidget(efoyButton, 5, 3)
 
         self.setLayout(layout)
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.updateData)
-        self.timer.start(30000)
-
-    def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera.lower() == "axis":
-            if selectedCompany.lower() == "wj":
-                cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(str(cameraURL))
-            else:
-                cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
-            cameraURL = hikPath(selectedIP, cameraNumber)
-            threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
-            if selectedCompany.lower() == "wj":
-                cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-            else:
-                cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-
-    def viewAllCameras(self):
-
-        self.allCameras = allCamerasView()
-        self.allCameras.show()
-
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.allCameras.frameGeometry()
-        Geo.moveCenter(Center)
-        self.allCameras.move(Geo.topLeft())
-
-    def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
-        if status == 0:
-
-            cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
-
-            self.errorMessage.setText("Unit Offline")
-            self.errorMessage.setStyleSheet("color: red;"
-                                            "font: bold 14px;")
-
-            self.allCamerasButton.setEnabled(False)
-            self.camera1Button.setEnabled(False)
-            self.camera2Button.setEnabled(False)
-            self.camera3Button.setEnabled(False)
-            self.camera4Button.setEnabled(False)
-            self.routerButton.setEnabled(False)
-
-            self.allCameras.setPixmap(cameraPath)
-            self.Camera1.setPixmap(cameraPath)
-            self.Camera2.setPixmap(cameraPath)
-            self.Camera3.setPixmap(cameraPath)
-            self.Camera4.setPixmap(cameraPath)
-
-        else:
-            self.errorMessage.setText("Unit Online")
-            self.errorMessage.setStyleSheet("color: green;"
-                                            "font: bold 14px;")
-
-    def updateData(self):
-        global unitVoltage
-        global unitLoad
-        global unitSolar
-        global formattedLoad
-        global formattedSolar
-
-        getVictronValues()
-
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
-
-        self.batteryVoltage.setText(str(unitVoltage) + " V")
-        self.loadDraw.setText(formattedLoad)
-        self.solarPower.setText(formattedSolar)
-
-        if unitVoltage >= 25.5:
-            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
-            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
-        elif unitVoltage >= 24 and unitVoltage < 25.5:
-            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
-            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
-        elif unitVoltage < 24 and unitVoltage >= 23.6:
-            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
-            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
-        elif unitVoltage < 23.6:
-            self.batteryPath = resourcePath("Assets/Images/battery.png")
-            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
-
-        if unitLoad <= 0:
-            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
-            self.loadImage.setPixmap(QPixmap(self.loadPath))
-        else:
-            self.loadPath = resourcePath("Assets/Images/Load.png")
-            self.loadImage.setPixmap(QPixmap(self.loadPath))
-
-        if unitSolar >= 400:
-            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
-            self.sunImage.setPixmap(QPixmap(self.sunPath))
-        elif unitSolar >= 200 and unitSolar < 400:
-            self.sunPath = resourcePath("Assets/Images/Sun.png")
-            self.sunImage.setPixmap(QPixmap(self.sunPath))
-        elif unitSolar >= 100 and unitSolar < 200:
-            self.sunPath = resourcePath("Assets/Images/cloudy.png")
-            self.sunImage.setPixmap(QPixmap(self.sunPath))
-        elif unitSolar < 100:
-            self.sunPath = resourcePath("Assets/Images/cloud.png")
-            self.sunImage.setPixmap(QPixmap(self.sunPath))
-
-
-    def openVictron(self):
-        webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
-
-    def openRouter(self):
-        webbrowser.open(f"https://{selectedIP}:64430/")
-
-    def openEfoy(self):
-        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
-
-    def closeEvent(self, event):
-        if userRights == "ADMIN":
-            self.openMonitoring = adminMonitoring()
-            self.openMonitoring.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openMonitoring.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openMonitoring.move(Geo.topLeft())
-
-            self.hide()
-        elif userRights == "USER":
-            self.openMonitoring = userMonitoring()
-            self.openMonitoring.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openMonitoring.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openMonitoring.move(Geo.topLeft())
-
-            self.hide()
-
 class unitManagement(QWidget):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        self.listOfUnits = []
-
-        fetchUnits = SQL.fetchUnits()
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
-
-        #Current Selected Unit
-        self.selectedUnit = ""
-        self.selectedLocation = ""
-        self.selectedCompany = ""
-        self.selectedCameras = ""
-
-        #Add new Unit
-        self.newUnitName = ""
-        self.newCameraType = ""
-        self.newIP = ""
-        self.newVictronID = ""
-        self.newEfoy = ""
-        self.newLocation = ""
-        self.NoCCTV = ""
-        self.newCompany = ""
-        self.newLat = ""
-        self.newLon = ""
-        self.newUnitType = ""
-
         super().__init__()
 
         self.setWindowTitle("Unit Mangement")
-        self.setGeometry(0, 0, 650, 300)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
+        self.setGeometry(0, 0, 600, 300)
 
         layout = QGridLayout()
 
         unitManagementDropdown = QComboBox()
-        unitManagementDropdown.addItems(self.listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
-        unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
 
-        self.unitName = QLabel("Placeholder")
+        unitName = QLabel("Placeholder")
 
-        layout.addWidget(self.unitName,1,0)
+        layout.addWidget(unitName,1,0)
 
-        self.locationEdit = QLineEdit()
-        self.locationEdit.setPlaceholderText("Location")
-        self.locationEdit.textChanged.connect(self.getUpdatedLocation)
+        locationEdit = QLineEdit()
+        locationEdit.setPlaceholderText("Unit Location")
 
-        layout.addWidget(self.locationEdit, 1, 1)
+        layout.addWidget(locationEdit, 1, 1)
 
-        self.companyEdit = QLineEdit()
-        self.companyEdit.setPlaceholderText("Company")
-        self.companyEdit.textChanged.connect(self.getUpdatedCompany)
+        companyEdit = QLineEdit()
+        companyEdit.setPlaceholderText("Company")
 
-        layout.addWidget(self.companyEdit, 1, 2)
+        layout.addWidget(companyEdit, 1, 2)
 
-        self.numCameras = QLineEdit()
-        self.numCameras.setPlaceholderText("Number of Cameras")
-        self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
+        numCameras = QLineEdit()
+        numCameras.setPlaceholderText("Number of Cameras")
 
-        layout.addWidget(self.numCameras, 1, 3)
+        layout.addWidget(numCameras, 1, 3)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUnit)
 
         layout.addWidget(changeButton,2,0,1,2)
 
@@ -1005,250 +237,93 @@ class unitManagement(QWidget):
 
         layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
 
-        self.unitNameAdd = QLineEdit()
-        self.unitNameAdd.setPlaceholderText("Unit ID")
-        self.unitNameAdd.textChanged.connect(self.getNewUnitName)
+        unitNameAdd = QLineEdit()
+        unitNameAdd.setPlaceholderText("Unit ID")
 
-        layout.addWidget(self.unitNameAdd,4,0)
+        layout.addWidget(unitNameAdd,4,0)
 
-        self.locationAdd = QLineEdit()
-        self.locationAdd.setPlaceholderText("Location")
-        self.locationAdd.textChanged.connect(self.getNewLocation)
+        locationAdd = QLineEdit()
+        locationAdd.setPlaceholderText("Location")
 
-        layout.addWidget(self.locationAdd,4,1)
+        layout.addWidget(locationAdd,4,1)
 
-        self.companyAdd = QLineEdit()
-        self.companyAdd.setPlaceholderText("Company")
-        self.companyAdd.textChanged.connect(self.getNewCompany)
+        companyAdd = QLineEdit()
+        companyAdd.setPlaceholderText("Company")
 
-        layout.addWidget(self.companyAdd,4,2)
+        layout.addWidget(companyAdd,4,2)
 
-        self.numCamerasAdd = QLineEdit()
-        self.numCamerasAdd.setPlaceholderText("Number of Cameras")
-        self.numCamerasAdd.textChanged.connect(self.getNewNumCCTV)
+        numCamerasAdd = QLineEdit()
+        numCamerasAdd.setPlaceholderText("Number of Cameras")
 
-        layout.addWidget(self.numCamerasAdd,4,3)
+        layout.addWidget(numCamerasAdd,4,3)
 
-        self.cameratypeAdd = QLineEdit()
-        self.cameratypeAdd.setPlaceholderText("Camera Manufacturer")
-        self.cameratypeAdd.textChanged.connect(self.getCameraType)
+        voltageAdd = QLineEdit()
+        voltageAdd.setPlaceholderText("Unit Voltage")
 
-        layout.addWidget(self.cameratypeAdd, 5, 0)
-
-        self.IPAdd = QLineEdit()
-        self.IPAdd.setPlaceholderText("IP Address")
-        self.IPAdd.textChanged.connect(self.getNewIP)
-
-        layout.addWidget(self.IPAdd,5,1)
+        layout.addWidget(voltageAdd,5,0)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC","IO"])
-        unitType.currentIndexChanged.connect(self.getNewUnitType)
+        unitType.currentIndexChanged.connect(self.getUnitType)
 
-        layout.addWidget(unitType,5,2)
+        layout.addWidget(unitType,5,1)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
-        self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd,5,3)
-
-        self.efoyAdd = QLineEdit()
-        self.efoyAdd.setPlaceholderText("Efoy ID")
-        self.efoyAdd.textChanged.connect(self.getNewEfoy)
-
-        layout.addWidget(self.efoyAdd,6,0)
-
-        self.latAdd = QLineEdit("")
-        self.latAdd.setPlaceholderText("Latitude")
-        self.latAdd.textChanged.connect(self.getNewLat)
-
-        layout.addWidget(self.latAdd,6,1)
-
-        self.lonAdd = QLineEdit("")
-        self.lonAdd.setPlaceholderText("Longitude")
-        self.lonAdd.textChanged.connect(self.getNewLon)
-
-        layout.addWidget(self.lonAdd,6,2)
+        layout.addWidget(self.victronAdd,5,2)
 
         addUnit = QPushButton("Add New Unit")
-        addUnit.clicked.connect(self.addNewUnit)
 
-        layout.addWidget(addUnit,7,0,1,4)
-
-        self.errorMessage = QLabel("")
-        self.errorMessage.setStyleSheet("color: red")
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
-
+        layout.addWidget(addUnit,6,0,1,4)
         self.setLayout(layout)
 
-    def getUpdatedLocation(self, Location):
-        self.selectedLocation = Location
-
-    def getUpdatedCompany(self, Company):
-        self.selectedCompany = Company
-
-    def getUpdatedNumCCTV(self, CCTV):
-        self.selectedCameras = CCTV
-
-    def getNewUnitName(self,Name):
-        self.newUnitName = Name
-
-    def getNewLocation(self, Location):
-        self.newLocation = Location
-
-    def getNewCompany(self, Company):
-        self.newCompany = Company
-
-    def getNewNumCCTV(self, Number):
-        self.NoCCTV = Number
-
-    def getCameraType(self, Type):
-        self.newCameraType = Type
-
-    def getNewIP(self,IPADDRESS):
-        self.newIP = IPADDRESS
-
-    def getNewUnitType(self, unitIndex):
+    def getUnitType(self, unitIndex):
         if unitIndex == 0:
-            self.newUnitType = "ARC"
             self.victronAdd.show()
-            self.efoyAdd.show()
         elif unitIndex == 1:
-            self.newUnitType = "IO"
             self.victronAdd.hide()
-            self.efoyAdd.hide()
-
-    def getNewVictronID(self,ID):
-        self.newVictronID = ID
-
-    def getNewEfoy(self, EFOY):
-        self.newEfoy = EFOY
-
-    def getNewLat(self,Lat):
-        self.newLat = Lat
-
-    def getNewLon(self,Lon):
-        self.newLon = Lon
-
-    def unitChanged(self, index):
-
-        self.selectedUnit = self.listOfUnits[index]
-
-        data = SQL.fetchUnitDetails(self.selectedUnit)
-
-        for row in data:
-            altered = list(row)
-            self.selectedLocation = altered[2]
-            self.selectedCompany = altered[3]
-            self.selectedCameras = str(altered[4])
-
-        self.unitName.setText(self.selectedUnit)
-        self.locationEdit.setText(self.selectedLocation)
-        self.companyEdit.setText(self.selectedCompany)
-        self.numCameras.setText(self.selectedCameras)
-
-    def changeUnit(self):
-
-        SQL.updateUnit(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras)
-        self.errorMessage.setText("Unit Updated")
-
-    def deleteUnit(self):
-        SQL.deleteUnits(self.selectedUnit)
-        self.errorMessage.setText("Unit Deleted")
-
-    def addNewUnit(self):
-        checkUnit = SQL.checkUnit(self.newUnitName)
-
-        if checkUnit is None:
-
-            if not [x for x in (self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType) if x == ""]:
-                SQL.addUnits(self.newUnitName,self.newIP, self.newVictronID, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
-                self.errorMessage.setText("Unit Added")
-                self.unitNameAdd.setText("")
-                self.locationAdd.setText("")
-                self.companyAdd.setText("")
-                self. numCamerasAdd.setText("")
-                self.cameratypeAdd.setText("")
-                self.IPAdd.setText("")
-                self.victronAdd.setText("")
-                self.efoyAdd.setText("")
-                self.latAdd.setText("")
-                self.lonAdd.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
-        else:
-
-            self.errorMessage.setText("Unit already in database")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openAdminMenu.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openAdminMenu.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
 
         self.hide()
 
 class userManagement(QWidget):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        self.listOfUsers = []
-
-        fetchUsers = SQL.fetchUsers()
-
-        for item in fetchUsers:
-            self.listOfUsers.append(item)
-
-        #Current Selected User
-        self.selectedUser = ""
-        self.selectedPassword = ""
-
-        #New User
-        self.newUsername = ""
-        self.newPassword = ""
-        self.newCompany = ""
-
         super().__init__()
 
         self.setWindowTitle("User Management")
-        self.setGeometry(0,0,350,250)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
+        self.setGeometry(0,0,300,250)
 
         layout = QGridLayout()
 
-        self.userSelection = QComboBox()
-        self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.setPlaceholderText("User Selection")
-        self.userSelection.currentIndexChanged.connect(self.userChanged)
+        userSelection = QComboBox()
+        userSelection.setPlaceholderText("User Selection")
 
-        layout.addWidget(self.userSelection,0,0,1,3)
+        layout.addWidget(userSelection,0,0,1,3)
 
-        self.usernameLabel = QLabel("")
+        usernameLabel = QLabel("PLACEHOLDER")
 
-        layout.addWidget(self.usernameLabel,1,0.5)
+        layout.addWidget(usernameLabel,1,0.5)
 
-        self.passwordLineEdit = QLineEdit()
-        self.passwordLineEdit.setPlaceholderText("Password")
-        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        passwordLineEdit = QLineEdit()
+        passwordLineEdit.setPlaceholderText("Password")
 
-        layout.addWidget(self.passwordLineEdit,1,1,1,2)
+        layout.addWidget(passwordLineEdit,1,1,1,2)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUser)
 
         layout.addWidget(changeButton,2,1)
 
-        deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUser)
+        deleteButton = QPushButton("Delete Unit")
 
         layout.addWidget(deleteButton,2,2)
 
@@ -1257,103 +332,44 @@ class userManagement(QWidget):
 
         layout.addWidget(addNewUserLabel,3,0,1,3)
 
-        self.usernameEdit = QLineEdit()
-        self.usernameEdit.setPlaceholderText("Username")
-        self.usernameEdit.textChanged.connect(self.getNewUsername)
+        usernameEdit = QLineEdit()
+        usernameEdit.setPlaceholderText("Username")
 
-        layout.addWidget(self.usernameEdit,4,0)
+        layout.addWidget(usernameEdit,4,0)
 
-        self.passwordAddLineEdit = QLineEdit()
-        self.passwordAddLineEdit.setPlaceholderText("Password")
-        self. passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+        passwordAddLineEdit = QLineEdit()
+        passwordAddLineEdit.setPlaceholderText("Password")
 
-        layout.addWidget(self.passwordAddLineEdit,4,1)
+        layout.addWidget(passwordAddLineEdit,4,1)
 
-        self.companyLineEdit = QLineEdit()
-        self.companyLineEdit.setPlaceholderText("Company")
-        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+        companyLineEdit = QLineEdit()
+        companyLineEdit.setPlaceholderText("Company")
 
-        layout.addWidget(self.companyLineEdit,4,2)
+        layout.addWidget(companyLineEdit,4,2)
 
         addUserButton = QPushButton("Add New User")
-        addUserButton.clicked.connect(self.addUser)
 
         layout.addWidget(addUserButton,5,1)
 
-        self.errorMessage = QLabel("")
-        self.errorMessage.setStyleSheet("color: red")
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(self.errorMessage, 6, 1)
-
         self.setLayout(layout)
-
-    def getPasswordChanged(self, Password):
-        self.selectedPassword = Password
-
-    def getNewUsername(self, Username):
-        self.newUsername = Username
-
-    def getNewPassword(self, Password):
-        self.newPassword = Password
-
-    def getNewCompany(self, Company):
-        self.newCompany = Company
-    def userChanged(self, index):
-
-        self.selectedUser = self.listOfUsers[index]
-
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
-
-        self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(self.selectedPassword)
-
-    def changeUser(self):
-        SQL.updateUser(self.selectedPassword, self.selectedUser)
-        self.errorMessage.setText("User Updated")
-
-    def deleteUser(self):
-
-        SQL.deleteUsers(self.selectedUser)
-        self.errorMessage.setText("User Deleted")
-
-    def addUser(self):
-        checkUsername = SQL.checkUsername(self.newUsername)
-
-        if checkUsername is None:
-            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
-                self.errorMessage.setText("User Added")
-                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany)
-                self.usernameEdit.setText("")
-                self.passwordAddLineEdit.setText("")
-                self.companyLineEdit.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
-        else:
-            self.errorMessage.setText("Username Already Exists")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openAdminMenu.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openAdminMenu.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
 
         self.hide()
 
 class adminMenu(QWidget):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
         super().__init__()
 
         self.setWindowTitle("Admin Menu")
         self.setGeometry(0, 0, 430, 180)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
 
         layout = QVBoxLayout()
 
@@ -1373,10 +389,10 @@ class adminMenu(QWidget):
         self.openUserManagement = userManagement()
         self.openUserManagement.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openUserManagement.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openUserManagement.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openUserManagement.frameGeometry()
+        geo.moveCenter(center)
+        self.openUserManagement.move(geo.topLeft())
 
         self.hide()
 
@@ -1384,10 +400,10 @@ class adminMenu(QWidget):
         self.openUnitManagement = unitManagement()
         self.openUnitManagement.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openUnitManagement.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openUnitManagement.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openUnitManagement.frameGeometry()
+        geo.moveCenter(center)
+        self.openUnitManagement.move(geo.topLeft())
 
         self.hide()
 
@@ -1395,199 +411,73 @@ class adminMenu(QWidget):
         self.openMonitoring = adminMonitoring()
         self.openMonitoring.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openMonitoring.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openMonitoring.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMonitoring.frameGeometry()
+        geo.moveCenter(center)
+        self.openMonitoring.move(geo.topLeft())
 
         self.hide()
 
 class interactiveMap(QWidget):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
         super().__init__()
 
         self.setWindowTitle("Interactive Unit Map")
-        self.setGeometry(0,0,700,700)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
+        self.setGeometry(0,0,550,550)
 
         layout = QGridLayout()
 
         self.mapBrowser = QtWebEngineWidgets.QWebEngineView(self)
         layout.addWidget(self.mapBrowser, 0, 0)
 
-        self.importMap()
-
         self.setLayout(layout)
-
-    def importMap(self):
-        names = []
-
-        lat = []
-
-        lon = []
-
-        data = SQL.fetchLocations()
-
-        for row in data:
-            altered = list(row)
-            names.append(altered[0])
-            lat.append(altered[1])
-            lon.append(altered[2])
-
-        fig = go.Figure(go.Scattermapbox(
-            lat=lat,
-            lon=lon,
-            mode='markers',
-            marker=go.scattermapbox.Marker(size=10),
-            text=names,
-        ))
-        fig.update_layout(
-            autosize=True,
-            hovermode='closest',
-            mapbox=dict(
-                accesstoken=mapboxAccessToken,
-                bearing=0,
-                center=dict(
-                    lat=54.628,
-                    lon=-2.150,
-                ),
-                pitch=0,
-                zoom=4.4,
-            ),
-        )
-        fig.update_traces()
-        self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn'))
 
 class adminMonitoring(QWidget):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        self.listOfUnits = []
-        self.listOfCompanies = []
-
-        fetchUnits = SQL.fetchUnits()
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
-
-        fetchCompanies = SQL.fetchCompanies()
-        for item in fetchCompanies:
-            self.listOfCompanies.append(item)
-
-        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
-
         super().__init__()
 
         self.setWindowTitle("Admin Dashboard")
         self.setGeometry(0, 0, 255, 600)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
 
-        mainLayout = QVBoxLayout()
+        layout = QVBoxLayout()
 
-        unitsLayout = QVBoxLayout()
+        companyTabs = QTabWidget()
 
-        groupBox = QGroupBox()
+        placeholder = QLabel("placeholder")
 
-        for i in self.listOfUnits:
+        companyTabs.addTab(placeholder, "Company")
 
-            self.testButton = QPushButton(str(i))
-
-            buttonText = self.testButton.text()
-
-            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
-
-            unitsLayout.addWidget(self.testButton)
-
-        groupBox.setLayout(unitsLayout)
-
-        scrollArea = QScrollArea()
-        scrollArea.setWidget(groupBox)
-        scrollArea.setWidgetResizable(True)
-
-        mainLayout.addWidget(scrollArea)
+        layout.addWidget(companyTabs)
 
         mapButton = QPushButton("Interactive Map")
         mapButton.clicked.connect(self.openMap)
 
-        mainLayout.addWidget(mapButton)
+        layout.addWidget(mapButton)
 
         adminButton = QPushButton("Admin Menu")
         adminButton.clicked.connect(self.openAdmin)
 
-        mainLayout.addWidget(adminButton)
+        layout.addWidget(adminButton)
 
-        self.setLayout(mainLayout)
-
-    def openUnitDashboard(self,unitName):
-        global selectedUnit
-        global selectedUnitType
-        global selectedIP
-        global selectedVictron
-        global selectedCCTV
-        global selectedEfoyID
-        global selectedCamera
-        global selectedCompany
-
-        unitType = SQL.fetchUnitType(unitName).strip()
-        data = SQL.fetchUnitDetails(unitName)
-        selectedUnit = unitName
-        selectedUnitType = unitType
-
-        for row in data:
-            altered = list(row)
-            selectedIP = altered[0]
-            selectedVictron = altered[1]
-            selectedCompany = altered[3]
-            selectedCCTV = altered[4]
-            selectedCamera = altered[5]
-            selectedEfoyID = altered[6]
-
-
-        if str(unitType) == "ARC":
-            getVictronValues()
-
-            self.openARCDashboard = arcDashboard()
-            self.openARCDashboard.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openARCDashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openARCDashboard.move(Geo.topLeft())
-
-            self.hide()
-        elif str(unitType) == "IO":
-            self.openIODashboard = ioDashboard()
-            self.openIODashboard.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openIODashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openIODashboard.move(Geo.topLeft())
-
-            self.hide()
+        self.setLayout(layout)
 
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openMapPage.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openMapPage.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMapPage.frameGeometry()
+        geo.moveCenter(center)
+        self.openMapPage.move(geo.topLeft())
 
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openAdminMenu.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openAdminMenu.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openAdminMenu.frameGeometry()
+        geo.moveCenter(center)
+        self.openAdminMenu.move(geo.topLeft())
 
         self.hide()
 
@@ -1595,157 +485,64 @@ class adminMonitoring(QWidget):
         self.login = loginUI()
         self.login.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.login.frameGeometry()
-        Geo.moveCenter(Center)
-        self.login.move(Geo.topLeft())
-
-        self.openMapPage = interactiveMap()
-        self.openMapPage.hide()
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.login.frameGeometry()
+        geo.moveCenter(center)
+        self.login.move(geo.topLeft())
 
         self.hide()
-
-class userMonitoring(QWidget):
-    def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        self.listOfUnits = []
-        self.listOfCompanies = []
-
-        fetchUnits = SQL.fetchUnits()
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
-
-        fetchCompanies = SQL.fetchCompanies()
-        for item in fetchCompanies:
-            self.listOfCompanies.append(item)
-
-        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
-
+class userMonitoring(QWidget): #Creating a new class and parsing it as a Qt Widget
+    def __init__(self): #Constructing the class as self
         super().__init__()
 
-        self.setWindowTitle("User Dashboard")
-        self.setGeometry(0, 0, 255, 600)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
+        self.setWindowTitle("Dashboard")
+        self.setGeometry(0,0,255,600)
+        self.setStyleSheet("background-color: white;")
 
-        mainLayout = QVBoxLayout()
+        layout = QVBoxLayout()
 
-        unitsLayout = QVBoxLayout()
+        companyTabs = QTabWidget()
 
-        groupBox = QGroupBox()
+        placeholder = QLabel("placeholder")
 
-        for i in self.listOfUnits:
-            self.testButton = QPushButton(str(i))
+        companyTabs.addTab(placeholder,"Company")
 
-            buttonText = self.testButton.text()
-
-            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
-
-            unitsLayout.addWidget(self.testButton)
-
-        groupBox.setLayout(unitsLayout)
-
-        scrollArea = QScrollArea()
-        scrollArea.setWidget(groupBox)
-        scrollArea.setWidgetResizable(True)
-
-        mainLayout.addWidget(scrollArea)
+        layout.addWidget(companyTabs)
 
         mapButton = QPushButton("Interactive Map")
         mapButton.clicked.connect(self.openMap)
 
-        mainLayout.addWidget(mapButton)
+        layout.addWidget(mapButton)
 
-        self.setLayout(mainLayout)
-
-    def openUnitDashboard(self,unitName):
-        global selectedUnit
-        global selectedUnitType
-        global selectedIP
-        global selectedVictron
-        global selectedCompany
-        global selectedCCTV
-        global selectedEfoyID
-        global selectedCamera
-
-        unitType = SQL.fetchUnitType(unitName).strip()
-        data = SQL.fetchUnitDetails(unitName)
-        selectedUnit = unitName
-        selectedUnitType = unitType
-
-        for row in data:
-            altered = list(row)
-            selectedIP = altered[0]
-            selectedVictron = altered[1]
-            selectedCompany = altered[3]
-            selectedCCTV = altered[4]
-            selectedCamera = altered[5]
-            selectedEfoyID = altered[6]
-
-        if str(unitType) == "ARC":
-            getVictronValues()
-
-            self.openARCDashboard = arcDashboard()
-            self.openARCDashboard.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openARCDashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openARCDashboard.move(Geo.topLeft())
-
-            self.hide()
-        elif str(unitType) == "IO":
-            self.openIODashboard = ioDashboard()
-            self.openIODashboard.show()
-
-            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-            Geo = self.openIODashboard.frameGeometry()
-            Geo.moveCenter(Center)
-            self.openIODashboard.move(Geo.topLeft())
-
-            self.hide()
+        self.setLayout(layout)
 
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openMapPage.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openMapPage.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        geo = self.openMapPage.frameGeometry()
+        geo.moveCenter(center)
+        self.openMapPage.move(geo.topLeft())
 
-    def closeEvent(self, event):
-        self.login = loginUI()
-        self.login.show()
+    def closeEvent(self, event): #Calling Qt method for when window is closed
+        self.login = loginUI() #Setting window as variable
+        self.login.show() #Showing window
 
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.login.frameGeometry()
-        Geo.moveCenter(Center)
-        self.login.move(Geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center() #Telling the program to center the window
+        geo = self.login.frameGeometry() #Setting the frame geometry
+        geo.moveCenter(center) #moving the geometry to the center of screen
+        self.login.move(geo.topLeft()) #from the top left of the screen
 
-        self.openMapPage = interactiveMap()
-        self.openMapPage.hide()
+        self.hide() #hiding current window
 
-        self.hide()
 
 class loginUI(QMainWindow):
     def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-        logoPath = resourcePath("Assets/Images/sunstone.png")
-
-        self.username = ""
-        self.password = ""
-        self.rights = ""
-
         super().__init__()
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
@@ -1789,83 +586,53 @@ class loginUI(QMainWindow):
 
     def getUser(self, Username):
         global username
-        self.username = Username
+        username = Username
         self.errorMessage.hide()
 
     def getPassword(self, Password):
         global password
-        self.password = Password
+        password = Password
         self.errorMessage.hide()
 
 
     def openMonitoring(self):
+        userRights = "ADMIN" #Placeholder
+        placeholderUsername = "Jack"
+        placeholderpassword = "Password"
 
-        global userRights
-
-        checkUsername = SQL.checkUsername(self.username)
-
-        if checkUsername is None:
+        if username == placeholderUsername:
+            loggedIn = password == placeholderpassword
+        else:
             self.errorMessage.show()
 
+        if loggedIn:
+
+            if "ADMIN" in userRights:
+                self.adminMonitoring = adminMonitoring()
+                self.adminMonitoring.show()
+
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.adminMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.adminMonitoring.move(geo.topLeft())
+
+                self.hide()
+            elif "USER" in userRights:
+                self.userMonitoring = userMonitoring()
+                self.userMonitoring.show()
+
+                center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+                geo = self.userMonitoring.frameGeometry()
+                geo.moveCenter(center)
+                self.userMonitoring.move(geo.topLeft())
+
+                self.hide()
         else:
-            checkPassword = SQL.fetchPassword(self.username)
-
-            loggedIn = self.password == checkPassword.strip()
-
-
-            if loggedIn:
-                userRights = SQL.fetchRights(self.username)
-                if "ADMIN" in userRights:
-                    self.adminMonitoring = adminMonitoring()
-                    self.adminMonitoring.show()
-
-                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    Geo = self.adminMonitoring.frameGeometry()
-                    Geo.moveCenter(Center)
-                    self.adminMonitoring.move(Geo.topLeft())
-
-                    self.hide()
-                elif "USER" in userRights:
-                    self.userMonitoring = userMonitoring()
-                    self.userMonitoring.show()
-
-                    Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-                    Geo = self.userMonitoring.frameGeometry()
-                    Geo.moveCenter(Center)
-                    self.userMonitoring.move(geo.topLeft())
-
-                    self.hide()
-            else:
-                self.errorMessage.show()
-
-
-class errorMessage(QMainWindow):
-
-    def __init__(self):
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        super().__init__()
-
-        self.setWindowTitle("Connection Error")
-        self.setGeometry(0, 0, 300, 300)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
-
-        layout = QVBoxLayout()
-
-        errorLabel = QLabel("You are not connected to the Internet")
-        errorLabel.setStyleSheet("color: red;"
-                                        "font: bold 14px;")
-        errorLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(errorLabel)
-
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
+            self.errorMessage.show()
 
 app = QApplication([])
 app.setStyle('Fusion')
+window = loginUI()
 
 app.setStyleSheet("""
     
@@ -1894,21 +661,7 @@ app.setStyleSheet("""
     }
 """)
 
-socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socketOpen.settimeout(2)
-
-try:
-    socketOpen.connect(("google.com", 80))
-
-except:
-    window = errorMessage()
-
-    window.show()
-
-else:
-    window = loginUI()
-    window.show()
-    socketOpen.close()
+window.show()
 
 center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
 
