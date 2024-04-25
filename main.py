@@ -4,8 +4,6 @@ from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6 import QtWebEngineWidgets
-import pyodbc
-
 
 username =  ""
 password =  ""
@@ -493,8 +491,8 @@ class adminMonitoring(QWidget):
         self.login.move(geo.topLeft())
 
         self.hide()
-class userMonitoring(QWidget):
-    def __init__(self):
+class userMonitoring(QWidget): #Creating a new class and parsing it as a Qt Widget
+    def __init__(self): #Constructing the class as self
         super().__init__()
 
         self.setWindowTitle("Dashboard")
@@ -527,16 +525,16 @@ class userMonitoring(QWidget):
         geo.moveCenter(center)
         self.openMapPage.move(geo.topLeft())
 
-    def closeEvent(self, event):
-        self.login = loginUI()
-        self.login.show()
+    def closeEvent(self, event): #Calling Qt method for when window is closed
+        self.login = loginUI() #Setting window as variable
+        self.login.show() #Showing window
 
-        center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        geo = self.login.frameGeometry()
-        geo.moveCenter(center)
-        self.login.move(geo.topLeft())
+        center = QScreen.availableGeometry(QApplication.primaryScreen()).center() #Telling the program to center the window
+        geo = self.login.frameGeometry() #Setting the frame geometry
+        geo.moveCenter(center) #moving the geometry to the center of screen
+        self.login.move(geo.topLeft()) #from the top left of the screen
 
-        self.hide()
+        self.hide() #hiding current window
 
 
 class loginUI(QMainWindow):
@@ -545,7 +543,6 @@ class loginUI(QMainWindow):
 
         self.setWindowTitle("Dashboard Login")
         self.setGeometry(0,0,380,320)
-        #self.setStyleSheet("background-color: white;")
 
         layout = QGridLayout()
 
