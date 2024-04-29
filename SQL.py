@@ -44,6 +44,13 @@ def updateUnit(unitName, Location, Company, CCTV):
 
     cnxn.commit()
 
+def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, Lat, Lon)
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = {CCTV}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = '{Victron}', efoyID = '{Efoy}', Lat = {Lat}, Lon = {Lon} WHERE Name = '{unitName}'")
+
+    cnxn.commit()
 def fetchCompanies():
     connection()
     cursor = cnxn.cursor()
