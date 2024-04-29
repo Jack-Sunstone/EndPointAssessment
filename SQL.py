@@ -86,6 +86,7 @@ def fetchPassword(Username):
     for row in cursor.fetchall():
         return row[0]
 
+
 def fetchRights(Username):
     connection()
     cursor = cnxn.cursor()
@@ -131,19 +132,17 @@ def deleteUnits(Name):
 
     cnxn.commit()
 
-def addUsers(Username, Password, Company):
+def addUsers(Username, Password, Company, Rights):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{Username.strip()}', '{Password.strip()}', '{Company.strip()}', 'USER')")
+    cursor.execute(f"INSERT INTO dbo.Users (Username, Password, Company, Rights) VALUES ('{Username.strip()}', '{Password.strip()}', '{Company.strip()}', '{(Rights.strip()).upper()}')")
 
     cnxn.commit()
 
-def updateUser(Password, Username):
+def updateUser(Username, Password, Rights):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}' WHERE Username = '{Username}' ")
-
-    cnxn.commit()
+    cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
 
 def deleteUsers(Username):
     connection()
