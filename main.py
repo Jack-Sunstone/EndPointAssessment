@@ -808,6 +808,9 @@ class arcDashboard(QWidget):
 
             layout.addWidget(self.errorMessage, 7, 2)
 
+        if selectedEfoyID == "":
+            efoyButton.hide()
+
         self.checkUnitStatus()
 
         self.setLayout(layout)
