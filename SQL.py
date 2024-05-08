@@ -10,13 +10,19 @@ def connection():
 
 #cursor.execute("INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType) VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL")
 
-def fetchUnits():
+def fetchUnitsSunstone():
     connection()
     cursor = cnxn.cursor()
     cursor.execute("SELECT Name FROM dbo.Units ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
+
+def fetchUnits(Company):
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Company =  '{Company}' ORDER BY Name")
+
 
 def fetchUnitDetails(unitName):
     connection()
@@ -99,6 +105,15 @@ def fetchRights(Username):
     cursor = cnxn.cursor()
 
     cursor.execute(f"SELECT Rights FROM dbo.Users WHERE Username = '{Username}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
+def fetchCompany(Username):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Company FROM dbo.Users WHERE Username = '{Username}'")
 
     for row in cursor.fetchall():
         return row[0]

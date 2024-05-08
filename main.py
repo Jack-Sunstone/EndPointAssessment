@@ -27,6 +27,7 @@ selectedCamera = ""
 selectedEfoyID = ""
 
 userRights = ""
+userCompany = ""
 
 unitSolar = ""
 formattedSolar = ""
@@ -980,7 +981,7 @@ class unitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnits()
+        fetchUnits = SQL.fetchUnitsSunstone()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -1306,7 +1307,7 @@ class superUnitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnits()
+        fetchUnits = SQL.fetchUnitsSunstone()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -2031,7 +2032,7 @@ class superUserManagement(QWidget):
                 self.usernameEdit.setText("")
                 self.passwordAddLineEdit.setText("")
                 self.companyLineEdit.setText("")
-                self.rightsLineEdit.setText("")
+                self.rightsAddLineEdit.setText("")
             else:
                 self.errorMessage.setText("One or All Field Is Empty")
         else:
@@ -2196,7 +2197,7 @@ class adminMonitoring(QWidget):
         self.listOfUnits = []
         self.listOfCompanies = []
 
-        fetchUnits = SQL.fetchUnits()
+        fetchUnits = SQL.fetchUnitsSunstone()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -2339,7 +2340,11 @@ class userMonitoring(QWidget):
         self.listOfUnits = []
         self.listOfCompanies = []
 
-        fetchUnits = SQL.fetchUnits()
+        if userCompany != "Sunstone":
+            fetchUnits = SQL.fetchUnitsSunstone()
+        else:
+            fetchUnits = SQL.fetchUnits(userCompany)
+
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -2528,8 +2533,10 @@ class loginUI(QMainWindow):
     def openMonitoring(self):
 
         global userRights
+        global userCompany
 
         checkUsername = SQL.checkUsername(self.username)
+
 
         if checkUsername is None:
             self.errorMessage.show()
@@ -2541,6 +2548,7 @@ class loginUI(QMainWindow):
 
             if loggedIn:
                 userRights = SQL.fetchRights(self.username)
+                userCompany = SQL.fetchCompany(self.username)
                 if "ADMIN" == userRights or "SUPERADMIN" == userRights:
                     self.adminMonitoring = adminMonitoring()
                     self.adminMonitoring.show()
