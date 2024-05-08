@@ -15,6 +15,7 @@ import socket
 import plotly.graph_objects as go
 from collections import deque
 import time
+import what3words
 
 selectedUnit = ""
 selectedIP = ""
@@ -40,6 +41,7 @@ wjPassword = "12Sunstone34"
 
 mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTViajJqbjI0N3RuOGhhOCJ9.Kl6jwZjBEtGoM1C_5NyLJg"
 
+geocoder = what3words.Geocoder("RMNUBSDA")
 
 def axisPath(password, IPaddress, cameraNumber):
     Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
@@ -959,7 +961,6 @@ class arcDashboard(QWidget):
 
             self.hide()
 
-
 class unitManagement(QWidget):
     def __init__(self):
 
@@ -989,6 +990,8 @@ class unitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+
+        self.w3w = ""
 
         super().__init__()
 
@@ -1118,11 +1121,22 @@ class unitManagement(QWidget):
 
         layout.addWidget(addUnit, 7, 0, 1, 4)
 
+        self.w3wLineEdit = QLineEdit()
+        self.w3wLineEdit.setPlaceholderText("what3words")
+        self.w3wLineEdit.textChanged.connect(self.getW3W)
+
+        layout.addWidget(self.w3wLineEdit, 8, 0, 1, 2)
+
+        self.w3wButton = QPushButton("Convert")
+        self.w3wButton.clicked.connect(self.convertW3W)
+
+        layout.addWidget(self.w3wButton, 8,2,1,2)
+
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 9, 1, 1, 2)
 
         self.setLayout(layout)
 
@@ -1174,6 +1188,10 @@ class unitManagement(QWidget):
 
     def getNewLon(self, Lon):
         self.newLon = Lon
+
+    def getW3W(self, W3W):
+        self.w3w = W3W
+
 
     def unitChanged(self, index):
 
@@ -1238,6 +1256,26 @@ class unitManagement(QWidget):
             self.latAdd.setText("")
             self.lonAdd.setText("")
 
+    def convertW3W(self):
+
+        if self.w3w == "":
+            self.errorMessage.setText("Unable to Convert")
+        elif len(self.w3w) < 14:
+            self.errorMessage.setText("Word is too small")
+        else:
+            result = geocoder.convert_to_coordinates(self.w3w)
+
+            self.newLat = str(result['coordinates']['lat'])
+            self.newLon = str(result['coordinates']['lng'])
+
+            self.latAdd.setText(self.newLat)
+            self.lonAdd.setText(self.newLon)
+
+            self.w3wLineEdit.setText("")
+            self.w3w = ""
+
+            self.errorMessage.setText("Converted")
+
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
@@ -1284,6 +1322,8 @@ class superUnitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+
+        self.w3w = ""
 
         super().__init__()
 
@@ -1447,11 +1487,27 @@ class superUnitManagement(QWidget):
 
         layout.addWidget(addUnit, 9, 0, 1, 4)
 
+        self.w3wLineEdit = QLineEdit()
+        self.w3wLineEdit.setPlaceholderText("what3words")
+        self.w3wLineEdit.textChanged.connect(self.getW3W)
+
+        layout.addWidget(self.w3wLineEdit, 10, 0, 1, 2)
+
+        self.w3wButton = QPushButton("Convert")
+        self.w3wButton.clicked.connect(self.convertW3W)
+
+        layout.addWidget(self.w3wButton, 10, 2, 1, 2)
+
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 10, 1, 1, 2)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 11, 1, 1, 2)
 
         self.setLayout(layout)
 
@@ -1521,6 +1577,9 @@ class superUnitManagement(QWidget):
 
     def getNewLon(self, Lon):
         self.newLon = Lon
+
+    def getW3W(self, W3W):
+        self.w3w = W3W
 
     def unitChanged(self, index):
 
@@ -1609,6 +1668,26 @@ class superUnitManagement(QWidget):
             self.efoyAdd.setText("")
             self.latAdd.setText("")
             self.lonAdd.setText("")
+
+    def convertW3W(self):
+
+        if self.w3w == "":
+            self.errorMessage.setText("Unable to Convert")
+        elif len(self.w3w) < 14:
+            self.errorMessage.setText("Word is too small")
+        else:
+            result = geocoder.convert_to_coordinates(self.w3w)
+
+            self.newLat = str(result['coordinates']['lat'])
+            self.newLon = str(result['coordinates']['lng'])
+
+            self.latAdd.setText(self.newLat)
+            self.lonAdd.setText(self.newLon)
+
+            self.w3wLineEdit.setText("")
+            self.w3w = ""
+
+            self.errorMessage.setText("Converted")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()

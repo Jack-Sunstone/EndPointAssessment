@@ -54,3 +54,6 @@ result = geocoder.convert_to_coordinates("fight.power.spoken")
 
 print(result['coordinates']['lat'])
 print(result['coordinates']['lng'])
+
+if len("good.good.good") < 14:
+    print("bad")
