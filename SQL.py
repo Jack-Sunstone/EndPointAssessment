@@ -21,8 +21,10 @@ def fetchUnitsSunstone():
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Company =  '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Company = '{Company}' ORDER BY Name")
 
+    for row in cursor.fetchall():
+        yield row[0]
 
 def fetchUnitDetails(unitName):
     connection()

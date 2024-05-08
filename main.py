@@ -2340,7 +2340,7 @@ class userMonitoring(QWidget):
         self.listOfUnits = []
         self.listOfCompanies = []
 
-        if userCompany != "Sunstone":
+        if userCompany == "Sunstone":
             fetchUnits = SQL.fetchUnitsSunstone()
         else:
             fetchUnits = SQL.fetchUnits(userCompany)
