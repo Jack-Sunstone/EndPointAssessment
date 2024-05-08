@@ -1,5 +1,7 @@
 import socket
 import SQL
+import what3words
+
 
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,3 +47,10 @@ def checkConnected():
         socketOpen.close()
         return 1
 print(checkConnected())
+
+geocoder = what3words.Geocoder("RMNUBSDA")
+
+result = geocoder.convert_to_coordinates("fight.power.spoken")
+
+print(result['coordinates']['lat'])
+print(result['coordinates']['lng'])
