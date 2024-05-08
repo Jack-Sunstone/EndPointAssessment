@@ -327,8 +327,20 @@ class allCamerasView(QWidget):
 
     def closeEvent(self, event):
 
-        for camera in [self.cameraOne, self.cameraTwo, self.cameraThree, self.cameraFour][:selectedCCTV]:
-            camera.close()
+        if selectedCCTV == 4:
+            self.cameraOne.close()
+            self.cameraTwo.close()
+            self.cameraThree.close()
+            self.cameraFour.close()
+
+        elif selectedCCTV == 3:
+            self.cameraOne.close()
+            self.cameraTwo.close()
+            self.cameraThree.close()
+
+        elif selectedCCTV == 2:
+            self.cameraOne.close()
+            self.cameraTwo.close()
 
         self.close()
 
@@ -1700,8 +1712,6 @@ class superUnitManagement(QWidget):
 
         self.hide()
 
-
-
 class userManagement(QWidget):
     def __init__(self):
 
@@ -2268,22 +2278,24 @@ class adminMonitoring(QWidget):
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
 
+            self.hide()
+
             Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
             Geo = self.openARCDashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openARCDashboard.move(Geo.topLeft())
 
-            self.hide()
         elif str(unitType) == "IO":
             self.openIODashboard = ioDashboard()
             self.openIODashboard.show()
+
+            self.hide()
 
             Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
             Geo = self.openIODashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
 
-            self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
@@ -2404,22 +2416,24 @@ class userMonitoring(QWidget):
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
 
+            self.hide()
+
             Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
             Geo = self.openARCDashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openARCDashboard.move(Geo.topLeft())
 
-            self.hide()
         elif str(unitType) == "IO":
             self.openIODashboard = ioDashboard()
             self.openIODashboard.show()
+
+            self.hide()
 
             Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
             Geo = self.openIODashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
 
-            self.hide()
 
     def openMap(self):
         self.openMapPage = interactiveMap()
