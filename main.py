@@ -2198,19 +2198,12 @@ class adminMonitoring(QWidget):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
         self.listOfUnits = []
-        self.listOfCompanies = []
 
         fetchUnits = SQL.fetchUnitsSunstone()
 
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
-        fetchCompanies = SQL.fetchCompanies()
-
-        for item in fetchCompanies:
-            self.listOfCompanies.append(item)
-
-        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
 
         super().__init__()
 
@@ -2225,14 +2218,21 @@ class adminMonitoring(QWidget):
 
         groupBox = QGroupBox()
 
+        j = 0
+
         for i in self.listOfUnits:
-            self.testButton = QPushButton(str(i))
+
+            fetchSite = SQL.fetchSites(i)
+
+            self.testButton = QPushButton(str(f"{i} {fetchSite}"))
 
             buttonText = self.testButton.text()
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
             unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
         groupBox.setLayout(unitsLayout)
 
@@ -2343,7 +2343,6 @@ class userMonitoring(QWidget):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
         self.listOfUnits = []
-        self.listOfCompanies = []
 
         if userCompany == "Sunstone":
             fetchUnits = SQL.fetchUnitsSunstone()
@@ -2352,12 +2351,6 @@ class userMonitoring(QWidget):
 
         for item in fetchUnits:
             self.listOfUnits.append(item)
-
-        fetchCompanies = SQL.fetchCompanies()
-        for item in fetchCompanies:
-            self.listOfCompanies.append(item)
-
-        self.listOfCompanies = list(dict.fromkeys(self.listOfCompanies))
 
         super().__init__()
 
@@ -2372,14 +2365,20 @@ class userMonitoring(QWidget):
 
         groupBox = QGroupBox()
 
+        j = 0
+
         for i in self.listOfUnits:
-            self.testButton = QPushButton(str(i))
+            fetchSite = SQL.fetchSites(i)
+
+            self.testButton = QPushButton(str(f"{i} {fetchSite}"))
 
             buttonText = self.testButton.text()
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
             unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
         groupBox.setLayout(unitsLayout)
 
@@ -2571,7 +2570,7 @@ class loginUI(QMainWindow):
                     Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
                     Geo = self.userMonitoring.frameGeometry()
                     Geo.moveCenter(Center)
-                    self.userMonitoring.move(geo.topLeft())
+                    self.userMonitoring.move(Geo.topLeft())
 
                     self.hide()
             else:

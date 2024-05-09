@@ -53,6 +53,7 @@ def fetchLocations(Company):
     for row in cursor.fetchall():
         yield row
 
+
 def updateUnit(unitName, Location, Company, CCTV):
     connection()
     cursor = cnxn.cursor()
@@ -78,6 +79,16 @@ def fetchCompanies():
         yield row[0]
 
     cnxn.commit()
+
+def fetchSites(unitName):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Location FROM dbo.Units WHERE Name = '{unitName}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
 
 def fetchUnitType(unitName):
     connection()
