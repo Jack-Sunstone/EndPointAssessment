@@ -37,6 +37,8 @@ formattedLoad = ""
 
 username = ""
 
+CameraNumber = 1
+
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
@@ -45,8 +47,8 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 geocoder = what3words.Geocoder("RMNUBSDA")
 
 
-def axisPath(password, IPaddress, cameraNumber):
-    Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
+def axisPath(IPaddress, cameraNumber):
+    Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
@@ -57,30 +59,10 @@ def hikPath(IPaddress, cameraNumber):
     return Hik
 
 
-def hanwhaPath(password, IPaddress, cameraNumber):
-    Hanwha = f"rtsp://admin:{password}@{IPaddress}:{cameraNumber}554/profile2/media.smp"
+def hanwhaPath(IPaddress, cameraNumber):
+    Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
-
-
-def cameraOne(cap):
-    cap = cv2.VideoCapture(str(cap))
-    if cap is None or not cap.isOpened():
-        print("Camera Not Available")
-    else:
-        while (True):
-            ret, Cam1 = cap.read()
-            cv2.imshow("Camera Live View", Cam1)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-
-def threading1Camera(cameraURL):
-    thread1 = Thread(target=cameraOne, args=(cameraURL,))
-    thread1.start()
-    thread1.join()
-    cv2.destroyAllWindows()
-
 
 def resourcePath(relativePath):
     try:
@@ -250,19 +232,19 @@ class allCamerasView(QWidget):
         if selectedCamera.lower() == "axis":
 
             if selectedCCTV == 4:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
-                cameraFourLink = axisPath(sunstonePassword, selectedIP, 4)
+                cameraOneLink = axisPath(selectedIP, 1)
+                cameraTwoLink = axisPath(selectedIP, 2)
+                cameraThreeLink = axisPath(selectedIP, 3)
+                cameraFourLink = axisPath(selectedIP, 4)
 
             if selectedCCTV == 3:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = axisPath(sunstonePassword, selectedIP, 3)
+                cameraOneLink = axisPath(selectedIP, 1)
+                cameraTwoLink = axisPath(selectedIP, 2)
+                cameraThreeLink = axisPath(selectedIP, 3)
 
             if selectedCCTV == 2:
-                cameraOneLink = axisPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = axisPath(sunstonePassword, selectedIP, 2)
+                cameraOneLink = axisPath(selectedIP, 1)
+                cameraTwoLink = axisPath(selectedIP, 2)
 
         elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
 
@@ -284,19 +266,19 @@ class allCamerasView(QWidget):
         elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
 
             if selectedCCTV == 4:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
-                cameraFourLink = hanwhaPath(sunstonePassword, selectedIP, 4)
+                cameraOneLink = hanwhaPath(selectedIP, 1)
+                cameraTwoLink = hanwhaPath(selectedIP, 2)
+                cameraThreeLink = hanwhaPath(selectedIP, 3)
+                cameraFourLink = hanwhaPath(selectedIP, 4)
 
             if selectedCCTV == 3:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
-                cameraThreeLink = hanwhaPath(sunstonePassword, selectedIP, 3)
+                cameraOneLink = hanwhaPath(selectedIP, 1)
+                cameraTwoLink = hanwhaPath(selectedIP, 2)
+                cameraThreeLink = hanwhaPath(selectedIP, 3)
 
             if selectedCCTV == 2:
-                cameraOneLink = hanwhaPath(sunstonePassword, selectedIP, 1)
-                cameraTwoLink = hanwhaPath(sunstonePassword, selectedIP, 2)
+                cameraOneLink = hanwhaPath(selectedIP, 1)
+                cameraTwoLink = hanwhaPath(selectedIP, 2)
 
         if selectedCCTV == 4:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
@@ -369,6 +351,72 @@ class allCamerasView(QWidget):
 
             self.hide()
 
+class singleCameraView(QWidget):
+    def __init__(self):
+
+        cameraIcon = resourcePath("Assets/Images/CCTV.png")  # importing camera Icon
+
+        super().__init__()
+
+        self.setWindowTitle(f"Camera {CameraNumber}")
+        self.setGeometry(0, 0, 1280, 720)
+        self.setFixedSize(1280, 720)
+        self.setWindowIcon(QIcon(cameraIcon))
+        self.setWindowIconText("Camera")
+
+        layout = QGridLayout()
+
+        if selectedCamera.lower() == "axis":
+
+            cameraOneLink = axisPath(selectedIP, CameraNumber)
+            print(cameraOneLink)
+
+
+        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
+
+            cameraOneLink = hikPath(selectedIP, CameraNumber)
+            print(cameraOneLink)
+
+
+        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
+
+             cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
+             print(cameraOneLink)
+
+        self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
+
+        layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+
+        self.cameraOne.close()
+
+        self.close()
+
+        if str(selectedUnitType) == "ARC":
+            getVictronValues()
+
+            self.openARCDashboard = arcDashboard()
+            self.openARCDashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openARCDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openARCDashboard.move(Geo.topLeft())
+
+            self.hide()
+        elif str(selectedUnitType) == "IO":
+            self.openIODashboard = ioDashboard()
+            self.openIODashboard.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openIODashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openIODashboard.move(Geo.topLeft())
+
+            self.hide()
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -534,23 +582,19 @@ class ioDashboard(QWidget):
         self.allCameras.move(Geo.topLeft())
 
     def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera.lower() == "axis":
-            if selectedCompany.lower() == "wj":
-                cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(str(cameraURL))
-            else:
-                cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
-            cameraURL = hikPath(selectedIP, cameraNumber)
-            threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
-            if selectedCompany.lower() == "wj":
-                cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-            else:
-                cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
+        global CameraNumber
+
+        CameraNumber = cameraNumber
+
+        self.hide()
+
+        self.singleCamera = singleCameraView()
+        self.singleCamera.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.singleCamera.frameGeometry()
+        Geo.moveCenter(Center)
+        self.singleCamera.move(Geo.topLeft())
 
     def checkUnitStatus(self):
         status = checkURL(selectedIP, 64430, 1)
@@ -836,24 +880,19 @@ class arcDashboard(QWidget):
         self.timer.start(30000)
 
     def viewIndividualCamera(self, cameraNumber):
-        if selectedCamera.lower() == "axis":
-            if selectedCompany.lower() == "wj":
-                cameraURL = axisPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(str(cameraURL))
-            else:
-                cameraURL = axisPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
-            cameraURL = hikPath(selectedIP, cameraNumber)
-            threading1Camera(cameraURL)
-        elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
-            if selectedCompany.lower() == "wj":
-                cameraURL = hanwhaPath(wjPassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
-            else:
-                cameraURL = hanwhaPath(sunstonePassword, selectedIP, cameraNumber)
-                threading1Camera(cameraURL)
+        global CameraNumber
 
+        CameraNumber = cameraNumber
+
+        self.hide()
+
+        self.singleCamera = singleCameraView()
+        self.singleCamera.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.singleCamera.frameGeometry()
+        Geo.moveCenter(Center)
+        self.singleCamera.move(Geo.topLeft())
     def viewAllCameras(self):
 
         self.hide()
