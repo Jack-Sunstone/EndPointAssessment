@@ -44,6 +44,7 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 
 geocoder = what3words.Geocoder("RMNUBSDA")
 
+
 def axisPath(password, IPaddress, cameraNumber):
     Axis = f"rtsp://root:{password}@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
@@ -974,6 +975,7 @@ class arcDashboard(QWidget):
 
             self.hide()
 
+
 class unitManagement(QWidget):
     def __init__(self):
 
@@ -1143,7 +1145,7 @@ class unitManagement(QWidget):
         self.w3wButton = QPushButton("Convert")
         self.w3wButton.clicked.connect(self.convertW3W)
 
-        layout.addWidget(self.w3wButton, 8,2,1,2)
+        layout.addWidget(self.w3wButton, 8, 2, 1, 2)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
@@ -1205,7 +1207,6 @@ class unitManagement(QWidget):
     def getW3W(self, W3W):
         self.w3w = W3W
 
-
     def unitChanged(self, index):
 
         self.selectedUnit = self.listOfUnits[index]
@@ -1246,8 +1247,8 @@ class unitManagement(QWidget):
         elif "ARC" not in self.newUnitName and "IO" not in self.newUnitName:
             self.errorMessage.setText("Unit Name Incorrect")
         elif any(x == "" for x in (
-        self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon,
-        self.newUnitType, self.newCameraType)):
+                self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon,
+                self.newUnitType, self.newCameraType)):
             self.errorMessage.setText("One or All Field Is Empty")
         elif len(self.newIP) < 8:
             self.errorMessage.setText("IP Address too short")
@@ -1299,6 +1300,7 @@ class unitManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class superUnitManagement(QWidget):
     def __init__(self):
@@ -1515,7 +1517,6 @@ class superUnitManagement(QWidget):
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1636,7 +1637,9 @@ class superUnitManagement(QWidget):
     def changeUnit(self):
         if int(self.selectedCameras) >= 1 and int(self.selectedCameras) <= 4:
             self.errorMessage.setText("Number of Cameras should be between 1-4")
-        elif any(x == "" for x in (self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon, self.selectedCameraType)):
+        elif any(x == "" for x in (
+        self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon,
+        self.selectedCameraType)):
             self.errorMessage.setText("One or More fields empty.")
         elif len(self.selectedIP) < 8:
             self.errorMessage.setText("IP Address too short")
@@ -1645,8 +1648,11 @@ class superUnitManagement(QWidget):
         elif self.selectedCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
-            SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras, self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy, self.selectedLat, self.selectedLon)
+            SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
+                                self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
+                                self.selectedLat, self.selectedLon)
             self.errorMessage.setText("Unit Updated")
+
     def deleteUnit(self):
         SQL.deleteUnits(self.selectedUnit)
         self.errorMessage.setText("Unit Deleted")
@@ -1659,8 +1665,8 @@ class superUnitManagement(QWidget):
         elif "ARC" not in self.newUnitName and "IO" not in self.newUnitName:
             self.errorMessage.setText("Unit Name Incorrect")
         elif any(x == "" for x in (
-        self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon,
-        self.newUnitType, self.newCameraType)):
+                self.newUnitName, self.newIP, self.newLocation, self.NoCCTV, self.newCompany, self.newLat, self.newLon,
+                self.newUnitType, self.newCameraType)):
             self.errorMessage.setText("One or All Field Is Empty")
         elif len(self.newIP) < 8:
             self.errorMessage.setText("IP Address too short")
@@ -1712,6 +1718,7 @@ class superUnitManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class userManagement(QWidget):
     def __init__(self):
@@ -1868,6 +1875,7 @@ class userManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class superUserManagement(QWidget):
     def __init__(self):
@@ -2049,6 +2057,7 @@ class superUserManagement(QWidget):
 
         self.hide()
 
+
 class adminMenu(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
@@ -2119,7 +2128,9 @@ class adminMenu(QWidget):
             self.openUnitManagement.move(Geo.topLeft())
 
             self.hide()
+
     def closeEvent(self, event):
+
         self.openMonitoring = adminMonitoring()
         self.openMonitoring.show()
 
@@ -2129,6 +2140,7 @@ class adminMenu(QWidget):
         self.openMonitoring.move(Geo.topLeft())
 
         self.hide()
+
 
 class interactiveMap(QWidget):
     def __init__(self):
@@ -2177,6 +2189,7 @@ class interactiveMap(QWidget):
             marker=go.scattermapbox.Marker(size=10),
             text=names,
         ))
+
         fig.update_layout(
             autosize=True,
             hovermode='closest',
@@ -2191,9 +2204,11 @@ class interactiveMap(QWidget):
                 zoom=4.4,
             ),
         )
+
         fig.update_traces()
 
         self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
+
 
 class adminMonitoring(QWidget):
     def __init__(self):
@@ -2201,12 +2216,25 @@ class adminMonitoring(QWidget):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
         self.listOfUnits = []
+        self.listOfLocations = []
 
         fetchUnits = SQL.fetchUnitsSunstone()
 
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
+        if userCompany == "Sunstone":
+            fetchSites = SQL.fetchSitesSunstone()
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
+
+        else:
+            fetchSites = SQL.fetchSites(userCompany)
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
+                print(self.listOfLocations)
 
         super().__init__()
 
@@ -2225,9 +2253,7 @@ class adminMonitoring(QWidget):
 
         for i in self.listOfUnits:
 
-            fetchSite = SQL.fetchSites(i)
-
-            self.testButton = QPushButton(str(f"{i} {fetchSite}"))
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
 
             buttonText = (self.testButton.text()).split()
 
@@ -2307,7 +2333,6 @@ class adminMonitoring(QWidget):
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
 
-
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
@@ -2342,12 +2367,14 @@ class adminMonitoring(QWidget):
 
         self.hide()
 
+
 class userMonitoring(QWidget):
     def __init__(self):
 
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
         self.listOfUnits = []
+        self.listOfLocations = []
 
         if userCompany == "Sunstone":
             fetchUnits = SQL.fetchUnitsSunstone()
@@ -2356,6 +2383,18 @@ class userMonitoring(QWidget):
 
         for item in fetchUnits:
             self.listOfUnits.append(item)
+
+        if userCompany == "Sunstone":
+            fetchSites = SQL.fetchSitesSunstone()
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
+
+        else:
+            fetchSites = SQL.fetchSites(userCompany)
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
 
         super().__init__()
 
@@ -2373,9 +2412,8 @@ class userMonitoring(QWidget):
         j = 0
 
         for i in self.listOfUnits:
-            fetchSite = SQL.fetchSites(i)
 
-            self.testButton = QPushButton(str(f"{i} {fetchSite}"))
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
 
             buttonText = (self.testButton.text()).split()
 
@@ -2450,7 +2488,6 @@ class userMonitoring(QWidget):
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
 
-
     def openMap(self):
         self.openMapPage = interactiveMap()
         self.openMapPage.show()
@@ -2473,6 +2510,7 @@ class userMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
+
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -2547,7 +2585,6 @@ class loginUI(QMainWindow):
         global userCompany
 
         checkUsername = SQL.checkUsername(self.username)
-
 
         if checkUsername is None:
             self.errorMessage.show()

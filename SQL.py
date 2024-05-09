@@ -80,15 +80,27 @@ def fetchCompanies():
 
     cnxn.commit()
 
-def fetchSites(unitName):
+def fetchSitesSunstone():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Location FROM dbo.Units WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT Location FROM dbo.Units ORDER BY Name")
 
     for row in cursor.fetchall():
-        return row[0]
+        yield row[0]
 
+    cnxn.commit()
+
+def fetchSites(Company):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Location FROM dbo.Units WHERE Company = '{Company}' ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
+    cnxn.commit()
 
 def fetchUnitType(unitName):
     connection()
