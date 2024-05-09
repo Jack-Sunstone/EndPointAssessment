@@ -177,8 +177,7 @@ class CameraWidget(QWidget):
                         self.Capture.release()
                         self.Online = False
                 else:
-                    # Attempt to reconnect
-                    print('attempting to reconnect', self.cameraStreamLink)
+
                     self.loadNetworkStream()
                     self.Spin(2)
                 self.Spin(.001)
@@ -369,19 +368,14 @@ class singleCameraView(QWidget):
         if selectedCamera.lower() == "axis":
 
             cameraOneLink = axisPath(selectedIP, CameraNumber)
-            print(cameraOneLink)
-
 
         elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
 
             cameraOneLink = hikPath(selectedIP, CameraNumber)
-            print(cameraOneLink)
-
 
         elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
 
              cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
-             print(cameraOneLink)
 
         self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
 
