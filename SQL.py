@@ -35,11 +35,20 @@ def fetchUnitDetails(unitName):
     for row in cursor.fetchall():
         yield row
 
-def fetchLocations():
+def fetchLocationsSunstone():
     connection()
     cursor = cnxn.cursor()
 
     cursor.execute("SELECT Name, Lat, Lon FROM dbo.Units")
+
+    for row in cursor.fetchall():
+        yield row
+
+def fetchLocations(Company):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name, Lat, Lon FROM dbo.Units WHERE Company = '{Company}'")
 
     for row in cursor.fetchall():
         yield row

@@ -2157,7 +2157,10 @@ class interactiveMap(QWidget):
 
         lon = []
 
-        data = SQL.fetchLocations()
+        if userCompany == "Sunstone":
+            data = SQL.fetchLocationsSunstone()
+        else:
+            data = SQL.fetchLocations(userCompany)
 
         for row in data:
             altered = list(row)
@@ -2198,10 +2201,12 @@ class adminMonitoring(QWidget):
         self.listOfCompanies = []
 
         fetchUnits = SQL.fetchUnitsSunstone()
+
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
         fetchCompanies = SQL.fetchCompanies()
+
         for item in fetchCompanies:
             self.listOfCompanies.append(item)
 
