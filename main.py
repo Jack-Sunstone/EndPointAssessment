@@ -2168,6 +2168,8 @@ class interactiveMap(QWidget):
             lat.append(altered[1])
             lon.append(altered[2])
 
+        config = {'displayModeBar': False}
+
         fig = go.Figure(go.Scattermapbox(
             lat=lat,
             lon=lon,
@@ -2190,7 +2192,8 @@ class interactiveMap(QWidget):
             ),
         )
         fig.update_traces()
-        self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn'))
+
+        self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
 
 class adminMonitoring(QWidget):
     def __init__(self):
@@ -2226,7 +2229,9 @@ class adminMonitoring(QWidget):
 
             self.testButton = QPushButton(str(f"{i} {fetchSite}"))
 
-            buttonText = self.testButton.text()
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
@@ -2372,7 +2377,9 @@ class userMonitoring(QWidget):
 
             self.testButton = QPushButton(str(f"{i} {fetchSite}"))
 
-            buttonText = self.testButton.text()
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 

@@ -23,19 +23,6 @@ names = []
 lat = []
 
 lon = []
-
-data = SQL.fetchLocations()
-
-for row in data:
-    altered = list(row)
-    names.append(altered[0])
-    lat.append(altered[1])
-    lon.append(altered[2])
-
-print(names)
-print(lat)
-print(lon)
-
 def checkConnected():
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(2)
@@ -48,12 +35,18 @@ def checkConnected():
         return 1
 print(checkConnected())
 
-geocoder = what3words.Geocoder("RMNUBSDA")
+#geocoder = what3words.Geocoder("RMNUBSDA")
 
-result = geocoder.convert_to_coordinates("fight.power.spoken")
+#result = geocoder.convert_to_coordinates("fight.power.spoken")
 
-print(result['coordinates']['lat'])
-print(result['coordinates']['lng'])
+#print(result['coordinates']['lat'])
+#print(result['coordinates']['lng'])
 
-if len("good.good.good") < 14:
-    print("bad")
+#if len("good.good.good") < 14:
+ #   print("bad")
+
+text = "ARC0109 ARC0011"
+
+buttonText = text.split()
+
+print(buttonText[0])
