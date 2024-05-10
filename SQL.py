@@ -66,7 +66,8 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = {CCTV}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron}, efoyID = '{Efoy}', Lat = {Lat}, Lon = {Lon} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData victronID = '{Victron.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 def fetchCompanies():
@@ -179,12 +180,15 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
         cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL)")
     else:
         cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
+
+        cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, UnitLoad, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()})")
     cnxn.commit()
 
 def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
     cursor.execute(f"DELETE FROM dbo.Units WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
 
     cnxn.commit()
 
