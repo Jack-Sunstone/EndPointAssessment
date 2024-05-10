@@ -46,18 +46,28 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 
 geocoder = what3words.Geocoder("RMNUBSDA")
 
+def pullVictronData():
+    global unitSolar
+    global unitVoltage
+    global unitLoad
+
+    data = SQL.fetchVictronData(selectedUnit)
+
+    for row in data:
+        altered = list(row)
+        unitSolar = altered[0]
+        unitVoltage = altered[1]
+        unitLoad = altered[2]
 
 def axisPath(IPaddress, cameraNumber):
     Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
-
 def hikPath(IPaddress, cameraNumber):
     Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
-
 
 def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
@@ -72,7 +82,6 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
-
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(Timeout)
@@ -83,39 +92,6 @@ def checkURL(IPAddress, Port, Timeout):
     else:
         socketOpen.close()
         return 1
-
-
-def getVictronValues():
-    if selectedVictron == None:
-        pass
-    else:
-        global unitSolar
-        global unitVoltage
-        global unitLoad
-        global formattedLoad
-        global formattedSolar
-
-        # Defining login details to access Sites
-        login_url = 'https://vrmapi.victronenergy.com/v2/auth/login'
-        login_string = '{"username":"support@sunstone-systems.com","password":"12Security34!"}'
-        # Stores and loads Json request to the login URL
-        response = requests.post(login_url, login_string)
-        token = json.loads(response.text).get("token")
-        headers = {"X-Authorization": 'Bearer ' + token}
-
-        diags_url = "https://vrmapi.victronenergy.com/v2/installations/{}/diagnostics?count=1000".format(
-            selectedVictron)
-        response = requests.get(diags_url, headers=headers)
-        data = response.json().get("records")
-
-        unitSolar = str([element['rawValue'] for element in data if element['code'] == "PVP"][0])
-        formattedSolar = str([element['formattedValue'] for element in data if element['code'] == "PVP"][0])
-
-        unitVoltage = str([element['rawValue'] for element in data if element['code'] == "bv"][0])
-
-        unitLoad = str([element['rawValue'] for element in data if element['code'] == "dc"][0])
-        formattedLoad = str([element['formattedValue'] for element in data if element['code'] == "dc"][0])
-
 
 class CameraWidget(QWidget):
 
@@ -177,8 +153,7 @@ class CameraWidget(QWidget):
                         self.Capture.release()
                         self.Online = False
                 else:
-                    # Attempt to reconnect
-                    print('attempting to reconnect', self.cameraStreamLink)
+
                     self.loadNetworkStream()
                     self.Spin(2)
                 self.Spin(.001)
@@ -212,7 +187,6 @@ class CameraWidget(QWidget):
 
     def getVideoFrame(self):
         return self.videoFrame
-
 
 class allCamerasView(QWidget):
     def __init__(self):
@@ -329,7 +303,7 @@ class allCamerasView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            getVictronValues()
+            pullVictronData()
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -369,19 +343,14 @@ class singleCameraView(QWidget):
         if selectedCamera.lower() == "axis":
 
             cameraOneLink = axisPath(selectedIP, CameraNumber)
-            print(cameraOneLink)
-
 
         elif selectedCamera.lower() == "hik" or selectedCamera.lower() == "hikvision":
 
             cameraOneLink = hikPath(selectedIP, CameraNumber)
-            print(cameraOneLink)
-
 
         elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
 
              cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
-             print(cameraOneLink)
 
         self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
 
@@ -396,7 +365,7 @@ class singleCameraView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            getVictronValues()
+            pullVictronData()
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -648,7 +617,6 @@ class ioDashboard(QWidget):
 
             self.hide()
 
-
 class arcDashboard(QWidget):
     def __init__(self):
         global unitVoltage
@@ -707,7 +675,7 @@ class arcDashboard(QWidget):
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.solarPower = QLabel(formattedSolar)
+        self.solarPower = QLabel(str(unitSolar) + " W")
 
         layout.addWidget(self.sunImage, 1, 0)
         layout.addWidget(self.solarPower, 1, 1)
@@ -725,7 +693,7 @@ class arcDashboard(QWidget):
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.loadDraw = QLabel(formattedLoad)
+        self.loadDraw = QLabel(str(unitLoad) + " W")
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -893,6 +861,7 @@ class arcDashboard(QWidget):
         Geo = self.singleCamera.frameGeometry()
         Geo.moveCenter(Center)
         self.singleCamera.move(Geo.topLeft())
+
     def viewAllCameras(self):
 
         self.hide()
@@ -940,7 +909,7 @@ class arcDashboard(QWidget):
         global formattedLoad
         global formattedSolar
 
-        getVictronValues()
+        pullVictronData()
 
         unitVoltage = float(unitVoltage)
         unitLoad = float(unitLoad)
@@ -1013,7 +982,6 @@ class arcDashboard(QWidget):
             self.openMonitoring.move(Geo.topLeft())
 
             self.hide()
-
 
 class unitManagement(QWidget):
     def __init__(self):
@@ -1339,7 +1307,6 @@ class unitManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
-
 
 class superUnitManagement(QWidget):
     def __init__(self):
@@ -1758,7 +1725,6 @@ class superUnitManagement(QWidget):
 
         self.hide()
 
-
 class userManagement(QWidget):
     def __init__(self):
 
@@ -1914,7 +1880,6 @@ class userManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
-
 
 class superUserManagement(QWidget):
     def __init__(self):
@@ -2096,7 +2061,6 @@ class superUserManagement(QWidget):
 
         self.hide()
 
-
 class adminMenu(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
@@ -2179,7 +2143,6 @@ class adminMenu(QWidget):
         self.openMonitoring.move(Geo.topLeft())
 
         self.hide()
-
 
 class interactiveMap(QWidget):
     def __init__(self):
@@ -2349,7 +2312,7 @@ class adminMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            getVictronValues()
+            pullVictronData()
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -2504,7 +2467,7 @@ class userMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            getVictronValues()
+            pullVictronData()
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()

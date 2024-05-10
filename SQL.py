@@ -210,3 +210,14 @@ def deleteUsers(Username):
     cursor.execute(f"DELETE FROM dbo.Users WHERE Username = '{Username}'")
 
     cnxn.commit()
+
+
+def fetchVictronData(unitName):
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SElECT Solar, Voltage, UnitLoad FROM dbo.VictronData WHERE Name = '{unitName}'")
+
+    for row in cursor.fetchall():
+        yield row
