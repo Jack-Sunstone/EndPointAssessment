@@ -29,11 +29,9 @@ selectedEfoyID = ""
 userRights = ""
 userCompany = ""
 
-unitSolar = ""
-formattedSolar = ""
-unitVoltage = ""
-unitLoad = ""
-formattedLoad = ""
+unitSolar = 0
+unitVoltage = 0
+unitLoad = 0
 
 username = ""
 
@@ -906,8 +904,6 @@ class arcDashboard(QWidget):
         global unitVoltage
         global unitLoad
         global unitSolar
-        global formattedLoad
-        global formattedSolar
 
         pullVictronData()
 
@@ -916,8 +912,8 @@ class arcDashboard(QWidget):
         unitSolar = float(unitSolar)
 
         self.batteryVoltage.setText(str(unitVoltage) + " V")
-        self.loadDraw.setText(formattedLoad)
-        self.solarPower.setText(formattedSolar)
+        self.loadDraw.setText(str(unitLoad) + " W")
+        self.solarPower.setText(str(unitSolar) + " W")
 
         if unitVoltage >= 25.5:
             self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
