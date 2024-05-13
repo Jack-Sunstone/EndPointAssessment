@@ -594,7 +594,7 @@ class ioDashboard(QWidget):
         webbrowser.open(f"https://{selectedIP}:64430/")
 
     def closeEvent(self, event):
-        if userRights == "ADMIN":
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
 
@@ -958,7 +958,7 @@ class arcDashboard(QWidget):
         webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
 
     def closeEvent(self, event):
-        if userRights == "ADMIN":
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
 
@@ -2207,7 +2207,6 @@ class interactiveMap(QWidget):
 
         self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
 
-
 class adminMonitoring(QWidget):
     def __init__(self):
 
@@ -2364,7 +2363,6 @@ class adminMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
-
 
 class userMonitoring(QWidget):
     def __init__(self):
