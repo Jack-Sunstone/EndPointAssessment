@@ -67,7 +67,7 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     cursor = cnxn.cursor()
 
     cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-    cursor.execute(f"UPDATE dbo.VictronData victronID = '{Victron.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()} WHERE Name = '{unitName}'")
 
     cnxn.commit()
 def fetchCompanies():

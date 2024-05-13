@@ -1637,7 +1637,7 @@ class superUnitManagement(QWidget):
         self.Lon.setText(self.selectedLon)
 
     def changeUnit(self):
-        if int(self.selectedCameras) >= 1 and int(self.selectedCameras) <= 4:
+        if int(self.selectedCameras) < 1 or int(self.selectedCameras) > 4:
             self.errorMessage.setText("Number of Cameras should be between 1-4")
         elif any(x == "" for x in (
         self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon,

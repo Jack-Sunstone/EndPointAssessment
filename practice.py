@@ -50,3 +50,10 @@ text = "ARC0109 ARC0011"
 buttonText = text.split()
 
 print(buttonText[0])
+
+camera = "0"
+
+if int(camera) < 1 or int(camera) > 4:
+    print("not Okay")
+else:
+    print("Okay")
