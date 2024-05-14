@@ -876,7 +876,7 @@ class arcDashboard(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateData)
-        self.timer.start(30000)
+        self.timer.start(60000)
 
     def viewIndividualCamera(self, cameraNumber):
         global CameraNumber
