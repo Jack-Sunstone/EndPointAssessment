@@ -2256,26 +2256,29 @@ class victronOverview(QWidget):
         self.Filters = ["Name", "Voltage", "Solar", "Load"]
         self.listOfUnits = []
         self.listOfLocations = []
+        self.listOfVoltage = []
+        self.listOfSolar = []
+        self.listOfLoad = []
 
         if userCompany == "Sunstone":
-            fetchUnits = SQL.fetchUnitsSunstone()
-        else:
-            fetchUnits = SQL.fetchUnits(userCompany)
+            fetchVictron = SQL.fetchVictronAllDataSunstone()
 
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
-
-        if userCompany == "Sunstone":
-            fetchSites = SQL.fetchSitesSunstone()
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
 
         else:
-            fetchSites = SQL.fetchSites(userCompany)
+            fetchVictron = SQL.fetchVictronAllData(userCompany)
 
-            for i in fetchSites:
-                self.listOfLocations.append(i)
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
 
         super().__init__()
 
@@ -2298,43 +2301,97 @@ class victronOverview(QWidget):
         layout.addWidget(self.filterDropdown)
 
         self.Header1 = QLabel("Unit Name")
+        self.Header1.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Header2 = QLabel("Voltage")
+        self.Header2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Header3 = QLabel("Solar")
+        self.Header3.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.Header4 = QLabel("Load")
+        self.Header4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.Header1.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header2.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header3.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header4.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
         unitsLayout.addWidget(self.Header1, 0, 0)
         unitsLayout.addWidget(self.Header2, 0, 1)
         unitsLayout.addWidget(self.Header3, 0, 2)
         unitsLayout.addWidget(self.Header4, 0, 3)
 
-        j = 1
+        j = 0
         for i in self.listOfUnits:
             self.unitName = QLabel(f"{i}")
+            self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.unitName.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.unitName, j, 0)
+            unitsLayout.addWidget(self.unitName, j+1, 0)
 
-            pullVictronData(str(i))
-
-            if unitVoltage == None or unitLoad == None or unitSolar == None:
-                unitVoltage = 0.0
-                unitLoad = 0.0
-                unitSolar = 0.0
-            else:
-                unitVoltage = float(unitVoltage)
-                unitLoad = int(unitLoad)
-                unitSolar = int(unitSolar)
+            unitVoltage = self.listOfVoltage[j]
+            unitLoad = self.listOfLoad[j]
+            unitSolar = self.listOfSolar[j]
 
             self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+            self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.batteryVoltage.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.batteryVoltage, j, 1)
+            unitsLayout.addWidget(self.batteryVoltage, j+1, 1)
 
             self.solarPower = QLabel(str(unitSolar) + " W")
+            self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.solarPower.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.solarPower, j, 2)
+            unitsLayout.addWidget(self.solarPower, j+1, 2)
 
             self.loadDraw = QLabel(str(unitLoad) + " W")
+            self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.loadDraw.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.loadDraw, j, 3)
+            unitsLayout.addWidget(self.loadDraw, j+1, 3)
 
             j = j + 1
 
@@ -2497,6 +2554,7 @@ class adminMonitoring(QWidget):
         Geo = self.openVictronPage.frameGeometry()
         Geo.moveCenter(Center)
         self.openVictronPage.move(Geo.topLeft())
+
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
@@ -2592,6 +2650,11 @@ class userMonitoring(QWidget):
 
         mainLayout.addWidget(mapButton)
 
+        victronButton = QPushButton("Victron Overview")
+        victronButton.clicked.connect(self.openVictron)
+
+        mainLayout.addWidget(victronButton)
+
         self.setLayout(mainLayout)
 
     def openUnitDashboard(self, unitName):
@@ -2650,6 +2713,15 @@ class userMonitoring(QWidget):
         Geo = self.openMapPage.frameGeometry()
         Geo.moveCenter(Center)
         self.openMapPage.move(Geo.topLeft())
+
+    def openVictron(self):
+        self.openVictronPage = victronOverview()
+        self.openVictronPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openVictronPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openVictronPage.move(Geo.topLeft())
 
     def closeEvent(self, event):
         self.login = loginUI()

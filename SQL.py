@@ -221,3 +221,22 @@ def fetchVictronData(unitName):
 
     for row in cursor.fetchall():
         yield row
+
+def fetchVictronAllDataSunstone():
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name, Voltage, Solar, UnitLoad FROM dbo.VictronData ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row
+
+def fetchVictronAllData(Company):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name, Voltage, Solar, UnitLoad FROM dbo.VictronData WHERE Company = '{Company}' ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row
