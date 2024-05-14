@@ -29,11 +29,9 @@ selectedEfoyID = ""
 userRights = ""
 userCompany = ""
 
-unitSolar = ""
-formattedSolar = ""
-unitVoltage = ""
-unitLoad = ""
-formattedLoad = ""
+unitSolar = 0
+unitVoltage = 0
+unitLoad = 0
 
 username = ""
 
@@ -46,12 +44,12 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 
 geocoder = what3words.Geocoder("RMNUBSDA")
 
-def pullVictronData():
+def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
     global unitLoad
 
-    data = SQL.fetchVictronData(selectedUnit)
+    data = SQL.fetchVictronData(unitName)
 
     for row in data:
         altered = list(row)
@@ -73,6 +71,13 @@ def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
+
+
+def dahuaPath(IPaddress, cameraNumber):
+    Dahua = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/live"
+
+    return Dahua
+
 
 def resourcePath(relativePath):
     try:
@@ -254,6 +259,23 @@ class allCamerasView(QWidget):
                 cameraOneLink = hanwhaPath(selectedIP, 1)
                 cameraTwoLink = hanwhaPath(selectedIP, 2)
 
+        elif selectedCamera.lower() == "dahua":
+
+            if selectedCCTV == 4:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+                cameraThreeLink = dahuaPath(selectedIP, 3)
+                cameraFourLink = dahuaPath(selectedIP, 4)
+
+            if selectedCCTV == 3:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+                cameraThreeLink = dahuaPath(selectedIP, 3)
+
+            if selectedCCTV == 2:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+
         if selectedCCTV == 4:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
@@ -350,7 +372,11 @@ class singleCameraView(QWidget):
 
         elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
 
-             cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
+            cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
+
+        elif selectedCamera.lower() == "dahua":
+
+            cameraOneLink = dahuaPath(selectedIP, CameraNumber)
 
         self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
 
@@ -596,7 +622,7 @@ class ioDashboard(QWidget):
         webbrowser.open(f"https://{selectedIP}:64430/")
 
     def closeEvent(self, event):
-        if userRights == "ADMIN":
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
 
@@ -626,9 +652,14 @@ class arcDashboard(QWidget):
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
 
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
 
         if unitVoltage >= 25.5:
             self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
@@ -845,7 +876,7 @@ class arcDashboard(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateData)
-        self.timer.start(30000)
+        self.timer.start(60000)
 
     def viewIndividualCamera(self, cameraNumber):
         global CameraNumber
@@ -906,18 +937,21 @@ class arcDashboard(QWidget):
         global unitVoltage
         global unitLoad
         global unitSolar
-        global formattedLoad
-        global formattedSolar
 
         pullVictronData()
 
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
 
         self.batteryVoltage.setText(str(unitVoltage) + " V")
-        self.loadDraw.setText(formattedLoad)
-        self.solarPower.setText(formattedSolar)
+        self.loadDraw.setText(str(unitLoad) + " W")
+        self.solarPower.setText(str(unitSolar) + " W")
 
         if unitVoltage >= 25.5:
             self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
@@ -962,7 +996,7 @@ class arcDashboard(QWidget):
         webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
 
     def closeEvent(self, event):
-        if userRights == "ADMIN":
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
 
@@ -1261,7 +1295,7 @@ class unitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
@@ -1641,7 +1675,7 @@ class superUnitManagement(QWidget):
         self.Lon.setText(self.selectedLon)
 
     def changeUnit(self):
-        if int(self.selectedCameras) >= 1 and int(self.selectedCameras) <= 4:
+        if int(self.selectedCameras) < 1 or int(self.selectedCameras) > 4:
             self.errorMessage.setText("Number of Cameras should be between 1-4")
         elif any(x == "" for x in (
         self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon,
@@ -1651,7 +1685,7 @@ class superUnitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.selectedLat or "." not in self.selectedLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.selectedCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.selectedCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
@@ -1678,7 +1712,7 @@ class superUnitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
@@ -2211,6 +2245,301 @@ class interactiveMap(QWidget):
 
         self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
 
+class victronOverview(QWidget):
+    def __init__(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.Filters = ["Name", "Voltage", "Solar", "Load"]
+        self.listOfUnits = []
+        self.listOfLocations = []
+        self.listOfVoltage = []
+        self.listOfSolar = []
+        self.listOfLoad = []
+
+        if userCompany == "Sunstone":
+            fetchVictron = SQL.fetchVictronAllDataSunstone()
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        else:
+            fetchVictron = SQL.fetchVictronAllData(userCompany)
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        super().__init__()
+
+        self.setWindowTitle("Victron Data Overview")
+        self.setGeometry(0, 0, 700, 700)
+
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QVBoxLayout()
+
+        self.unitsLayout = QGridLayout()
+
+        groupBox = QGroupBox()
+
+        self.filterDropdown = QComboBox()
+        self.filterDropdown.addItems(self.Filters)
+        self.filterDropdown.currentIndexChanged.connect(self.filterChanged)
+
+        layout.addWidget(self.filterDropdown)
+
+        self.Header1 = QLabel("Unit Name")
+        self.Header1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header2 = QLabel("Voltage")
+        self.Header2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header3 = QLabel("Solar")
+        self.Header3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header4 = QLabel("Load")
+        self.Header4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.Header1.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header2.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header3.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header4.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+        self.unitsLayout.addWidget(self.Header1, 0, 0)
+        self.unitsLayout.addWidget(self.Header2, 0, 1)
+        self.unitsLayout.addWidget(self.Header3, 0, 2)
+        self.unitsLayout.addWidget(self.Header4, 0, 3)
+
+        j = 0
+        for i in self.listOfUnits:
+            self.unitName = QLabel(f"{i}")
+            self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.unitName.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.unitName, j+1, 0)
+
+            unitVoltage = self.listOfVoltage[j]
+            unitLoad = self.listOfLoad[j]
+            unitSolar = self.listOfSolar[j]
+
+            self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+            self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.batteryVoltage.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.batteryVoltage, j+1, 1)
+
+            self.solarPower = QLabel(str(unitSolar) + " W")
+            self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.solarPower.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.solarPower, j+1, 2)
+
+            self.loadDraw = QLabel(str(unitLoad) + " W")
+            self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.loadDraw.setStyleSheet("border-radius: 8px;"
+                                   "color: black;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #c8eacf;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.loadDraw, j+1, 3)
+
+            j = j + 1
+
+        groupBox.setLayout(self.unitsLayout)
+
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(groupBox)
+        scrollArea.setWidgetResizable(True)
+
+        layout.addWidget(scrollArea)
+
+        self.setLayout(layout)
+
+    def filterChanged(self, index):
+
+        selectedFilter = self.Filters[index]
+
+        for i in reversed(range(self.unitsLayout.count())):
+            widgetToRemove = self.unitsLayout.itemAt(i).widget()
+            self.unitsLayout.removeWidget(widgetToRemove)
+            widgetToRemove.deleteLater()
+
+        self.Header1 = QLabel("Unit Name")
+        self.Header1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header2 = QLabel("Voltage")
+        self.Header2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header3 = QLabel("Solar")
+        self.Header3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header4 = QLabel("Load")
+        self.Header4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.Header1.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header2.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header3.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header4.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+        self.unitsLayout.addWidget(self.Header1, 0, 0)
+        self.unitsLayout.addWidget(self.Header2, 0, 1)
+        self.unitsLayout.addWidget(self.Header3, 0, 2)
+        self.unitsLayout.addWidget(self.Header4, 0, 3)
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+        self.listOfVoltage = []
+        self.listOfSolar = []
+        self.listOfLoad = []
+
+        if userCompany == "Sunstone":
+            if selectedFilter == "Name":
+                fetchVictron = SQL.fetchVictronAllDataSunstone()
+            else:
+                fetchVictron = SQL.fetchFilteredVictronSunstone(selectedFilter)
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        else:
+            if selectedFilter == "Name":
+                fetchVictron = SQL.fetchVictronAllData(userCompany)
+            else:
+                fetchVictron = SQL.fetchFilteredVictron(userCompany, selectedFilter)
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        j = 0
+        for i in self.listOfUnits:
+            self.unitName = QLabel(f"{i}")
+            self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.unitName.setStyleSheet("border-radius: 8px;"
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.unitName, j + 1, 0)
+
+            unitVoltage = self.listOfVoltage[j]
+            unitLoad = self.listOfLoad[j]
+            unitSolar = self.listOfSolar[j]
+
+            self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+            self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.batteryVoltage.setStyleSheet("border-radius: 8px;"
+                                              "color: black;"
+                                              "border: 1px solid #46a15b;"
+                                              "background-color: #c8eacf;"
+                                              "padding: 5px 15px;"
+                                              "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.batteryVoltage, j + 1, 1)
+
+            self.solarPower = QLabel(str(unitSolar) + " W")
+            self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.solarPower.setStyleSheet("border-radius: 8px;"
+                                          "color: black;"
+                                          "border: 1px solid #46a15b;"
+                                          "background-color: #c8eacf;"
+                                          "padding: 5px 15px;"
+                                          "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.solarPower, j + 1, 2)
+
+            self.loadDraw = QLabel(str(unitLoad) + " W")
+            self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.loadDraw.setStyleSheet("border-radius: 8px;"
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.loadDraw, j + 1, 3)
+
+            j = j + 1
 
 class adminMonitoring(QWidget):
     def __init__(self):
@@ -2280,6 +2609,11 @@ class adminMonitoring(QWidget):
 
         mainLayout.addWidget(mapButton)
 
+        victronButton = QPushButton("Victron Overview")
+        victronButton.clicked.connect(self.openVictron)
+
+        mainLayout.addWidget(victronButton)
+
         adminButton = QPushButton("Admin Menu")
         adminButton.clicked.connect(self.openAdmin)
 
@@ -2312,7 +2646,7 @@ class adminMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -2344,6 +2678,15 @@ class adminMonitoring(QWidget):
         Geo.moveCenter(Center)
         self.openMapPage.move(Geo.topLeft())
 
+    def openVictron(self):
+        self.openVictronPage = victronOverview()
+        self.openVictronPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openVictronPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openVictronPage.move(Geo.topLeft())
+
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
@@ -2368,7 +2711,6 @@ class adminMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
-
 
 class userMonitoring(QWidget):
     def __init__(self):
@@ -2440,6 +2782,11 @@ class userMonitoring(QWidget):
 
         mainLayout.addWidget(mapButton)
 
+        victronButton = QPushButton("Victron Overview")
+        victronButton.clicked.connect(self.openVictron)
+
+        mainLayout.addWidget(victronButton)
+
         self.setLayout(mainLayout)
 
     def openUnitDashboard(self, unitName):
@@ -2498,6 +2845,15 @@ class userMonitoring(QWidget):
         Geo = self.openMapPage.frameGeometry()
         Geo.moveCenter(Center)
         self.openMapPage.move(Geo.topLeft())
+
+    def openVictron(self):
+        self.openVictronPage = victronOverview()
+        self.openVictronPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openVictronPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openVictronPage.move(Geo.topLeft())
 
     def closeEvent(self, event):
         self.login = loginUI()

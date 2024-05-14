@@ -2290,7 +2290,7 @@ class victronOverview(QWidget):
 
         layout = QVBoxLayout()
 
-        unitsLayout = QGridLayout()
+        self.unitsLayout = QGridLayout()
 
         groupBox = QGroupBox()
 
@@ -2338,10 +2338,10 @@ class victronOverview(QWidget):
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
-        unitsLayout.addWidget(self.Header1, 0, 0)
-        unitsLayout.addWidget(self.Header2, 0, 1)
-        unitsLayout.addWidget(self.Header3, 0, 2)
-        unitsLayout.addWidget(self.Header4, 0, 3)
+        self.unitsLayout.addWidget(self.Header1, 0, 0)
+        self.unitsLayout.addWidget(self.Header2, 0, 1)
+        self.unitsLayout.addWidget(self.Header3, 0, 2)
+        self.unitsLayout.addWidget(self.Header4, 0, 3)
 
         j = 0
         for i in self.listOfUnits:
@@ -2354,7 +2354,7 @@ class victronOverview(QWidget):
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.unitName, j+1, 0)
+            self.unitsLayout.addWidget(self.unitName, j+1, 0)
 
             unitVoltage = self.listOfVoltage[j]
             unitLoad = self.listOfLoad[j]
@@ -2369,7 +2369,7 @@ class victronOverview(QWidget):
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.batteryVoltage, j+1, 1)
+            self.unitsLayout.addWidget(self.batteryVoltage, j+1, 1)
 
             self.solarPower = QLabel(str(unitSolar) + " W")
             self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -2380,7 +2380,7 @@ class victronOverview(QWidget):
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.solarPower, j+1, 2)
+            self.unitsLayout.addWidget(self.solarPower, j+1, 2)
 
             self.loadDraw = QLabel(str(unitLoad) + " W")
             self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -2391,11 +2391,11 @@ class victronOverview(QWidget):
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
-            unitsLayout.addWidget(self.loadDraw, j+1, 3)
+            self.unitsLayout.addWidget(self.loadDraw, j+1, 3)
 
             j = j + 1
 
-        groupBox.setLayout(unitsLayout)
+        groupBox.setLayout(self.unitsLayout)
 
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
@@ -2408,6 +2408,138 @@ class victronOverview(QWidget):
     def filterChanged(self, index):
 
         selectedFilter = self.Filters[index]
+
+        for i in reversed(range(self.unitsLayout.count())):
+            widgetToRemove = self.unitsLayout.itemAt(i).widget()
+            self.unitsLayout.removeWidget(widgetToRemove)
+            widgetToRemove.deleteLater()
+
+        self.Header1 = QLabel("Unit Name")
+        self.Header1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header2 = QLabel("Voltage")
+        self.Header2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header3 = QLabel("Solar")
+        self.Header3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.Header4 = QLabel("Load")
+        self.Header4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.Header1.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header2.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header3.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+        self.Header4.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
+
+        self.unitsLayout.addWidget(self.Header1, 0, 0)
+        self.unitsLayout.addWidget(self.Header2, 0, 1)
+        self.unitsLayout.addWidget(self.Header3, 0, 2)
+        self.unitsLayout.addWidget(self.Header4, 0, 3)
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+        self.listOfVoltage = []
+        self.listOfSolar = []
+        self.listOfLoad = []
+
+        if userCompany == "Sunstone":
+            if selectedFilter == "Name":
+                fetchVictron = SQL.fetchVictronAllDataSunstone()
+            else:
+                fetchVictron = SQL.fetchFilteredVictronSunstone(selectedFilter)
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        else:
+            if selectedFilter == "Name":
+                fetchVictron = SQL.fetchVictronAllData(userCompany)
+            else:
+                fetchVictron = SQL.fetchFilteredVictron(userCompany, selectedFilter)
+
+            for row in fetchVictron:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfVoltage.append(altered[1])
+                self.listOfSolar.append(altered[2])
+                self.listOfLoad.append(altered[3])
+
+        j = 0
+        for i in self.listOfUnits:
+            self.unitName = QLabel(f"{i}")
+            self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.unitName.setStyleSheet("border-radius: 8px;"
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.unitName, j + 1, 0)
+
+            unitVoltage = self.listOfVoltage[j]
+            unitLoad = self.listOfLoad[j]
+            unitSolar = self.listOfSolar[j]
+
+            self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+            self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.batteryVoltage.setStyleSheet("border-radius: 8px;"
+                                              "color: black;"
+                                              "border: 1px solid #46a15b;"
+                                              "background-color: #c8eacf;"
+                                              "padding: 5px 15px;"
+                                              "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.batteryVoltage, j + 1, 1)
+
+            self.solarPower = QLabel(str(unitSolar) + " W")
+            self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.solarPower.setStyleSheet("border-radius: 8px;"
+                                          "color: black;"
+                                          "border: 1px solid #46a15b;"
+                                          "background-color: #c8eacf;"
+                                          "padding: 5px 15px;"
+                                          "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.solarPower, j + 1, 2)
+
+            self.loadDraw = QLabel(str(unitLoad) + " W")
+            self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.loadDraw.setStyleSheet("border-radius: 8px;"
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
+
+            self.unitsLayout.addWidget(self.loadDraw, j + 1, 3)
+
+            j = j + 1
 
 class adminMonitoring(QWidget):
     def __init__(self):

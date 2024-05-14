@@ -181,7 +181,7 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
     else:
         cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
 
-        cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, UnitLoad, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
+        cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
     cnxn.commit()
 
 def deleteUnits(Name):
@@ -217,7 +217,7 @@ def fetchVictronData(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SElECT Solar, Voltage, UnitLoad FROM dbo.VictronData WHERE Name = '{unitName}'")
+    cursor.execute(f"SElECT Solar, Voltage, Load FROM dbo.VictronData WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row
@@ -227,7 +227,7 @@ def fetchVictronAllDataSunstone():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name, Voltage, Solar, UnitLoad FROM dbo.VictronData ORDER BY Name")
+    cursor.execute(f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row
@@ -236,7 +236,28 @@ def fetchVictronAllData(Company):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name, Voltage, Solar, UnitLoad FROM dbo.VictronData WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData WHERE Company = '{Company}' ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row
+
+
+def fetchFilteredVictronSunstone(Filter):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(
+        f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData ORDER By {Filter} DESC")
+
+    for row in cursor.fetchall():
+        yield row
+
+def fetchFilteredVictron(Company, Filter):
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData WHERE Comapany = '{Company}' ORDER By {Filter} DESC")
 
     for row in cursor.fetchall():
         yield row
