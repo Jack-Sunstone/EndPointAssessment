@@ -72,6 +72,13 @@ def hanwhaPath(IPaddress, cameraNumber):
 
     return Hanwha
 
+
+def dahuaPath(IPaddress, cameraNumber):
+    Dahua = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/live"
+
+    return Dahua
+
+
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -252,6 +259,23 @@ class allCamerasView(QWidget):
                 cameraOneLink = hanwhaPath(selectedIP, 1)
                 cameraTwoLink = hanwhaPath(selectedIP, 2)
 
+        elif selectedCamera.lower() == "dahua":
+
+            if selectedCCTV == 4:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+                cameraThreeLink = dahuaPath(selectedIP, 3)
+                cameraFourLink = dahuaPath(selectedIP, 4)
+
+            if selectedCCTV == 3:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+                cameraThreeLink = dahuaPath(selectedIP, 3)
+
+            if selectedCCTV == 2:
+                cameraOneLink = dahuaPath(selectedIP, 1)
+                cameraTwoLink = dahuaPath(selectedIP, 2)
+
         if selectedCCTV == 4:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
@@ -348,7 +372,11 @@ class singleCameraView(QWidget):
 
         elif selectedCamera.lower() == "hanwha" or selectedCamera.lower() == "wisenet":
 
-             cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
+            cameraOneLink = hanwhaPath(selectedIP, CameraNumber)
+
+        elif selectedCamera.lower() == "dahua":
+
+            cameraOneLink = dahuaPath(selectedIP, CameraNumber)
 
         self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
 
@@ -1257,7 +1285,7 @@ class unitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
@@ -1647,7 +1675,7 @@ class superUnitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.selectedLat or "." not in self.selectedLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.selectedCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.selectedCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
@@ -1674,7 +1702,7 @@ class superUnitManagement(QWidget):
             self.errorMessage.setText("IP Address too short")
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
-        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet"]:
+        elif self.newCameraType.lower() not in ["axis", "hik", "hikvision", "hanwha", "wisenet", "dahua"]:
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
