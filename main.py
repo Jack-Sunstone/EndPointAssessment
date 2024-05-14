@@ -44,12 +44,12 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 
 geocoder = what3words.Geocoder("RMNUBSDA")
 
-def pullVictronData():
+def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
     global unitLoad
 
-    data = SQL.fetchVictronData(selectedUnit)
+    data = SQL.fetchVictronData(unitName)
 
     for row in data:
         altered = list(row)
@@ -658,8 +658,8 @@ class arcDashboard(QWidget):
             unitSolar = 0.0
         else:
             unitVoltage = float(unitVoltage)
-            unitLoad = float(unitLoad)
-            unitSolar = float(unitSolar)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
 
         if unitVoltage >= 25.5:
             self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
@@ -946,8 +946,8 @@ class arcDashboard(QWidget):
             unitSolar = 0.0
         else:
             unitVoltage = float(unitVoltage)
-            unitLoad = float(unitLoad)
-            unitSolar = float(unitSolar)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
 
         self.batteryVoltage.setText(str(unitVoltage) + " V")
         self.loadDraw.setText(str(unitLoad) + " W")
@@ -2247,7 +2247,35 @@ class interactiveMap(QWidget):
 
 class victronOverview(QWidget):
     def __init__(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.Filters = ["Name", "Voltage", "Solar", "Load"]
+        self.listOfUnits = []
+        self.listOfLocations = []
+
+        if userCompany == "Sunstone":
+            fetchUnits = SQL.fetchUnitsSunstone()
+        else:
+            fetchUnits = SQL.fetchUnits(userCompany)
+
+        for item in fetchUnits:
+            self.listOfUnits.append(item)
+
+        if userCompany == "Sunstone":
+            fetchSites = SQL.fetchSitesSunstone()
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
+
+        else:
+            fetchSites = SQL.fetchSites(userCompany)
+
+            for i in fetchSites:
+                self.listOfLocations.append(i)
 
         super().__init__()
 
@@ -2257,9 +2285,72 @@ class victronOverview(QWidget):
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
-        layout = QGridLayout()
+        layout = QVBoxLayout()
+
+        unitsLayout = QGridLayout()
+
+        groupBox = QGroupBox()
+
+        self.filterDropdown = QComboBox()
+        self.filterDropdown.addItems(self.Filters)
+        self.filterDropdown.currentIndexChanged.connect(self.filterChanged)
+
+        layout.addWidget(self.filterDropdown)
+
+        self.Header1 = QLabel("Unit Name")
+        self.Header2 = QLabel("Voltage")
+        self.Header3 = QLabel("Solar")
+        self.Header4 = QLabel("Load")
+
+        unitsLayout.addWidget(self.Header1, 0, 0)
+        unitsLayout.addWidget(self.Header2, 0, 1)
+        unitsLayout.addWidget(self.Header3, 0, 2)
+        unitsLayout.addWidget(self.Header4, 0, 3)
+
+        j = 1
+        for i in self.listOfUnits:
+            self.unitName = QLabel(f"{i}")
+
+            unitsLayout.addWidget(self.unitName, j, 0)
+
+            pullVictronData(str(i))
+
+            if unitVoltage == None or unitLoad == None or unitSolar == None:
+                unitVoltage = 0.0
+                unitLoad = 0.0
+                unitSolar = 0.0
+            else:
+                unitVoltage = float(unitVoltage)
+                unitLoad = int(unitLoad)
+                unitSolar = int(unitSolar)
+
+            self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+
+            unitsLayout.addWidget(self.batteryVoltage, j, 1)
+
+            self.solarPower = QLabel(str(unitSolar) + " W")
+
+            unitsLayout.addWidget(self.solarPower, j, 2)
+
+            self.loadDraw = QLabel(str(unitLoad) + " W")
+
+            unitsLayout.addWidget(self.loadDraw, j, 3)
+
+            j = j + 1
+
+        groupBox.setLayout(unitsLayout)
+
+        scrollArea = QScrollArea()
+        scrollArea.setWidget(groupBox)
+        scrollArea.setWidgetResizable(True)
+
+        layout.addWidget(scrollArea)
 
         self.setLayout(layout)
+
+    def filterChanged(self, index):
+
+        selectedFilter = self.Filters[index]
 
 class adminMonitoring(QWidget):
     def __init__(self):
@@ -2329,6 +2420,11 @@ class adminMonitoring(QWidget):
 
         mainLayout.addWidget(mapButton)
 
+        victronButton = QPushButton("Victron Overview")
+        victronButton.clicked.connect(self.openVictron)
+
+        mainLayout.addWidget(victronButton)
+
         adminButton = QPushButton("Admin Menu")
         adminButton.clicked.connect(self.openAdmin)
 
@@ -2361,7 +2457,7 @@ class adminMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -2393,6 +2489,14 @@ class adminMonitoring(QWidget):
         Geo.moveCenter(Center)
         self.openMapPage.move(Geo.topLeft())
 
+    def openVictron(self):
+        self.openVictronPage = victronOverview()
+        self.openVictronPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openVictronPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openVictronPage.move(Geo.topLeft())
     def openAdmin(self):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
