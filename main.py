@@ -652,9 +652,14 @@ class arcDashboard(QWidget):
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
 
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = float(unitLoad)
+            unitSolar = float(unitSolar)
 
         if unitVoltage >= 25.5:
             self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
@@ -935,9 +940,14 @@ class arcDashboard(QWidget):
 
         pullVictronData()
 
-        unitVoltage = float(unitVoltage)
-        unitLoad = float(unitLoad)
-        unitSolar = float(unitSolar)
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = float(unitLoad)
+            unitSolar = float(unitSolar)
 
         self.batteryVoltage.setText(str(unitVoltage) + " V")
         self.loadDraw.setText(str(unitLoad) + " W")
