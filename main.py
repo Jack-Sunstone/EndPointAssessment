@@ -2245,6 +2245,22 @@ class interactiveMap(QWidget):
 
         self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
 
+class victronOverview(QWidget):
+    def __init__(self):
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        super().__init__()
+
+        self.setWindowTitle("Victron Data Overview")
+        self.setGeometry(0, 0, 700, 700)
+
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.setLayout(layout)
+
 class adminMonitoring(QWidget):
     def __init__(self):
 
