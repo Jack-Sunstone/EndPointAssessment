@@ -2111,6 +2111,44 @@ class genManagement(QWidget):
 
         self.setLayout(layout)
 
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
+
+class superGenManagement(QWidget):
+    def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        super().__init__()
+
+        self.setWindowTitle("Super Generator Management")
+        self.setGeometry(0, 0, 650, 300)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
+
 class adminMenu(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
@@ -2135,6 +2173,7 @@ class adminMenu(QWidget):
         layout.addWidget(unitManagementButton)
 
         genManagementButton = QPushButton("Generator Management")
+        genManagementButton.clicked.connect(self.openGen)
 
         layout.addWidget(genManagementButton)
 
@@ -2186,6 +2225,29 @@ class adminMenu(QWidget):
 
             self.hide()
 
+    def openGen(self):
+        if userRights == "ADMIN":
+
+            self.openGenManagement = genManagement()
+            self.openGenManagement.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenManagement.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenManagement.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "SUPERADMIN":
+
+            self.openGenManagement = superGenManagement()
+            self.openGenManagement.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenManagement.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenManagement.move(Geo.topLeft())
+
+            self.hide()
     def closeEvent(self, event):
 
         self.openMonitoring = adminMonitoring()
