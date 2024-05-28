@@ -26,6 +26,22 @@ def fetchUnits(Company):
     for row in cursor.fetchall():
         yield row[0]
 
+def fetchGeneratorSunstone():
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute("SELECT Name FROM dbo.Generators ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
+def fetchGenerators(Company):
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute(f"SELECT Name FROM dbo.Generators WHERE Company = '{Company}' ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
 def fetchUnitDetails(unitName):
     connection()
     cursor = cnxn.cursor()
