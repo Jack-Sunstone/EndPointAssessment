@@ -51,6 +51,15 @@ def fetchUnitDetails(unitName):
     for row in cursor.fetchall():
         yield row
 
+def fetchGenDetails(genName):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT victronID, Location, Company, efoy1ID, efoy2ID, Lat, Lon FROM dbo.Units WHERE Name = '{genName}'")
+
+    for row in cursor.fetchall():
+        yield row
+
 def fetchLocationsSunstone():
     connection()
     cursor = cnxn.cursor()
@@ -199,6 +208,15 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
 
         cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
     cnxn.commit()
+
+def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID):
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"INSERT INTO dbo.Generators (Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID) VALUES ('{Name.strip()}', '{victronID.strip()}', '{Location.strip()}', '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, , '{efoy1ID.strip()}', , '{efoy2ID.strip()}'")
+    cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
+
 
 def deleteUnits(Name):
     connection()
