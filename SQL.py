@@ -197,6 +197,15 @@ def checkUnit(Name):
     for row in cursor.fetchall():
         return row[0]
 
+def checkGen(Name):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name FROM dbo.Generators WHERE Name = '{Name}'")
+
+    for row in cursor.fetchall():
+        return row[0]
+
 def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, EfoyID):
     connection()
     cursor = cnxn.cursor()
