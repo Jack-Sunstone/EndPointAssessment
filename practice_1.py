@@ -2207,7 +2207,54 @@ class genManagement(QWidget):
 
         layout.addWidget(addUnit, 5, 0, 1, 4)
 
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 6, 1, 1, 2)
+
         self.setLayout(layout)
+
+    def unitChanged(self, index):
+
+        self.selectedGen = self.listOfGen[index]
+
+        data = SQL.fetchGenDetails(self.selectedGen)
+
+        for row in data:
+            altered = list(row)
+            self.selectedVictronID = str(altered[0])
+            self.selectedLocation = altered[1]
+            self.selectedCompany = altered[2]
+
+        self.locationEdit.show()
+        self.companyEdit.show()
+
+        self.genName.setText(self.selectedGen)
+        self.locationEdit.setText(self.selectedLocation)
+        self.companyEdit.setText(self.selectedCompany)
+
+    def addNewGen(self):
+        checkGen = SQL.checkGen(self.newGenName)
+
+        if checkGen is not None:
+            self.errorMessage.setText("Unit already in database")
+        elif any(x == "" for x in (self.newGenName, self.newVictronID, self.newEfoy1)):
+            self.errorMessage.setText("One or All Field Is Empty")
+        elif "." not in self.newLat or "." not in self.newLon:
+            self.errorMessage.setText("Lat and Lon do not Compute")
+        else:
+            SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
+            self.errorMessage.setText("Generator Added")
+            self.unitNameAdd.setText("")
+            self.locationAdd.setText("")
+            self.companyAdd.setText("")
+            self.victronAdd.setText("")
+            self.efoy1Add.setText("")
+            self.efoy2Add.setText("")
+            self.latAdd.setText("")
+            self.lonAdd.setText("")
+
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
