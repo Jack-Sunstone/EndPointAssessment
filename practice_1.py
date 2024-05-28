@@ -2334,13 +2334,13 @@ class superGenManagement(QWidget):
         layout.addWidget(self.Victron, 1, 3)
 
         self.Efoy1 = QLineEdit()
-        self.Efoy1.textChanged.connect(self.getUpdatedEfoy)
+        self.Efoy1.textChanged.connect(self.getUpdatedEfoy1)
         self.Efoy1.hide()
 
         layout.addWidget(self.Efoy1, 2, 0)
 
         self.Efoy2 = QLineEdit()
-        self.Efoy2.textChanged.connect(self.getUpdatedEfoy)
+        self.Efoy2.textChanged.connect(self.getUpdatedEfoy2)
         self.Efoy2.hide()
 
         layout.addWidget(self.Efoy2, 2, 1)
@@ -2364,7 +2364,7 @@ class superGenManagement(QWidget):
 
         self.genNameAdd = QLineEdit()
         self.genNameAdd.setPlaceholderText("Unit ID")
-        self.genNameAdd.textChanged.connect(self.genNameAdd)
+        self.genNameAdd.textChanged.connect(self.getNewGenName)
 
         layout.addWidget(self.genNameAdd, 4, 0)
 
@@ -2388,13 +2388,13 @@ class superGenManagement(QWidget):
 
         self.efoy1Add = QLineEdit()
         self.efoy1Add.setPlaceholderText("Efoy 1 ID")
-        self.efoy1Add.textChanged.connect(self.getNewEfoy)
+        self.efoy1Add.textChanged.connect(self.getNewEfoy1)
 
         layout.addWidget(self.efoy1Add, 5, 0)
 
         self.efoy2Add = QLineEdit()
         self.efoy2Add.setPlaceholderText("Efoy 2 ID (Can be Null)")
-        self.efoy2Add.textChanged.connect(self.getNewEfoy)
+        self.efoy2Add.textChanged.connect(self.getNewEfoy2)
 
         layout.addWidget(self.efoy2Add, 5, 1)
 
@@ -2422,6 +2422,52 @@ class superGenManagement(QWidget):
         layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         self.setLayout(layout)
+
+    def getUpdatedLocation(self, Location):
+        self.selectedLocation = Location
+
+    def getUpdatedCompany(self, Company):
+        self.selectedCompany = Company
+
+    def getUpdatedVictron(self, Victron):
+        self.selectedVictronID = Victron
+
+    def getUpdatedEfoy1(self, Efoy):
+        self.selectedEfoy1 = Efoy
+
+    def getUpdatedEfoy2(self, Efoy):
+        self.selectedEfoy2 = Efoy
+
+    def getUpdatedLat(self, Lat):
+        self.selectedLat = Lat
+
+    def getUpdatedLon(self, Lon):
+        self.selectedLon = Lon
+
+    def getNewGenName(self, Name):
+        self.newGenName = Name
+
+    def getNewLocation(self, Location):
+        self.newLocation = Location
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def getNewVictronID(self, ID):
+        self.newVictronID = ID
+
+    def getNewEfoy1(self, Efoy):
+        self.newEfoy1 = Efoy
+
+    def getNewEfoy2(self, Efoy):
+        self.newEfoy2 = Efoy
+
+    def getNewLat(self, Lat):
+        self.newLat = Lat
+
+    def getNewLon(self, Lon):
+        self.newLon = Lon
+
 
     def unitChanged(self, index):
 
