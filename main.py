@@ -325,7 +325,7 @@ class allCamerasView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -391,7 +391,7 @@ class singleCameraView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -938,7 +938,7 @@ class arcDashboard(QWidget):
         global unitLoad
         global unitSolar
 
-        pullVictronData()
+        pullVictronData(selectedUnit)
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1798,7 +1798,7 @@ class userManagement(QWidget):
 
         self.usernameLabel = QLabel("")
 
-        layout.addWidget(self.usernameLabel, 0, 1)
+        layout.addWidget(self.usernameLabel, 1, 0)
 
         self.passwordLineEdit = QLineEdit()
         self.passwordLineEdit.setPlaceholderText("Password")
@@ -2814,7 +2814,7 @@ class userMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()

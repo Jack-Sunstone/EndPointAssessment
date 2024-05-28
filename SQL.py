@@ -118,7 +118,7 @@ def fetchUsers():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute("SELECT Username FROM dbo.Users")
+    cursor.execute("SELECT Username FROM dbo.Users WHERE Rights = 'USER' OR Rights = 'ADMIN'")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -257,7 +257,7 @@ def fetchFilteredVictron(Company, Filter):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData WHERE Comapany = '{Company}' ORDER By {Filter} DESC")
+    cursor.execute(f"SELECT Name, Voltage, Solar, Load FROM dbo.VictronData WHERE Company = '{Company}' ORDER By {Filter} DESC")
 
     for row in cursor.fetchall():
         yield row
