@@ -325,7 +325,7 @@ class allCamerasView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -391,7 +391,7 @@ class singleCameraView(QWidget):
         self.close()
 
         if str(selectedUnitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -938,7 +938,7 @@ class arcDashboard(QWidget):
         global unitLoad
         global unitSolar
 
-        pullVictronData()
+        pullVictronData(selectedUnit)
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1016,6 +1016,342 @@ class arcDashboard(QWidget):
             self.openMonitoring.move(Geo.topLeft())
 
             self.hide()
+
+class userManagement(QWidget):
+    def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.listOfUsers = []
+
+        fetchUsers = SQL.fetchUsers()
+
+        for item in fetchUsers:
+            self.listOfUsers.append(item)
+
+        # Current Selected User
+        self.selectedUser = ""
+        self.selectedPassword = ""
+
+        # New User
+        self.newUsername = ""
+        self.newPassword = ""
+        self.newCompany = ""
+
+        super().__init__()
+
+        self.setWindowTitle("User Management")
+        self.setGeometry(0, 0, 350, 250)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.userSelection = QComboBox()
+        self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.setPlaceholderText("User Selection")
+        self.userSelection.currentIndexChanged.connect(self.userChanged)
+
+        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+
+        self.usernameLabel = QLabel("")
+
+        layout.addWidget(self.usernameLabel, 1, 0)
+
+        self.passwordLineEdit = QLineEdit()
+        self.passwordLineEdit.setPlaceholderText("Password")
+        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        self.passwordLineEdit.hide()
+
+        layout.addWidget(self.passwordLineEdit, 1, 1, 1, 2)
+
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUser)
+
+        layout.addWidget(changeButton, 2, 1)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUser)
+
+        layout.addWidget(deleteButton, 2, 2)
+
+        addNewUserLabel = QLabel("--------------- Add New User ---------------")
+        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+
+        self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("Username")
+        self.usernameEdit.textChanged.connect(self.getNewUsername)
+
+        layout.addWidget(self.usernameEdit, 4, 0)
+
+        self.passwordAddLineEdit = QLineEdit()
+        self.passwordAddLineEdit.setPlaceholderText("Password")
+        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+
+        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+
+        self.companyLineEdit = QLineEdit()
+        self.companyLineEdit.setPlaceholderText("Company")
+        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+
+        layout.addWidget(self.companyLineEdit, 4, 2)
+
+        addUserButton = QPushButton("Add New User")
+        addUserButton.clicked.connect(self.addUser)
+
+        layout.addWidget(addUserButton, 5, 1)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 6, 1)
+
+        self.setLayout(layout)
+
+    def getPasswordChanged(self, Password):
+        self.selectedPassword = Password
+
+    def getNewUsername(self, Username):
+        self.newUsername = Username
+
+    def getNewPassword(self, Password):
+        self.newPassword = Password
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def userChanged(self, index):
+
+        self.selectedUser = self.listOfUsers[index]
+
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+
+        self.passwordLineEdit.show()
+        self.usernameLabel.show()
+
+        self.usernameLabel.setText(self.selectedUser)
+        self.passwordLineEdit.setText(self.selectedPassword)
+
+    def changeUser(self):
+        SQL.updateUser(self.selectedPassword, self.selectedUser, "USER")
+        self.errorMessage.setText("User Updated")
+
+    def deleteUser(self):
+
+        if username == self.selectedUser:
+            self.errorMessage.setText("You cannot delete your own account")
+        else:
+            SQL.deleteUsers(self.selectedUser)
+            self.errorMessage.setText("User Deleted")
+
+    def addUser(self):
+        checkUsername = SQL.checkUsername(self.newUsername)
+
+        if checkUsername is None:
+            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
+                self.errorMessage.setText("User Added")
+                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, "USER")
+                self.usernameEdit.setText("")
+                self.passwordAddLineEdit.setText("")
+                self.companyLineEdit.setText("")
+            else:
+                self.errorMessage.setText("One or All Field Is Empty")
+        else:
+            self.errorMessage.setText("Username Already Exists")
+
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
+
+class superUserManagement(QWidget):
+    def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.listOfUsers = []
+
+        fetchUsers = SQL.fetchUsers()
+
+        for item in fetchUsers:
+            self.listOfUsers.append(item)
+
+        # Current Selected User
+        self.selectedUser = ""
+        self.selectedPassword = ""
+        self.selectedRights = ""
+
+        # New User
+        self.newUsername = ""
+        self.newPassword = ""
+        self.newCompany = ""
+        self.newRights = ""
+
+        super().__init__()
+
+        self.setWindowTitle("Super User Management")
+        self.setGeometry(0, 0, 350, 250)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.userSelection = QComboBox()
+        self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.setPlaceholderText("User Selection")
+        self.userSelection.currentIndexChanged.connect(self.userChanged)
+
+        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+
+        self.usernameLabel = QLabel("")
+
+        layout.addWidget(self.usernameLabel, 1, 0)
+
+        self.passwordLineEdit = QLineEdit()
+
+        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        self.passwordLineEdit.hide()
+
+        layout.addWidget(self.passwordLineEdit, 1, 1)
+
+        self.rightLineEdit = QLineEdit()
+        self.rightLineEdit.textChanged.connect(self.getRightsChanged)
+        self.rightLineEdit.hide()
+
+        layout.addWidget(self.rightLineEdit, 1, 2)
+
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUser)
+
+        layout.addWidget(changeButton, 2, 1)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUser)
+
+        layout.addWidget(deleteButton, 2, 2)
+
+        addNewUserLabel = QLabel("--------------- Add New User ---------------")
+        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+
+        self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("Username")
+        self.usernameEdit.textChanged.connect(self.getNewUsername)
+
+        layout.addWidget(self.usernameEdit, 4, 0)
+
+        self.passwordAddLineEdit = QLineEdit()
+        self.passwordAddLineEdit.setPlaceholderText("Password")
+        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+
+        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+
+        self.companyLineEdit = QLineEdit()
+        self.companyLineEdit.setPlaceholderText("Company")
+        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+
+        layout.addWidget(self.companyLineEdit, 4, 2)
+
+        self.rightsAddLineEdit = QLineEdit()
+        self.rightsAddLineEdit.setPlaceholderText("Rights")
+        self.rightsAddLineEdit.textChanged.connect(self.getNewRights)
+
+        layout.addWidget(self.rightsAddLineEdit, 5, 1)
+
+        addUserButton = QPushButton("Add New User")
+        addUserButton.clicked.connect(self.addUser)
+
+        layout.addWidget(addUserButton, 6, 1)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 7, 1)
+
+        self.setLayout(layout)
+
+    def getPasswordChanged(self, Password):
+        self.selectedPassword = Password
+
+    def getRightsChanged(self, Rights):
+        self.selectedRights = Rights
+
+    def getNewUsername(self, Username):
+        self.newUsername = Username
+
+    def getNewPassword(self, Password):
+        self.newPassword = Password
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def getNewRights(self, Rights):
+        self.newRights = Rights
+
+    def userChanged(self, index):
+
+        self.selectedUser = self.listOfUsers[index]
+
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+        self.selectedRights = SQL.fetchRights(self.selectedUser).strip()
+
+        self.usernameLabel.show()
+        self.passwordLineEdit.show()
+        self.rightLineEdit.show()
+
+        self.usernameLabel.setText(self.selectedUser)
+        self.passwordLineEdit.setText(self.selectedPassword)
+        self.rightLineEdit.setText(self.selectedRights)
+
+    def changeUser(self):
+        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
+        self.errorMessage.setText("User Updated")
+
+    def deleteUser(self):
+
+        if username == self.selectedUser:
+            self.errorMessage.setText("You cannot delete your own account")
+        else:
+            SQL.deleteUsers(self.selectedUser)
+            self.errorMessage.setText("User Deleted")
+
+    def addUser(self):
+        checkUsername = SQL.checkUsername(self.newUsername)
+
+        if checkUsername is None:
+            if not [x for x in (self.newUsername, self.newPassword, self.newCompany, self.newRights) if x == ""]:
+                self.errorMessage.setText("User Added")
+                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, self.newRights)
+                self.usernameEdit.setText("")
+                self.passwordAddLineEdit.setText("")
+                self.companyLineEdit.setText("")
+                self.rightsAddLineEdit.setText("")
+            else:
+                self.errorMessage.setText("One or All Field Is Empty")
+        else:
+            self.errorMessage.setText("Username Already Exists")
+
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
 
 class unitManagement(QWidget):
     def __init__(self):
@@ -1759,341 +2095,21 @@ class superUnitManagement(QWidget):
 
         self.hide()
 
-class userManagement(QWidget):
+class genManagement(QWidget):
     def __init__(self):
 
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
-        self.listOfUsers = []
-
-        fetchUsers = SQL.fetchUsers()
-
-        for item in fetchUsers:
-            self.listOfUsers.append(item)
-
-        # Current Selected User
-        self.selectedUser = ""
-        self.selectedPassword = ""
-
-        # New User
-        self.newUsername = ""
-        self.newPassword = ""
-        self.newCompany = ""
-
         super().__init__()
 
-        self.setWindowTitle("User Management")
-        self.setGeometry(0, 0, 350, 250)
+        self.setWindowTitle("Generator Management")
+        self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
-        self.userSelection = QComboBox()
-        self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.setPlaceholderText("User Selection")
-        self.userSelection.currentIndexChanged.connect(self.userChanged)
-
-        layout.addWidget(self.userSelection, 0, 0, 1, 3)
-
-        self.usernameLabel = QLabel("")
-
-        layout.addWidget(self.usernameLabel, 0, 1)
-
-        self.passwordLineEdit = QLineEdit()
-        self.passwordLineEdit.setPlaceholderText("Password")
-        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
-        self.passwordLineEdit.hide()
-
-        layout.addWidget(self.passwordLineEdit, 1, 1, 1, 2)
-
-        changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUser)
-
-        layout.addWidget(changeButton, 2, 1)
-
-        deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUser)
-
-        layout.addWidget(deleteButton, 2, 2)
-
-        addNewUserLabel = QLabel("--------------- Add New User ---------------")
-        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
-
-        self.usernameEdit = QLineEdit()
-        self.usernameEdit.setPlaceholderText("Username")
-        self.usernameEdit.textChanged.connect(self.getNewUsername)
-
-        layout.addWidget(self.usernameEdit, 4, 0)
-
-        self.passwordAddLineEdit = QLineEdit()
-        self.passwordAddLineEdit.setPlaceholderText("Password")
-        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
-
-        layout.addWidget(self.passwordAddLineEdit, 4, 1)
-
-        self.companyLineEdit = QLineEdit()
-        self.companyLineEdit.setPlaceholderText("Company")
-        self.companyLineEdit.textChanged.connect(self.getNewCompany)
-
-        layout.addWidget(self.companyLineEdit, 4, 2)
-
-        addUserButton = QPushButton("Add New User")
-        addUserButton.clicked.connect(self.addUser)
-
-        layout.addWidget(addUserButton, 5, 1)
-
-        self.errorMessage = QLabel("")
-        self.errorMessage.setStyleSheet("color: red")
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(self.errorMessage, 6, 1)
-
         self.setLayout(layout)
-
-    def getPasswordChanged(self, Password):
-        self.selectedPassword = Password
-
-    def getNewUsername(self, Username):
-        self.newUsername = Username
-
-    def getNewPassword(self, Password):
-        self.newPassword = Password
-
-    def getNewCompany(self, Company):
-        self.newCompany = Company
-
-    def userChanged(self, index):
-
-        self.selectedUser = self.listOfUsers[index]
-
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
-
-        self.passwordLineEdit.show()
-        self.usernameLabel.show()
-
-        self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(self.selectedPassword)
-
-    def changeUser(self):
-        SQL.updateUser(self.selectedPassword, self.selectedUser, "USER")
-        self.errorMessage.setText("User Updated")
-
-    def deleteUser(self):
-
-        if username == self.selectedUser:
-            self.errorMessage.setText("You cannot delete your own account")
-        else:
-            SQL.deleteUsers(self.selectedUser)
-            self.errorMessage.setText("User Deleted")
-
-    def addUser(self):
-        checkUsername = SQL.checkUsername(self.newUsername)
-
-        if checkUsername is None:
-            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
-                self.errorMessage.setText("User Added")
-                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, "USER")
-                self.usernameEdit.setText("")
-                self.passwordAddLineEdit.setText("")
-                self.companyLineEdit.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
-        else:
-            self.errorMessage.setText("Username Already Exists")
-
-    def closeEvent(self, event):
-        self.openAdminMenu = adminMenu()
-        self.openAdminMenu.show()
-
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openAdminMenu.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openAdminMenu.move(Geo.topLeft())
-
-        self.hide()
-
-class superUserManagement(QWidget):
-    def __init__(self):
-
-        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
-        self.listOfUsers = []
-
-        fetchUsers = SQL.fetchUsers()
-
-        for item in fetchUsers:
-            self.listOfUsers.append(item)
-
-        # Current Selected User
-        self.selectedUser = ""
-        self.selectedPassword = ""
-        self.selectedRights = ""
-
-        # New User
-        self.newUsername = ""
-        self.newPassword = ""
-        self.newCompany = ""
-        self.newRights = ""
-
-        super().__init__()
-
-        self.setWindowTitle("Super User Management")
-        self.setGeometry(0, 0, 350, 250)
-        self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowIconText("Logo")
-
-        layout = QGridLayout()
-
-        self.userSelection = QComboBox()
-        self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.setPlaceholderText("User Selection")
-        self.userSelection.currentIndexChanged.connect(self.userChanged)
-
-        layout.addWidget(self.userSelection, 0, 0, 1, 3)
-
-        self.usernameLabel = QLabel("")
-
-        layout.addWidget(self.usernameLabel, 1, 0)
-
-        self.passwordLineEdit = QLineEdit()
-
-        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
-        self.passwordLineEdit.hide()
-
-        layout.addWidget(self.passwordLineEdit, 1, 1)
-
-        self.rightLineEdit = QLineEdit()
-        self.rightLineEdit.textChanged.connect(self.getRightsChanged)
-        self.rightLineEdit.hide()
-
-        layout.addWidget(self.rightLineEdit, 1, 2)
-
-        changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUser)
-
-        layout.addWidget(changeButton, 2, 1)
-
-        deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUser)
-
-        layout.addWidget(deleteButton, 2, 2)
-
-        addNewUserLabel = QLabel("--------------- Add New User ---------------")
-        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
-
-        self.usernameEdit = QLineEdit()
-        self.usernameEdit.setPlaceholderText("Username")
-        self.usernameEdit.textChanged.connect(self.getNewUsername)
-
-        layout.addWidget(self.usernameEdit, 4, 0)
-
-        self.passwordAddLineEdit = QLineEdit()
-        self.passwordAddLineEdit.setPlaceholderText("Password")
-        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
-
-        layout.addWidget(self.passwordAddLineEdit, 4, 1)
-
-        self.companyLineEdit = QLineEdit()
-        self.companyLineEdit.setPlaceholderText("Company")
-        self.companyLineEdit.textChanged.connect(self.getNewCompany)
-
-        layout.addWidget(self.companyLineEdit, 4, 2)
-
-        self.rightsAddLineEdit = QLineEdit()
-        self.rightsAddLineEdit.setPlaceholderText("Rights")
-        self.rightsAddLineEdit.textChanged.connect(self.getNewRights)
-
-        layout.addWidget(self.rightsAddLineEdit, 5, 1)
-
-        addUserButton = QPushButton("Add New User")
-        addUserButton.clicked.connect(self.addUser)
-
-        layout.addWidget(addUserButton, 6, 1)
-
-        self.errorMessage = QLabel("")
-        self.errorMessage.setStyleSheet("color: red")
-        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addWidget(self.errorMessage, 7, 1)
-
-        self.setLayout(layout)
-
-    def getPasswordChanged(self, Password):
-        self.selectedPassword = Password
-
-    def getRightsChanged(self, Rights):
-        self.selectedRights = Rights
-
-    def getNewUsername(self, Username):
-        self.newUsername = Username
-
-    def getNewPassword(self, Password):
-        self.newPassword = Password
-
-    def getNewCompany(self, Company):
-        self.newCompany = Company
-
-    def getNewRights(self, Rights):
-        self.newRights = Rights
-
-    def userChanged(self, index):
-
-        self.selectedUser = self.listOfUsers[index]
-
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
-        self.selectedRights = SQL.fetchRights(self.selectedUser).strip()
-
-        self.usernameLabel.show()
-        self.passwordLineEdit.show()
-        self.rightLineEdit.show()
-
-        self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(self.selectedPassword)
-        self.rightLineEdit.setText(self.selectedRights)
-
-    def changeUser(self):
-        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
-        self.errorMessage.setText("User Updated")
-
-    def deleteUser(self):
-
-        if username == self.selectedUser:
-            self.errorMessage.setText("You cannot delete your own account")
-        else:
-            SQL.deleteUsers(self.selectedUser)
-            self.errorMessage.setText("User Deleted")
-
-    def addUser(self):
-        checkUsername = SQL.checkUsername(self.newUsername)
-
-        if checkUsername is None:
-            if not [x for x in (self.newUsername, self.newPassword, self.newCompany, self.newRights) if x == ""]:
-                self.errorMessage.setText("User Added")
-                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, self.newRights)
-                self.usernameEdit.setText("")
-                self.passwordAddLineEdit.setText("")
-                self.companyLineEdit.setText("")
-                self.rightsAddLineEdit.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
-        else:
-            self.errorMessage.setText("Username Already Exists")
-
-    def closeEvent(self, event):
-        self.openAdminMenu = adminMenu()
-        self.openAdminMenu.show()
-
-        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
-        Geo = self.openAdminMenu.frameGeometry()
-        Geo.moveCenter(Center)
-        self.openAdminMenu.move(Geo.topLeft())
-
-        self.hide()
 
 class adminMenu(QWidget):
     def __init__(self):
@@ -2117,6 +2133,10 @@ class adminMenu(QWidget):
         unitManagementButton.clicked.connect(self.openUnit)
 
         layout.addWidget(unitManagementButton)
+
+        genManagementButton = QPushButton("Generator Management")
+
+        layout.addWidget(genManagementButton)
 
         self.setLayout(layout)
 
@@ -2814,7 +2834,7 @@ class userMonitoring(QWidget):
             selectedEfoyID = altered[6]
 
         if str(unitType) == "ARC":
-            pullVictronData()
+            pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
@@ -2868,7 +2888,6 @@ class userMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
-
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -2978,7 +2997,6 @@ class loginUI(QMainWindow):
             else:
                 self.errorMessage.show()
 
-
 class errorMessage(QMainWindow):
 
     def __init__(self):
@@ -3004,7 +3022,6 @@ class errorMessage(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
