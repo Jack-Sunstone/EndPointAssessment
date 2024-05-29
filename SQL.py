@@ -78,23 +78,6 @@ def fetchLocations(Company):
     for row in cursor.fetchall():
         yield row
 
-
-def updateUnit(unitName, Location, Company, CCTV):
-    connection()
-    cursor = cnxn.cursor()
-
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location}', Company = '{Company}', NoCCTV = {CCTV} WHERE Name = '{unitName}'")
-
-    cnxn.commit()
-
-def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, Lat, Lon):
-    connection()
-    cursor = cnxn.cursor()
-
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
-
-    cnxn.commit()
 def fetchCompanies():
     connection()
     cursor = cnxn.cursor()
@@ -228,6 +211,32 @@ def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID)
 
     cnxn.commit()
 
+def updateUnit(unitName, Location, Company, CCTV):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+
+    cnxn.commit()
+
+def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, Lat, Lon):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+
+    cnxn.commit()
+
+def updateGen(genName, Location, Company):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{genName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
+
+    cnxn.commit()
 def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
