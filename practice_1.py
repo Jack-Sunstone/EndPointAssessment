@@ -25,6 +25,7 @@ selectedCCTV = ""
 selectedUnitType = ""
 selectedCamera = ""
 selectedEfoyID = ""
+selectedEfoyID2 = ""
 
 userRights = ""
 userCompany = ""
@@ -1016,6 +1017,112 @@ class arcDashboard(QWidget):
             self.openMonitoring.move(Geo.topLeft())
 
             self.hide()
+
+class generatorDashboard(QWidget):
+    def __init__(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        windowIcon = resourcePath("Assets/Images/ARCunit.png")
+
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
+
+        if unitVoltage >= 25.5:
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
+        elif unitVoltage < 23.6:
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
+
+        if unitLoad <= 0:
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+        else:
+            self.loadPath = resourcePath("Assets/Images/Load.png")
+
+        if unitSolar >= 400:
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
+        elif unitSolar >= 200 and unitSolar < 400:
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
+        elif unitSolar >= 100 and unitSolar < 200:
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
+        elif unitSolar < 100:
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
+
+        super().__init__()
+
+        self.setWindowTitle("Generator Dashboard")
+        self.setGeometry(0, 0, 400, 300)
+        self.setWindowIcon(QIcon(windowIcon))
+        self.setWindowIconText("Generator")
+
+        layout = QGridLayout()
+
+        genLabel = QLabel(selectedUnit)
+        genLabel.setStyleSheet("font: bold 14px;")
+        genLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(genLabel,0,1)
+
+        sunPixmap = QPixmap(self.sunPath)
+        batteryPixmap = QPixmap(self.batteryPath)
+        loadPixmap = QPixmap(self.loadPath)
+
+        self.sunImage = QLabel()
+        self.sunImage.setPixmap(sunPixmap)
+        self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.solarPower = QLabel(str(unitSolar) + " W")
+
+        layout.addWidget(self.sunImage, 1, 0)
+        layout.addWidget(self.solarPower, 1, 1)
+
+        self.batteryImage = QLabel()
+        self.batteryImage.setPixmap(batteryPixmap)
+        self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+
+        layout.addWidget(self.batteryImage, 2, 0)
+        layout.addWidget(self.batteryVoltage, 2, 1)
+
+        self.loadImage = QLabel()
+        self.loadImage.setPixmap(loadPixmap)
+        self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.loadDraw = QLabel(str(unitLoad) + " W")
+
+        layout.addWidget(self.loadImage, 3, 0)
+        layout.addWidget(self.loadDraw, 3, 1)
+
+        victronButton = QPushButton("Victron Webpage")
+        victronButton.clicked.connect(self.openVictron)
+
+        layout.addWidget(victronButton, 1, 2)
+
+        efoy1Button = QPushButton("Efoy No.1")
+        efoy1Button.clicked.connect(self.openEfoy1)
+
+        layout.addWidget(efoy1Button, 2, 2)
+
+        efoy2Button = QPushButton("Efoy No.2")
+        efoy2Button.clicked.connect(self.openEfoy2)
+
+        layout.addWidget(efoy2Button, 3, 2)
+
+        if selectedEfoyID2 == "":
+            efoy2Button.hide()
+
+        self.setLayout(layout)
 
 class userManagement(QWidget):
     def __init__(self):
