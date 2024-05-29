@@ -77,6 +77,7 @@ def fetchLocationsSunstone():
     for row in cursor.fetchall():
         yield row
 
+
 def fetchLocations(Company):
     connection()
     cursor = cnxn.cursor()
@@ -86,6 +87,23 @@ def fetchLocations(Company):
     for row in cursor.fetchall():
         yield row
 
+def fetchGeneratorLocationSunstone():
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute("SELECT Name, Lat, Lon FROM dbo.Generators")
+
+    for row in cursor.fetchall():
+        yield row
+
+def fetchGeneratorLocation(Company):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Name, Lat, Lon FROM dbo.Generators WHERE Company = '{Company}'")
+
+    for row in cursor.fetchall():
+        yield row
 def fetchCompanies():
     connection()
     cursor = cnxn.cursor()
@@ -101,7 +119,7 @@ def fetchSitesSunstone():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Location FROM dbo.CCTVUnits ORDER BY Name")
+    cursor.execute(f"SELECT Location FROM dbo.AllUnits ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -112,7 +130,7 @@ def fetchSites(Company):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Location FROM dbo.CCTVUnits WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Location FROM dbo.AllUnits WHERE Company = '{Company}' ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -123,7 +141,7 @@ def fetchUnitType(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT UnitType FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT UnitType FROM dbo.AllUnits WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         return row[0]
