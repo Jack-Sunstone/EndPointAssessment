@@ -2937,14 +2937,38 @@ class interactiveMap(QWidget):
 
         if userCompany == "Sunstone":
             data = SQL.fetchLocationsSunstone()
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
+            data = SQL.fetchGeneratorLocationSunstone()
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
         else:
             data = SQL.fetchLocations(userCompany)
 
-        for row in data:
-            altered = list(row)
-            names.append(altered[0])
-            lat.append(altered[1])
-            lon.append(altered[2])
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
+            data = SQL.fetchGeneratorLocation(userCompany)
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
 
         config = {'displayModeBar': False}
 
