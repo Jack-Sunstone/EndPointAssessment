@@ -365,3 +365,4 @@ def fetchFilteredVictron(Company, Filter):
 
     for row in cursor.fetchall():
         yield row
+

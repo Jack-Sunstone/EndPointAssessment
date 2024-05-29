@@ -3302,6 +3302,7 @@ class adminMonitoring(QWidget):
 
         self.listOfUnits = []
         self.listOfLocations = []
+        self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
 
         fetchUnits = SQL.fetchUnitsSunstone()
 
