@@ -2515,7 +2515,7 @@ class superGenManagement(QWidget):
         else:
             SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
             self.errorMessage.setText("Generator Added")
-            self.unitNameAdd.setText("")
+            self.genNameAdd.setText("")
             self.locationAdd.setText("")
             self.companyAdd.setText("")
             self.victronAdd.setText("")

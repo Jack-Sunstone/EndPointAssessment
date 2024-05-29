@@ -215,7 +215,7 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
     else:
         cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
 
-        cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
+        cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
     cnxn.commit()
 
 def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID):
@@ -223,9 +223,10 @@ def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID)
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"INSERT INTO dbo.Generators (Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID) VALUES ('{Name.strip()}', '{victronID.strip()}', '{Location.strip()}', '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, , '{efoy1ID.strip()}', , '{efoy2ID.strip()}'")
-    cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
+    cursor.execute(f"INSERT INTO dbo.Generators (Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID) VALUES ('{Name.strip()}', '{victronID.strip()}', '{Location.strip()}', '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{efoy1ID.strip()}', '{efoy2ID.strip()}')")
+    cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
 
+    cnxn.commit()
 
 def deleteUnits(Name):
     connection()
