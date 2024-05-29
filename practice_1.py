@@ -1177,6 +1177,37 @@ class generatorDashboard(QWidget):
             self.sunPath = resourcePath("Assets/Images/cloud.png")
             self.sunImage.setPixmap(QPixmap(self.sunPath))
 
+    def openVictron(self):
+        webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
+
+    def openEfoy1(self):
+        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
+
+    def openEfoy2(self):
+        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID2}")
+
+    def closeEvent(self, event):
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
+            self.openMonitoring = adminMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "USER":
+            self.openMonitoring = userMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+
 class userManagement(QWidget):
     def __init__(self):
 
