@@ -1105,17 +1105,17 @@ class generatorDashboard(QWidget):
         layout.addWidget(self.loadDraw, 3, 1)
 
         victronButton = QPushButton("Victron Webpage")
-        victronButton.clicked.connect(self.openVictron)
+        #victronButton.clicked.connect(self.openVictron)
 
         layout.addWidget(victronButton, 1, 2)
 
         efoy1Button = QPushButton("Efoy No.1")
-        efoy1Button.clicked.connect(self.openEfoy1)
+        #efoy1Button.clicked.connect(self.openEfoy1)
 
         layout.addWidget(efoy1Button, 2, 2)
 
         efoy2Button = QPushButton("Efoy No.2")
-        efoy2Button.clicked.connect(self.openEfoy2)
+        #efoy2Button.clicked.connect(self.openEfoy2)
 
         layout.addWidget(efoy2Button, 3, 2)
 
@@ -1123,6 +1123,59 @@ class generatorDashboard(QWidget):
             efoy2Button.hide()
 
         self.setLayout(layout)
+
+    def updateData(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        pullVictronData(selectedUnit)
+
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
+
+        self.batteryVoltage.setText(str(unitVoltage) + " V")
+        self.loadDraw.setText(str(unitLoad) + " W")
+        self.solarPower.setText(str(unitSolar) + " W")
+
+        if unitVoltage >= 25.5:
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 23.6:
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+
+        if unitLoad <= 0:
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+        else:
+            self.loadPath = resourcePath("Assets/Images/Load.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+
+        if unitSolar >= 400:
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 200 and unitSolar < 400:
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 100 and unitSolar < 200:
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar < 100:
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
 
 class userManagement(QWidget):
     def __init__(self):
@@ -3596,6 +3649,9 @@ class loginUI(QMainWindow):
                 userRights = SQL.fetchRights(self.username)
                 userCompany = SQL.fetchCompany(self.username)
                 if "ADMIN" == userRights or "SUPERADMIN" == userRights:
+                    self.testing = generatorDashboard()
+                    self.testing.show()
+
                     self.adminMonitoring = adminMonitoring()
                     self.adminMonitoring.show()
 
