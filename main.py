@@ -25,6 +25,7 @@ selectedCCTV = ""
 selectedUnitType = ""
 selectedCamera = ""
 selectedEfoyID = ""
+selectedEfoyID2 = ""
 
 userRights = ""
 userCompany = ""
@@ -1017,6 +1018,537 @@ class arcDashboard(QWidget):
 
             self.hide()
 
+class generatorDashboard(QWidget):
+    def __init__(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        windowIcon = resourcePath("Assets/Images/ARCunit.png")
+
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
+
+        if unitVoltage >= 25.5:
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
+        elif unitVoltage < 23.6:
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
+
+        if unitLoad <= 0:
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+        else:
+            self.loadPath = resourcePath("Assets/Images/Load.png")
+
+        if unitSolar >= 400:
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
+        elif unitSolar >= 200 and unitSolar < 400:
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
+        elif unitSolar >= 100 and unitSolar < 200:
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
+        elif unitSolar < 100:
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
+
+        super().__init__()
+
+        self.setWindowTitle("Generator Dashboard")
+        self.setGeometry(0, 0, 400, 300)
+        self.setWindowIcon(QIcon(windowIcon))
+        self.setWindowIconText("Generator")
+
+        layout = QGridLayout()
+
+        genLabel = QLabel(selectedUnit)
+        genLabel.setStyleSheet("font: bold 14px;")
+        genLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(genLabel,0,1)
+
+        sunPixmap = QPixmap(self.sunPath)
+        batteryPixmap = QPixmap(self.batteryPath)
+        loadPixmap = QPixmap(self.loadPath)
+
+        self.sunImage = QLabel()
+        self.sunImage.setPixmap(sunPixmap)
+        self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.solarPower = QLabel(str(unitSolar) + " W")
+
+        layout.addWidget(self.sunImage, 1, 0)
+        layout.addWidget(self.solarPower, 1, 1)
+
+        self.batteryImage = QLabel()
+        self.batteryImage.setPixmap(batteryPixmap)
+        self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.batteryVoltage = QLabel(str(unitVoltage) + " V")
+
+        layout.addWidget(self.batteryImage, 2, 0)
+        layout.addWidget(self.batteryVoltage, 2, 1)
+
+        self.loadImage = QLabel()
+        self.loadImage.setPixmap(loadPixmap)
+        self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.loadDraw = QLabel(str(unitLoad) + " W")
+
+        layout.addWidget(self.loadImage, 3, 0)
+        layout.addWidget(self.loadDraw, 3, 1)
+
+        victronButton = QPushButton("Victron Webpage")
+        victronButton.clicked.connect(self.openVictron)
+
+        layout.addWidget(victronButton, 1, 2)
+
+        efoy1Button = QPushButton("Efoy No.1")
+        efoy1Button.clicked.connect(self.openEfoy1)
+
+        layout.addWidget(efoy1Button, 2, 2)
+
+        efoy2Button = QPushButton("Efoy No.2")
+        efoy2Button.clicked.connect(self.openEfoy2)
+
+        layout.addWidget(efoy2Button, 3, 2)
+
+        if selectedEfoyID2 == "":
+            efoy2Button.hide()
+
+        self.setLayout(layout)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.updateData)
+        self.timer.start(60000)
+
+
+    def updateData(self):
+        global unitVoltage
+        global unitLoad
+        global unitSolar
+
+        pullVictronData(selectedUnit)
+
+        if unitVoltage == None or unitLoad == None or unitSolar == None:
+            unitVoltage = 0.0
+            unitLoad = 0.0
+            unitSolar = 0.0
+        else:
+            unitVoltage = float(unitVoltage)
+            unitLoad = int(unitLoad)
+            unitSolar = int(unitSolar)
+
+        self.batteryVoltage.setText(str(unitVoltage) + " V")
+        self.loadDraw.setText(str(unitLoad) + " W")
+        self.solarPower.setText(str(unitSolar) + " W")
+
+        if unitVoltage >= 25.5:
+            self.batteryPath = resourcePath("Assets/Images/fullBattery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryPath = resourcePath("Assets/Images/half_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryPath = resourcePath("Assets/Images/low_battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+        elif unitVoltage < 23.6:
+            self.batteryPath = resourcePath("Assets/Images/battery.png")
+            self.batteryImage.setPixmap(QPixmap(self.batteryPath))
+
+        if unitLoad <= 0:
+            self.loadPath = resourcePath("Assets/Images/ChargingLoad.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+        else:
+            self.loadPath = resourcePath("Assets/Images/Load.png")
+            self.loadImage.setPixmap(QPixmap(self.loadPath))
+
+        if unitSolar >= 400:
+            self.sunPath = resourcePath("Assets/Images/very_sunny.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 200 and unitSolar < 400:
+            self.sunPath = resourcePath("Assets/Images/Sun.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar >= 100 and unitSolar < 200:
+            self.sunPath = resourcePath("Assets/Images/cloudy.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+        elif unitSolar < 100:
+            self.sunPath = resourcePath("Assets/Images/cloud.png")
+            self.sunImage.setPixmap(QPixmap(self.sunPath))
+
+    def openVictron(self):
+        webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
+
+    def openEfoy1(self):
+        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
+
+    def openEfoy2(self):
+        webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID2}")
+
+    def closeEvent(self, event):
+        if userRights == "ADMIN" or userRights == "SUPERADMIN":
+            self.openMonitoring = adminMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "USER":
+            self.openMonitoring = userMonitoring()
+            self.openMonitoring.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openMonitoring.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openMonitoring.move(Geo.topLeft())
+
+            self.hide()
+
+class userManagement(QWidget):
+    def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.listOfUsers = []
+
+        fetchUsers = SQL.fetchUsers()
+
+        for item in fetchUsers:
+            self.listOfUsers.append(item)
+
+        # Current Selected User
+        self.selectedUser = ""
+        self.selectedPassword = ""
+
+        # New User
+        self.newUsername = ""
+        self.newPassword = ""
+        self.newCompany = ""
+
+        super().__init__()
+
+        self.setWindowTitle("User Management")
+        self.setGeometry(0, 0, 350, 250)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.userSelection = QComboBox()
+        self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.setPlaceholderText("User Selection")
+        self.userSelection.currentIndexChanged.connect(self.userChanged)
+
+        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+
+        self.usernameLabel = QLabel("")
+
+        layout.addWidget(self.usernameLabel, 1, 0)
+
+        self.passwordLineEdit = QLineEdit()
+        self.passwordLineEdit.setPlaceholderText("Password")
+        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        self.passwordLineEdit.hide()
+
+        layout.addWidget(self.passwordLineEdit, 1, 1, 1, 2)
+
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUser)
+
+        layout.addWidget(changeButton, 2, 1)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUser)
+
+        layout.addWidget(deleteButton, 2, 2)
+
+        addNewUserLabel = QLabel("--------------- Add New User ---------------")
+        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+
+        self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("Username")
+        self.usernameEdit.textChanged.connect(self.getNewUsername)
+
+        layout.addWidget(self.usernameEdit, 4, 0)
+
+        self.passwordAddLineEdit = QLineEdit()
+        self.passwordAddLineEdit.setPlaceholderText("Password")
+        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+
+        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+
+        self.companyLineEdit = QLineEdit()
+        self.companyLineEdit.setPlaceholderText("Company")
+        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+
+        layout.addWidget(self.companyLineEdit, 4, 2)
+
+        addUserButton = QPushButton("Add New User")
+        addUserButton.clicked.connect(self.addUser)
+
+        layout.addWidget(addUserButton, 5, 1)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 6, 1)
+
+        self.setLayout(layout)
+
+    def getPasswordChanged(self, Password):
+        self.selectedPassword = Password
+
+    def getNewUsername(self, Username):
+        self.newUsername = Username
+
+    def getNewPassword(self, Password):
+        self.newPassword = Password
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def userChanged(self, index):
+
+        self.selectedUser = self.listOfUsers[index]
+
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+
+        self.passwordLineEdit.show()
+        self.usernameLabel.show()
+
+        self.usernameLabel.setText(self.selectedUser)
+        self.passwordLineEdit.setText(self.selectedPassword)
+
+    def changeUser(self):
+        SQL.updateUser(self.selectedPassword, self.selectedUser, "USER")
+        self.errorMessage.setText("User Updated")
+
+    def deleteUser(self):
+
+        if username == self.selectedUser:
+            self.errorMessage.setText("You cannot delete your own account")
+        else:
+            SQL.deleteUsers(self.selectedUser)
+            self.errorMessage.setText("User Deleted")
+
+    def addUser(self):
+        checkUsername = SQL.checkUsername(self.newUsername)
+
+        if checkUsername is None:
+            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
+                self.errorMessage.setText("User Added")
+                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, "USER")
+                self.usernameEdit.setText("")
+                self.passwordAddLineEdit.setText("")
+                self.companyLineEdit.setText("")
+            else:
+                self.errorMessage.setText("One or All Field Is Empty")
+        else:
+            self.errorMessage.setText("Username Already Exists")
+
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
+
+class superUserManagement(QWidget):
+    def __init__(self):
+
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        self.listOfUsers = []
+
+        fetchUsers = SQL.fetchUsers()
+
+        for item in fetchUsers:
+            self.listOfUsers.append(item)
+
+        # Current Selected User
+        self.selectedUser = ""
+        self.selectedPassword = ""
+        self.selectedRights = ""
+
+        # New User
+        self.newUsername = ""
+        self.newPassword = ""
+        self.newCompany = ""
+        self.newRights = ""
+
+        super().__init__()
+
+        self.setWindowTitle("Super User Management")
+        self.setGeometry(0, 0, 350, 250)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowIconText("Logo")
+
+        layout = QGridLayout()
+
+        self.userSelection = QComboBox()
+        self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.setPlaceholderText("User Selection")
+        self.userSelection.currentIndexChanged.connect(self.userChanged)
+
+        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+
+        self.usernameLabel = QLabel("")
+
+        layout.addWidget(self.usernameLabel, 1, 0)
+
+        self.passwordLineEdit = QLineEdit()
+
+        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
+        self.passwordLineEdit.hide()
+
+        layout.addWidget(self.passwordLineEdit, 1, 1)
+
+        self.rightLineEdit = QLineEdit()
+        self.rightLineEdit.textChanged.connect(self.getRightsChanged)
+        self.rightLineEdit.hide()
+
+        layout.addWidget(self.rightLineEdit, 1, 2)
+
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUser)
+
+        layout.addWidget(changeButton, 2, 1)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUser)
+
+        layout.addWidget(deleteButton, 2, 2)
+
+        addNewUserLabel = QLabel("--------------- Add New User ---------------")
+        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+
+        self.usernameEdit = QLineEdit()
+        self.usernameEdit.setPlaceholderText("Username")
+        self.usernameEdit.textChanged.connect(self.getNewUsername)
+
+        layout.addWidget(self.usernameEdit, 4, 0)
+
+        self.passwordAddLineEdit = QLineEdit()
+        self.passwordAddLineEdit.setPlaceholderText("Password")
+        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+
+        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+
+        self.companyLineEdit = QLineEdit()
+        self.companyLineEdit.setPlaceholderText("Company")
+        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+
+        layout.addWidget(self.companyLineEdit, 4, 2)
+
+        self.rightsAddLineEdit = QLineEdit()
+        self.rightsAddLineEdit.setPlaceholderText("Rights")
+        self.rightsAddLineEdit.textChanged.connect(self.getNewRights)
+
+        layout.addWidget(self.rightsAddLineEdit, 5, 1)
+
+        addUserButton = QPushButton("Add New User")
+        addUserButton.clicked.connect(self.addUser)
+
+        layout.addWidget(addUserButton, 6, 1)
+
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(self.errorMessage, 7, 1)
+
+        self.setLayout(layout)
+
+    def getPasswordChanged(self, Password):
+        self.selectedPassword = Password
+
+    def getRightsChanged(self, Rights):
+        self.selectedRights = Rights
+
+    def getNewUsername(self, Username):
+        self.newUsername = Username
+
+    def getNewPassword(self, Password):
+        self.newPassword = Password
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def getNewRights(self, Rights):
+        self.newRights = Rights
+
+    def userChanged(self, index):
+
+        self.selectedUser = self.listOfUsers[index]
+
+        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+        self.selectedRights = SQL.fetchRights(self.selectedUser).strip()
+
+        self.usernameLabel.show()
+        self.passwordLineEdit.show()
+        self.rightLineEdit.show()
+
+        self.usernameLabel.setText(self.selectedUser)
+        self.passwordLineEdit.setText(self.selectedPassword)
+        self.rightLineEdit.setText(self.selectedRights)
+
+    def changeUser(self):
+        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
+        self.errorMessage.setText("User Updated")
+
+    def deleteUser(self):
+
+        if username == self.selectedUser:
+            self.errorMessage.setText("You cannot delete your own account")
+        else:
+            SQL.deleteUsers(self.selectedUser)
+            self.errorMessage.setText("User Deleted")
+
+    def addUser(self):
+        checkUsername = SQL.checkUsername(self.newUsername)
+
+        if checkUsername is None:
+            if not [x for x in (self.newUsername, self.newPassword, self.newCompany, self.newRights) if x == ""]:
+                self.errorMessage.setText("User Added")
+                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, self.newRights)
+                self.usernameEdit.setText("")
+                self.passwordAddLineEdit.setText("")
+                self.companyLineEdit.setText("")
+                self.rightsAddLineEdit.setText("")
+            else:
+                self.errorMessage.setText("One or All Field Is Empty")
+        else:
+            self.errorMessage.setText("Username Already Exists")
+
+    def closeEvent(self, event):
+        self.openAdminMenu = adminMenu()
+        self.openAdminMenu.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openAdminMenu.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openAdminMenu.move(Geo.topLeft())
+
+        self.hide()
+
 class unitManagement(QWidget):
     def __init__(self):
 
@@ -1024,7 +1556,7 @@ class unitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnitsSunstone()
+        fetchUnits = SQL.fetchUnitsManagement()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -1349,7 +1881,7 @@ class superUnitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnitsSunstone()
+        fetchUnits = SQL.fetchUnitsManagement()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -1759,150 +2291,211 @@ class superUnitManagement(QWidget):
 
         self.hide()
 
-class userManagement(QWidget):
+class genManagement(QWidget):
     def __init__(self):
 
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
-        self.listOfUsers = []
+        self.listOfGen = []
 
-        fetchUsers = SQL.fetchUsers()
+        fetchGen = SQL.fetchGeneratorSunstone()
+        for item in fetchGen:
+            self.listOfGen.append(item)
 
-        for item in fetchUsers:
-            self.listOfUsers.append(item)
+        self.selectedUnit = ""
+        self.selectedLocation = ""
+        self.selectedCompany = ""
 
-        # Current Selected User
-        self.selectedUser = ""
-        self.selectedPassword = ""
-
-        # New User
-        self.newUsername = ""
-        self.newPassword = ""
+        self.newGenName = ""
+        self.newLocation = ""
         self.newCompany = ""
+        self.newVictronID = ""
+        self.newEfoy1 = ""
+        self.newEfoy2 = ""
+        self.newLat = ""
+        self.newLon = ""
 
         super().__init__()
 
-        self.setWindowTitle("User Management")
-        self.setGeometry(0, 0, 350, 250)
+        self.setWindowTitle("Generator Management")
+        self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
-        self.userSelection = QComboBox()
-        self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.setPlaceholderText("User Selection")
-        self.userSelection.currentIndexChanged.connect(self.userChanged)
+        genManagementDropdown = QComboBox()
+        genManagementDropdown.addItems(self.listOfGen)
+        genManagementDropdown.setPlaceholderText("Generator Management")
+        genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
-        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+        layout.addWidget(genManagementDropdown, 0, 0, 1, 4)
 
-        self.usernameLabel = QLabel("")
+        self.genName = QLabel("")
+        layout.addWidget(self.genName, 1, 0, 1, 2)
 
-        layout.addWidget(self.usernameLabel, 1, 0)
+        self.locationEdit = QLineEdit()
+        self.locationEdit.textChanged.connect(self.getUpdatedLocation)
+        self.locationEdit.hide()
 
-        self.passwordLineEdit = QLineEdit()
-        self.passwordLineEdit.setPlaceholderText("Password")
-        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
-        self.passwordLineEdit.hide()
+        layout.addWidget(self.locationEdit, 1, 2)
 
-        layout.addWidget(self.passwordLineEdit, 1, 1, 1, 2)
+        self.companyEdit = QLineEdit()
+        self.companyEdit.textChanged.connect(self.getUpdatedCompany)
+        self.companyEdit.hide()
+
+        layout.addWidget(self.companyEdit, 1, 3)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUser)
+        changeButton.clicked.connect(self.changeGen)
 
-        layout.addWidget(changeButton, 2, 1)
+        layout.addWidget(changeButton, 2, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUser)
+        #deleteButton.clicked.connect(self.deleteGen)
 
-        layout.addWidget(deleteButton, 2, 2)
+        layout.addWidget(deleteButton, 2, 2, 1, 2)
 
-        addNewUserLabel = QLabel("--------------- Add New User ---------------")
-        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        addNewUnitLabel = QLabel("--------------- Add New Generator ---------------")
+        addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+        layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
 
-        self.usernameEdit = QLineEdit()
-        self.usernameEdit.setPlaceholderText("Username")
-        self.usernameEdit.textChanged.connect(self.getNewUsername)
+        self.genNameAdd = QLineEdit()
+        self.genNameAdd.setPlaceholderText("Unit ID")
+        self.genNameAdd.textChanged.connect(self.getNewGenName)
 
-        layout.addWidget(self.usernameEdit, 4, 0)
+        layout.addWidget(self.genNameAdd, 4, 0)
 
-        self.passwordAddLineEdit = QLineEdit()
-        self.passwordAddLineEdit.setPlaceholderText("Password")
-        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+        self.locationAdd = QLineEdit()
+        self.locationAdd.setPlaceholderText("Location")
+        self.locationAdd.textChanged.connect(self.getNewLocation)
 
-        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+        layout.addWidget(self.locationAdd, 4, 1)
 
-        self.companyLineEdit = QLineEdit()
-        self.companyLineEdit.setPlaceholderText("Company")
-        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+        self.companyAdd = QLineEdit()
+        self.companyAdd.setPlaceholderText("Company")
+        self.companyAdd.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(self.companyLineEdit, 4, 2)
+        layout.addWidget(self.companyAdd, 4, 2)
 
-        addUserButton = QPushButton("Add New User")
-        addUserButton.clicked.connect(self.addUser)
+        self.victronAdd = QLineEdit()
+        self.victronAdd.setPlaceholderText("Victron Site ID")
+        self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(addUserButton, 5, 1)
+        layout.addWidget(self.victronAdd, 4, 3)
+
+        self.efoy1Add = QLineEdit()
+        self.efoy1Add.setPlaceholderText("Efoy 1 ID")
+        self.efoy1Add.textChanged.connect(self.getNewEfoy1)
+
+        layout.addWidget(self.efoy1Add, 5, 0)
+
+        self.efoy2Add = QLineEdit()
+        self.efoy2Add.setPlaceholderText("Efoy 2 ID (Can be Null)")
+        self.efoy2Add.textChanged.connect(self.getNewEfoy2)
+
+        layout.addWidget(self.efoy2Add, 5, 1)
+
+        self.latAdd = QLineEdit("")
+        self.latAdd.setPlaceholderText("Latitude")
+        self.latAdd.textChanged.connect(self.getNewLat)
+
+        layout.addWidget(self.latAdd, 5, 2)
+
+        self.lonAdd = QLineEdit("")
+        self.lonAdd.setPlaceholderText("Longitude")
+        self.lonAdd.textChanged.connect(self.getNewLon)
+
+        layout.addWidget(self.lonAdd, 5, 3)
+
+        addUnit = QPushButton("Add New Generator")
+        addUnit.clicked.connect(self.addNewGen)
+
+        layout.addWidget(addUnit, 6, 0, 1, 4)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 6, 1)
+        layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         self.setLayout(layout)
 
-    def getPasswordChanged(self, Password):
-        self.selectedPassword = Password
+    def getUpdatedLocation(self, Location):
+        self.selectedLocation = Location
 
-    def getNewUsername(self, Username):
-        self.newUsername = Username
+    def getUpdatedCompany(self, Company):
+        self.selectedCompany = Company
+    def getNewGenName(self, Name):
+        self.newGenName = Name
 
-    def getNewPassword(self, Password):
-        self.newPassword = Password
+    def getNewLocation(self, Location):
+        self.newLocation = Location
 
     def getNewCompany(self, Company):
         self.newCompany = Company
 
-    def userChanged(self, index):
+    def getNewVictronID(self, ID):
+        self.newVictronID = ID
 
-        self.selectedUser = self.listOfUsers[index]
+    def getNewEfoy1(self, Efoy):
+        self.newEfoy1 = Efoy
 
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
+    def getNewEfoy2(self, Efoy):
+        self.newEfoy2 = Efoy
 
-        self.passwordLineEdit.show()
-        self.usernameLabel.show()
+    def getNewLat(self, Lat):
+        self.newLat = Lat
 
-        self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(self.selectedPassword)
+    def getNewLon(self, Lon):
+        self.newLon = Lon
 
-    def changeUser(self):
-        SQL.updateUser(self.selectedPassword, self.selectedUser, "USER")
-        self.errorMessage.setText("User Updated")
+    def genChanged(self, index):
 
-    def deleteUser(self):
+        self.selectedGen = self.listOfGen[index]
 
-        if username == self.selectedUser:
-            self.errorMessage.setText("You cannot delete your own account")
+        data = SQL.fetchGenDetails(self.selectedGen)
+
+        for row in data:
+            altered = list(row)
+            self.selectedVictronID = str(altered[0])
+            self.selectedLocation = altered[1]
+            self.selectedCompany = altered[2]
+
+        self.locationEdit.show()
+        self.companyEdit.show()
+
+        self.genName.setText(self.selectedGen)
+        self.locationEdit.setText(self.selectedLocation)
+        self.companyEdit.setText(self.selectedCompany)
+
+    def changeGen(self):
+
+        SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany)
+
+        self.errorMessage.setText("Generator Updated")
+
+    def addNewGen(self):
+        checkGen = SQL.checkGen(self.newGenName)
+
+        if checkGen is not None:
+            self.errorMessage.setText("Unit already in database")
+        elif any(x == "" for x in (self.newGenName, self.newVictronID, self.newEfoy1)):
+            self.errorMessage.setText("One or All Field Is Empty")
+        elif "." not in self.newLat or "." not in self.newLon:
+            self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            SQL.deleteUsers(self.selectedUser)
-            self.errorMessage.setText("User Deleted")
-
-    def addUser(self):
-        checkUsername = SQL.checkUsername(self.newUsername)
-
-        if checkUsername is None:
-            if not [x for x in (self.newUsername, self.newPassword, self.newCompany) if x == ""]:
-                self.errorMessage.setText("User Added")
-                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, "USER")
-                self.usernameEdit.setText("")
-                self.passwordAddLineEdit.setText("")
-                self.companyLineEdit.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
-        else:
-            self.errorMessage.setText("Username Already Exists")
+            SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
+            self.errorMessage.setText("Generator Added")
+            self.genNameAdd.setText("")
+            self.locationAdd.setText("")
+            self.companyAdd.setText("")
+            self.victronAdd.setText("")
+            self.efoy1Add.setText("")
+            self.efoy2Add.setText("")
+            self.latAdd.setText("")
+            self.lonAdd.setText("")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
@@ -1915,174 +2508,282 @@ class userManagement(QWidget):
 
         self.hide()
 
-class superUserManagement(QWidget):
+class superGenManagement(QWidget):
     def __init__(self):
 
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
-        self.listOfUsers = []
+        self.listOfGen = []
 
-        fetchUsers = SQL.fetchUsers()
+        fetchGen = SQL.fetchGeneratorSunstone()
+        for item in fetchGen:
+            self.listOfGen.append(item)
 
-        for item in fetchUsers:
-            self.listOfUsers.append(item)
+        self.selectedGen = ""
+        self.selectedLocation = ""
+        self.selectedCompany = ""
+        self.selectedVictronID = ""
+        self.selectedEfoy1 = ""
+        self.selectedEfoy2 = ""
+        self.selectedLat = ""
+        self.selectedLon = ""
 
-        # Current Selected User
-        self.selectedUser = ""
-        self.selectedPassword = ""
-        self.selectedRights = ""
-
-        # New User
-        self.newUsername = ""
-        self.newPassword = ""
+        self.newGenName = ""
+        self.newLocation = ""
         self.newCompany = ""
-        self.newRights = ""
+        self.newVictronID = ""
+        self.newEfoy1 = ""
+        self.newEfoy2 = ""
+        self.newLat = ""
+        self.newLon = ""
 
         super().__init__()
 
-        self.setWindowTitle("Super User Management")
-        self.setGeometry(0, 0, 350, 250)
+        self.setWindowTitle("Super Generator Management")
+        self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
 
         layout = QGridLayout()
 
-        self.userSelection = QComboBox()
-        self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.setPlaceholderText("User Selection")
-        self.userSelection.currentIndexChanged.connect(self.userChanged)
+        genManagementDropdown = QComboBox()
+        genManagementDropdown.addItems(self.listOfGen)
+        genManagementDropdown.setPlaceholderText("Generator Management")
+        genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
-        layout.addWidget(self.userSelection, 0, 0, 1, 3)
+        layout.addWidget(genManagementDropdown,0,0,1,4)
 
-        self.usernameLabel = QLabel("")
+        self.genName = QLabel("")
+        layout.addWidget(self.genName, 1, 0)
 
-        layout.addWidget(self.usernameLabel, 1, 0)
+        self.locationEdit = QLineEdit()
+        self.locationEdit.textChanged.connect(self.getUpdatedLocation)
+        self.locationEdit.hide()
 
-        self.passwordLineEdit = QLineEdit()
+        layout.addWidget(self.locationEdit, 1, 1)
 
-        self.passwordLineEdit.textChanged.connect(self.getPasswordChanged)
-        self.passwordLineEdit.hide()
+        self.companyEdit = QLineEdit()
+        self.companyEdit.textChanged.connect(self.getUpdatedCompany)
+        self.companyEdit.hide()
 
-        layout.addWidget(self.passwordLineEdit, 1, 1)
+        layout.addWidget(self.companyEdit, 1, 2)
 
-        self.rightLineEdit = QLineEdit()
-        self.rightLineEdit.textChanged.connect(self.getRightsChanged)
-        self.rightLineEdit.hide()
+        self.Victron = QLineEdit()
+        self.Victron.textChanged.connect(self.getUpdatedVictron)
+        self.Victron.hide()
 
-        layout.addWidget(self.rightLineEdit, 1, 2)
+        layout.addWidget(self.Victron, 1, 3)
+
+        self.Efoy1 = QLineEdit()
+        self.Efoy1.textChanged.connect(self.getUpdatedEfoy1)
+        self.Efoy1.hide()
+
+        layout.addWidget(self.Efoy1, 2, 0)
+
+        self.Efoy2 = QLineEdit()
+        self.Efoy2.textChanged.connect(self.getUpdatedEfoy2)
+        self.Efoy2.hide()
+
+        layout.addWidget(self.Efoy2, 2, 1)
+
+        self.Lat = QLineEdit()
+        self.Lat.textChanged.connect(self.getUpdatedLat)
+        self.Lat.hide()
+
+        layout.addWidget(self.Lat, 2, 2)
+
+        self.Lon = QLineEdit()
+        self.Lon.textChanged.connect(self.getUpdatedLon)
+        self.Lon.hide()
+
+        layout.addWidget(self.Lon, 2, 3)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUser)
+        changeButton.clicked.connect(self.changeGen)
 
-        layout.addWidget(changeButton, 2, 1)
+        layout.addWidget(changeButton, 3, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUser)
+        #deleteButton.clicked.connect(self.deleteGen)
 
-        layout.addWidget(deleteButton, 2, 2)
+        layout.addWidget(deleteButton, 3, 2, 1, 2)
 
-        addNewUserLabel = QLabel("--------------- Add New User ---------------")
-        addNewUserLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        addNewUnitLabel = QLabel("--------------- Add New Generator ---------------")
+        addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUserLabel, 3, 0, 1, 3)
+        layout.addWidget(addNewUnitLabel, 4, 0, 1, 4)
 
-        self.usernameEdit = QLineEdit()
-        self.usernameEdit.setPlaceholderText("Username")
-        self.usernameEdit.textChanged.connect(self.getNewUsername)
+        self.genNameAdd = QLineEdit()
+        self.genNameAdd.setPlaceholderText("Unit ID")
+        self.genNameAdd.textChanged.connect(self.getNewGenName)
 
-        layout.addWidget(self.usernameEdit, 4, 0)
+        layout.addWidget(self.genNameAdd, 5, 0)
 
-        self.passwordAddLineEdit = QLineEdit()
-        self.passwordAddLineEdit.setPlaceholderText("Password")
-        self.passwordAddLineEdit.textChanged.connect(self.getNewPassword)
+        self.locationAdd = QLineEdit()
+        self.locationAdd.setPlaceholderText("Location")
+        self.locationAdd.textChanged.connect(self.getNewLocation)
 
-        layout.addWidget(self.passwordAddLineEdit, 4, 1)
+        layout.addWidget(self.locationAdd, 5, 1)
 
-        self.companyLineEdit = QLineEdit()
-        self.companyLineEdit.setPlaceholderText("Company")
-        self.companyLineEdit.textChanged.connect(self.getNewCompany)
+        self.companyAdd = QLineEdit()
+        self.companyAdd.setPlaceholderText("Company")
+        self.companyAdd.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(self.companyLineEdit, 4, 2)
+        layout.addWidget(self.companyAdd, 5, 2)
 
-        self.rightsAddLineEdit = QLineEdit()
-        self.rightsAddLineEdit.setPlaceholderText("Rights")
-        self.rightsAddLineEdit.textChanged.connect(self.getNewRights)
+        self.victronAdd = QLineEdit()
+        self.victronAdd.setPlaceholderText("Victron Site ID")
+        self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.rightsAddLineEdit, 5, 1)
+        layout.addWidget(self.victronAdd, 5, 3)
 
-        addUserButton = QPushButton("Add New User")
-        addUserButton.clicked.connect(self.addUser)
+        self.efoy1Add = QLineEdit()
+        self.efoy1Add.setPlaceholderText("Efoy 1 ID")
+        self.efoy1Add.textChanged.connect(self.getNewEfoy1)
 
-        layout.addWidget(addUserButton, 6, 1)
+        layout.addWidget(self.efoy1Add, 6, 0)
+
+        self.efoy2Add = QLineEdit()
+        self.efoy2Add.setPlaceholderText("Efoy 2 ID (Can be Null)")
+        self.efoy2Add.textChanged.connect(self.getNewEfoy2)
+
+        layout.addWidget(self.efoy2Add, 6, 1)
+
+        self.latAdd = QLineEdit("")
+        self.latAdd.setPlaceholderText("Latitude")
+        self.latAdd.textChanged.connect(self.getNewLat)
+
+        layout.addWidget(self.latAdd, 6, 2)
+
+        self.lonAdd = QLineEdit("")
+        self.lonAdd.setPlaceholderText("Longitude")
+        self.lonAdd.textChanged.connect(self.getNewLon)
+
+        layout.addWidget(self.lonAdd, 6, 3)
+
+        addUnit = QPushButton("Add New Generator")
+        addUnit.clicked.connect(self.addNewGen)
+
+        layout.addWidget(addUnit, 7, 0, 1, 4)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 7, 1)
+        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
 
         self.setLayout(layout)
 
-    def getPasswordChanged(self, Password):
-        self.selectedPassword = Password
+    def getUpdatedLocation(self, Location):
+        self.selectedLocation = Location
 
-    def getRightsChanged(self, Rights):
-        self.selectedRights = Rights
+    def getUpdatedCompany(self, Company):
+        self.selectedCompany = Company
 
-    def getNewUsername(self, Username):
-        self.newUsername = Username
+    def getUpdatedVictron(self, Victron):
+        self.selectedVictronID = Victron
 
-    def getNewPassword(self, Password):
-        self.newPassword = Password
+    def getUpdatedEfoy1(self, Efoy):
+        self.selectedEfoy1 = Efoy
+
+    def getUpdatedEfoy2(self, Efoy):
+        self.selectedEfoy2 = Efoy
+
+    def getUpdatedLat(self, Lat):
+        self.selectedLat = Lat
+
+    def getUpdatedLon(self, Lon):
+        self.selectedLon = Lon
+
+    def getNewGenName(self, Name):
+        self.newGenName = Name
+
+    def getNewLocation(self, Location):
+        self.newLocation = Location
 
     def getNewCompany(self, Company):
         self.newCompany = Company
 
-    def getNewRights(self, Rights):
-        self.newRights = Rights
+    def getNewVictronID(self, ID):
+        self.newVictronID = ID
 
-    def userChanged(self, index):
+    def getNewEfoy1(self, Efoy):
+        self.newEfoy1 = Efoy
 
-        self.selectedUser = self.listOfUsers[index]
+    def getNewEfoy2(self, Efoy):
+        self.newEfoy2 = Efoy
 
-        self.selectedPassword = SQL.fetchPassword(self.selectedUser).strip()
-        self.selectedRights = SQL.fetchRights(self.selectedUser).strip()
+    def getNewLat(self, Lat):
+        self.newLat = Lat
 
-        self.usernameLabel.show()
-        self.passwordLineEdit.show()
-        self.rightLineEdit.show()
+    def getNewLon(self, Lon):
+        self.newLon = Lon
 
-        self.usernameLabel.setText(self.selectedUser)
-        self.passwordLineEdit.setText(self.selectedPassword)
-        self.rightLineEdit.setText(self.selectedRights)
+    def genChanged(self, index):
 
-    def changeUser(self):
-        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
-        self.errorMessage.setText("User Updated")
+        self.selectedGen = self.listOfGen[index]
 
-    def deleteUser(self):
+        data = SQL.fetchGenDetails(self.selectedGen)
 
-        if username == self.selectedUser:
-            self.errorMessage.setText("You cannot delete your own account")
+        for row in data:
+            altered = list(row)
+            self.selectedVictronID = str(altered[0])
+            self.selectedLocation = altered[1]
+            self.selectedCompany = altered[2]
+            self.selectedEfoy1 = altered[3]
+            self.selectedEfoy2 = altered[4]
+            self.selectedLat = str(altered[5])
+            self.selectedLon = str(altered[6])
+
+        self.locationEdit.show()
+        self.companyEdit.show()
+        self.Victron.show()
+        self.Efoy1.show()
+        self.Efoy2.show()
+        self.Lat.show()
+        self.Lon.show()
+
+        self.genName.setText(self.selectedGen)
+        self.locationEdit.setText(self.selectedLocation)
+        self.companyEdit.setText(self.selectedCompany)
+        self.Victron.setText(self.selectedVictronID)
+        self.Efoy1.setText(self.selectedEfoy1)
+        self.Efoy2.setText(self.selectedEfoy2)
+        self.Lat.setText(self.selectedLat)
+        self.Lon.setText(self.selectedLon)
+
+    def changeGen(self):
+
+        if any(x == "" for x in (self.selectedVictronID, self.selectedEfoy1)):
+            self.errorMessage.setText("One or All Field Is Empty")
+        elif "." not in self.selectedLat or "." not in self.selectedLon:
+            self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            SQL.deleteUsers(self.selectedUser)
-            self.errorMessage.setText("User Deleted")
+            SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany, self.selectedVictronID, self.selectedEfoy1, self.selectedEfoy2, self.selectedLat, self.selectedLon)
 
-    def addUser(self):
-        checkUsername = SQL.checkUsername(self.newUsername)
+            self.errorMessage.setText("Generator Updated")
 
-        if checkUsername is None:
-            if not [x for x in (self.newUsername, self.newPassword, self.newCompany, self.newRights) if x == ""]:
-                self.errorMessage.setText("User Added")
-                SQL.addUsers(self.newUsername, self.newPassword, self.newCompany, self.newRights)
-                self.usernameEdit.setText("")
-                self.passwordAddLineEdit.setText("")
-                self.companyLineEdit.setText("")
-                self.rightsAddLineEdit.setText("")
-            else:
-                self.errorMessage.setText("One or All Field Is Empty")
+
+    def addNewGen(self):
+        checkGen = SQL.checkGen(self.newGenName)
+
+        if checkGen is not None:
+            self.errorMessage.setText("Unit already in database")
+        elif any(x == "" for x in (self.newGenName, self.newVictronID, self.newEfoy1)):
+            self.errorMessage.setText("One or All Field Is Empty")
+        elif "." not in self.newLat or "." not in self.newLon:
+            self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            self.errorMessage.setText("Username Already Exists")
+            SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
+            self.errorMessage.setText("Generator Added")
+            self.genNameAdd.setText("")
+            self.locationAdd.setText("")
+            self.companyAdd.setText("")
+            self.victronAdd.setText("")
+            self.efoy1Add.setText("")
+            self.efoy2Add.setText("")
+            self.latAdd.setText("")
+            self.lonAdd.setText("")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
@@ -2117,6 +2818,11 @@ class adminMenu(QWidget):
         unitManagementButton.clicked.connect(self.openUnit)
 
         layout.addWidget(unitManagementButton)
+
+        genManagementButton = QPushButton("Generator Management")
+        genManagementButton.clicked.connect(self.openGen)
+
+        layout.addWidget(genManagementButton)
 
         self.setLayout(layout)
 
@@ -2166,6 +2872,30 @@ class adminMenu(QWidget):
 
             self.hide()
 
+    def openGen(self):
+        if userRights == "ADMIN":
+
+            self.openGenManagement = genManagement()
+            self.openGenManagement.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenManagement.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenManagement.move(Geo.topLeft())
+
+            self.hide()
+        elif userRights == "SUPERADMIN":
+
+            self.openGenManagement = superGenManagement()
+            self.openGenManagement.show()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenManagement.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenManagement.move(Geo.topLeft())
+
+            self.hide()
+
     def closeEvent(self, event):
 
         self.openMonitoring = adminMonitoring()
@@ -2207,14 +2937,38 @@ class interactiveMap(QWidget):
 
         if userCompany == "Sunstone":
             data = SQL.fetchLocationsSunstone()
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
+            data = SQL.fetchGeneratorLocationSunstone()
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
         else:
             data = SQL.fetchLocations(userCompany)
 
-        for row in data:
-            altered = list(row)
-            names.append(altered[0])
-            lat.append(altered[1])
-            lon.append(altered[2])
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
+            data = SQL.fetchGeneratorLocation(userCompany)
+
+            for row in data:
+                altered = list(row)
+                names.append(altered[0])
+                lat.append(altered[1])
+                lon.append(altered[2])
+
 
         config = {'displayModeBar': False}
 
@@ -2628,24 +3382,41 @@ class adminMonitoring(QWidget):
         global selectedVictron
         global selectedCCTV
         global selectedEfoyID
+        global selectedEfoyID2
         global selectedCamera
         global selectedCompany
 
         unitType = SQL.fetchUnitType(unitName).strip()
-        data = SQL.fetchUnitDetails(unitName)
-        selectedUnit = unitName
-        selectedUnitType = unitType
 
-        for row in data:
-            altered = list(row)
-            selectedIP = altered[0]
-            selectedVictron = altered[1]
-            selectedCompany = altered[3]
-            selectedCCTV = altered[4]
-            selectedCamera = altered[5]
-            selectedEfoyID = altered[6]
+        if str(unitType) == "" or str(unitType) == "IO":
+            data = SQL.fetchUnitDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+                selectedIP = altered[0]
+                selectedVictron = altered[1]
+                selectedCompany = altered[3]
+                selectedCCTV = altered[4]
+                selectedCamera = altered[5]
+                selectedEfoyID = altered[6]
+
+        elif str(unitType) == "GEN":
+            data = SQL.fetchGenDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+
+                selectedVictron = altered[0]
+                selectedCompany = altered[2]
+                selectedEfoyID = altered[3]
+                selectedEfoyID2 = altered[4]
 
         if str(unitType) == "ARC":
+
             pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
@@ -2668,6 +3439,20 @@ class adminMonitoring(QWidget):
             Geo = self.openIODashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
+
+        elif str(unitType) == "GEN":
+
+            pullVictronData(selectedUnit)
+
+            self.openGenDashboard = generatorDashboard()
+            self.openGenDashboard.show()
+
+            self.hide()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenDashboard.move(Geo.topLeft())
 
     def openMap(self):
         self.openMapPage = interactiveMap()
@@ -2794,26 +3579,43 @@ class userMonitoring(QWidget):
         global selectedUnitType
         global selectedIP
         global selectedVictron
-        global selectedCompany
         global selectedCCTV
         global selectedEfoyID
+        global selectedEfoyID2
         global selectedCamera
+        global selectedCompany
 
         unitType = SQL.fetchUnitType(unitName).strip()
-        data = SQL.fetchUnitDetails(unitName)
-        selectedUnit = unitName
-        selectedUnitType = unitType
 
-        for row in data:
-            altered = list(row)
-            selectedIP = altered[0]
-            selectedVictron = altered[1]
-            selectedCompany = altered[3]
-            selectedCCTV = altered[4]
-            selectedCamera = altered[5]
-            selectedEfoyID = altered[6]
+        if str(unitType) == "" or str(unitType) == "IO":
+            data = SQL.fetchUnitDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+                selectedIP = altered[0]
+                selectedVictron = altered[1]
+                selectedCompany = altered[3]
+                selectedCCTV = altered[4]
+                selectedCamera = altered[5]
+                selectedEfoyID = altered[6]
+
+        elif str(unitType) == "GEN":
+            data = SQL.fetchGenDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+
+                selectedVictron = altered[0]
+                selectedCompany = altered[2]
+                selectedEfoyID = altered[3]
+                selectedEfoyID2 = altered[4]
 
         if str(unitType) == "ARC":
+
             pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
@@ -2836,6 +3638,20 @@ class userMonitoring(QWidget):
             Geo = self.openIODashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
+
+        elif str(unitType) == "GEN":
+
+            pullVictronData(selectedUnit)
+
+            self.openGenDashboard = generatorDashboard()
+            self.openGenDashboard.show()
+
+            self.hide()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenDashboard.move(Geo.topLeft())
 
     def openMap(self):
         self.openMapPage = interactiveMap()
@@ -2868,7 +3684,6 @@ class userMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
-
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -2956,6 +3771,7 @@ class loginUI(QMainWindow):
                 userRights = SQL.fetchRights(self.username)
                 userCompany = SQL.fetchCompany(self.username)
                 if "ADMIN" == userRights or "SUPERADMIN" == userRights:
+
                     self.adminMonitoring = adminMonitoring()
                     self.adminMonitoring.show()
 
@@ -2977,7 +3793,6 @@ class loginUI(QMainWindow):
                     self.hide()
             else:
                 self.errorMessage.show()
-
 
 class errorMessage(QMainWindow):
 
@@ -3004,7 +3819,6 @@ class errorMessage(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
