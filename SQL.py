@@ -13,7 +13,7 @@ def connection():
 def fetchUnitsSunstone():
     connection()
     cursor = cnxn.cursor()
-    cursor.execute("SELECT Name FROM dbo.Units ORDER BY Name")
+    cursor.execute("SELECT Name FROM dbo.CCTVUnits ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -21,7 +21,7 @@ def fetchUnitsSunstone():
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Name FROM dbo.CCTVUnits WHERE Company = '{Company}' ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -46,7 +46,7 @@ def fetchUnitDetails(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon FROM dbo.Units WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row
@@ -64,7 +64,7 @@ def fetchLocationsSunstone():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute("SELECT Name, Lat, Lon FROM dbo.Units")
+    cursor.execute("SELECT Name, Lat, Lon FROM dbo.CCTVUnits")
 
     for row in cursor.fetchall():
         yield row
@@ -73,7 +73,7 @@ def fetchLocations(Company):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name, Lat, Lon FROM dbo.Units WHERE Company = '{Company}'")
+    cursor.execute(f"SELECT Name, Lat, Lon FROM dbo.CCTVUnits WHERE Company = '{Company}'")
 
     for row in cursor.fetchall():
         yield row
@@ -82,7 +82,7 @@ def fetchCompanies():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute("SELECT Company FROM dbo.Units")
+    cursor.execute("SELECT Company FROM dbo.CCTVUnits")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -93,7 +93,7 @@ def fetchSitesSunstone():
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Location FROM dbo.Units ORDER BY Name")
+    cursor.execute(f"SELECT Location FROM dbo.CCTVUnits ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -104,7 +104,7 @@ def fetchSites(Company):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Location FROM dbo.Units WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Location FROM dbo.CCTVUnits WHERE Company = '{Company}' ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -115,7 +115,7 @@ def fetchUnitType(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT UnitType FROM dbo.Units WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT UnitType FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         return row[0]
@@ -175,7 +175,7 @@ def checkUnit(Name):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name FROM dbo.Units WHERE Name = '{Name}'")
+    cursor.execute(f"SELECT Name FROM dbo.CCTVUnits WHERE Name = '{Name}'")
 
     for row in cursor.fetchall():
         return row[0]
@@ -194,11 +194,12 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
     cursor = cnxn.cursor()
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL)")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.Units (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
 
         cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
+    cursor.execute(f"INSERT INTO dbo.AllUnits (Name, Location, Company, UnitType) VALUES ('{Name.strip()}', '{Location.strip()}', '{Company.strip()}', '{UnitType.strip()}')")
     cnxn.commit()
 
 def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID):
@@ -208,15 +209,16 @@ def addGenerator(Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID)
 
     cursor.execute(f"INSERT INTO dbo.Generators (Name, victronID, Location, Company, Lat, Lon, efoy1ID, efoy2ID) VALUES ('{Name.strip()}', '{victronID.strip()}', '{Location.strip()}', '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{efoy1ID.strip()}', '{efoy2ID.strip()}')")
     cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
-
+    cursor.execute( f"INSERT INTO dbo.AllUnits (Name, Location, Company, UnitType) VALUES ('{Name.strip()}', '{Location.strip()}', '{Company.strip()}', 'GEN')")
     cnxn.commit()
 
 def updateUnit(unitName, Location, Company, CCTV):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()} WHERE Name = '{unitName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
@@ -224,8 +226,9 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
@@ -235,6 +238,7 @@ def updateGen(genName, Location, Company):
 
     cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{genName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
@@ -244,14 +248,16 @@ def updateGenSuper(genName, Location, Company, Victron, Efoy1, Efoy2, Lat, Lon):
 
     cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}', victronID = {Victron.strip()}, efoy1ID = '{Efoy1.strip()}', efoy2ID = '{Efoy2.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{genName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
 def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"DELETE FROM dbo.Units WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.CCTVUnits WHERE Name = '{Name}'")
     cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.AllUnits WHERE Name = '{Name}'")
 
     cnxn.commit()
 
@@ -260,6 +266,9 @@ def deleteGen(Name):
     cursor = cnxn.cursor()
     cursor.execute(f"DELETE FROM dbo.Generators WHERE Name = '{Name}'")
     cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.AllUnits WHERE Name = '{Name}'")
+
+    cnxn.commit()
 
 def addUsers(Username, Password, Company, Rights):
     connection()
