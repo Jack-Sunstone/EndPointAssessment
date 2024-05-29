@@ -236,6 +236,12 @@ def deleteUnits(Name):
 
     cnxn.commit()
 
+def deleteGen(Name):
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute(f"DELETE FROM dbo.Generators WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
+
 def addUsers(Username, Password, Company, Rights):
     connection()
     cursor = cnxn.cursor()
