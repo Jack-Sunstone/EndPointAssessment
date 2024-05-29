@@ -237,6 +237,16 @@ def updateGen(genName, Location, Company):
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
 
     cnxn.commit()
+
+def updateGenSuper(genName, Location, Company, Victron, Efoy1, Efoy2, Lat, Lon):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}', victronID = {Victron.strip()}, efoy1ID = '{Efoy1.strip()}', efoy2ID = '{Efoy2.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{genName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
+
+    cnxn.commit()
+
 def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
