@@ -3555,26 +3555,43 @@ class userMonitoring(QWidget):
         global selectedUnitType
         global selectedIP
         global selectedVictron
-        global selectedCompany
         global selectedCCTV
         global selectedEfoyID
+        global selectedEfoyID2
         global selectedCamera
+        global selectedCompany
 
         unitType = SQL.fetchUnitType(unitName).strip()
-        data = SQL.fetchUnitDetails(unitName)
-        selectedUnit = unitName
-        selectedUnitType = unitType
 
-        for row in data:
-            altered = list(row)
-            selectedIP = altered[0]
-            selectedVictron = altered[1]
-            selectedCompany = altered[3]
-            selectedCCTV = altered[4]
-            selectedCamera = altered[5]
-            selectedEfoyID = altered[6]
+        if str(unitType) == "" or str(unitType) == "IO":
+            data = SQL.fetchUnitDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+                selectedIP = altered[0]
+                selectedVictron = altered[1]
+                selectedCompany = altered[3]
+                selectedCCTV = altered[4]
+                selectedCamera = altered[5]
+                selectedEfoyID = altered[6]
+
+        elif str(unitType) == "GEN":
+            data = SQL.fetchGenDetails(unitName)
+            selectedUnit = unitName
+            selectedUnitType = unitType
+
+            for row in data:
+                altered = list(row)
+
+                selectedVictron = altered[0]
+                selectedCompany = altered[2]
+                selectedEfoyID = altered[3]
+                selectedEfoyID2 = altered[4]
 
         if str(unitType) == "ARC":
+
             pullVictronData(selectedUnit)
 
             self.openARCDashboard = arcDashboard()
@@ -3597,6 +3614,20 @@ class userMonitoring(QWidget):
             Geo = self.openIODashboard.frameGeometry()
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
+
+        elif str(unitType) == "GEN":
+
+            pullVictronData(selectedUnit)
+
+            self.openGenDashboard = generatorDashboard()
+            self.openGenDashboard.show()
+
+            self.hide()
+
+            Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+            Geo = self.openGenDashboard.frameGeometry()
+            Geo.moveCenter(Center)
+            self.openGenDashboard.move(Geo.topLeft())
 
     def openMap(self):
         self.openMapPage = interactiveMap()
