@@ -1105,17 +1105,17 @@ class generatorDashboard(QWidget):
         layout.addWidget(self.loadDraw, 3, 1)
 
         victronButton = QPushButton("Victron Webpage")
-        #victronButton.clicked.connect(self.openVictron)
+        victronButton.clicked.connect(self.openVictron)
 
         layout.addWidget(victronButton, 1, 2)
 
         efoy1Button = QPushButton("Efoy No.1")
-        #efoy1Button.clicked.connect(self.openEfoy1)
+        efoy1Button.clicked.connect(self.openEfoy1)
 
         layout.addWidget(efoy1Button, 2, 2)
 
         efoy2Button = QPushButton("Efoy No.2")
-        #efoy2Button.clicked.connect(self.openEfoy2)
+        efoy2Button.clicked.connect(self.openEfoy2)
 
         layout.addWidget(efoy2Button, 3, 2)
 
@@ -1123,6 +1123,11 @@ class generatorDashboard(QWidget):
             efoy2Button.hide()
 
         self.setLayout(layout)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.updateData)
+        self.timer.start(60000)
+
 
     def updateData(self):
         global unitVoltage
