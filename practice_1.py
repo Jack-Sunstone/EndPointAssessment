@@ -2285,7 +2285,7 @@ class genManagement(QWidget):
         else:
             SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
             self.errorMessage.setText("Generator Added")
-            self.unitNameAdd.setText("")
+            self.genNameAdd.setText("")
             self.locationAdd.setText("")
             self.companyAdd.setText("")
             self.victronAdd.setText("")
@@ -2294,6 +2294,11 @@ class genManagement(QWidget):
             self.latAdd.setText("")
             self.lonAdd.setText("")
 
+    def changeUnit(self):
+
+        SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany)
+
+        self.errorMessage.setText("Generator Updated ")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
@@ -2397,12 +2402,12 @@ class superGenManagement(QWidget):
         layout.addWidget(self.Lon, 2, 3)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUnit)
+        changeButton.clicked.connect(self.changeGen)
 
         layout.addWidget(changeButton, 3, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUnit)
+        deleteButton.clicked.connect(self.deleteGen)
 
         layout.addWidget(deleteButton, 3, 2, 1, 2)
 
@@ -2550,6 +2555,17 @@ class superGenManagement(QWidget):
         self.Efoy2.setText(self.selectedEfoy)
         self.Lat.setText(self.selectedLat)
         self.Lon.setText(self.selectedLon)
+
+    def changeUnit(self):
+
+        if any(x == "" for x in (self.newGenName, self.newVictronID, self.newEfoy1)):
+            self.errorMessage.setText("One or All Field Is Empty")
+        elif "." not in self.newLat or "." not in self.newLon:
+            self.errorMessage.setText("Lat and Lon do not Compute")
+        else:
+            SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany, self.selectedVictronID, self.selectedEfoy1, self.selectedEfoy2, self.selectedLat, self.selectedLon)
+
+            self.errorMessage.setText("Generator Updated ")
 
 
     def addNewGen(self):
