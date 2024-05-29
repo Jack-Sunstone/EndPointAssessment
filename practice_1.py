@@ -3327,20 +3327,10 @@ class adminMonitoring(QWidget):
 
         fetchUnits = SQL.fetchUnitsSunstone()
 
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
-
-        if userCompany == "Sunstone":
-            fetchSites = SQL.fetchSitesSunstone()
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
-
-        else:
-            fetchSites = SQL.fetchSites(userCompany)
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
+        for row in fetchUnits:
+            altered = list(row)
+            self.listOfUnits.append(altered[0])
+            self.listOfLocations.append(altered[1])
 
         self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
         self.dropdownLocations.insert(0,"All Units")
@@ -3412,6 +3402,42 @@ class adminMonitoring(QWidget):
             widgetToRemove = self.unitsLayout.itemAt(i).widget()
             self.unitsLayout.removeWidget(widgetToRemove)
             widgetToRemove.deleteLater()
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+
+        if selectedFilter == "All Units":
+
+            fetchUnits = SQL.fetchUnitsSunstone()
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
+
+        else:
+
+            fetchUnits = SQL.fetchFilteredUnitsSunstone(selectedFilter)
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
+
+        j = 0
+
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
+
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
+
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
+
+            self.unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
     def openUnitDashboard(self, unitName):
         global selectedUnit
@@ -3546,23 +3572,21 @@ class userMonitoring(QWidget):
 
         if userCompany == "Sunstone":
             fetchUnits = SQL.fetchUnitsSunstone()
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
         else:
             fetchUnits = SQL.fetchUnits(userCompany)
 
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
 
-        if userCompany == "Sunstone":
-            fetchSites = SQL.fetchSitesSunstone()
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
-
-        else:
-            fetchSites = SQL.fetchSites(userCompany)
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
+        self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
+        self.dropdownLocations.insert(0, "All Units")
 
         super().__init__()
 
@@ -3573,7 +3597,7 @@ class userMonitoring(QWidget):
 
         mainLayout = QVBoxLayout()
 
-        unitsLayout = QVBoxLayout()
+        self.unitsLayout = QVBoxLayout()
 
         groupBox = QGroupBox()
 
@@ -3588,11 +3612,17 @@ class userMonitoring(QWidget):
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
-            unitsLayout.addWidget(self.testButton)
+            self.unitsLayout.addWidget(self.testButton)
 
             j = j + 1
 
-        groupBox.setLayout(unitsLayout)
+        groupBox.setLayout(self.unitsLayout)
+
+        self.filterDropdown = QComboBox()
+        self.filterDropdown.addItems(self.dropdownLocations)
+        self.filterDropdown.currentIndexChanged.connect(self.filterChanged)
+
+        mainLayout.addWidget(self.filterDropdown)
 
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
@@ -3611,6 +3641,65 @@ class userMonitoring(QWidget):
         mainLayout.addWidget(victronButton)
 
         self.setLayout(mainLayout)
+
+    def filterChanged(self, index):
+
+        selectedFilter = self.dropdownLocations[index]
+
+        for i in reversed(range(self.unitsLayout.count())):
+            widgetToRemove = self.unitsLayout.itemAt(i).widget()
+            self.unitsLayout.removeWidget(widgetToRemove)
+            widgetToRemove.deleteLater()
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+
+        if selectedFilter == "All Units":
+            if userCompany == "Sunstone":
+
+                fetchUnits = SQL.fetchUnitsSunstone()
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+            else:
+                fetchUnits = SQL.fetchUnits(userCompany)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+        else:
+            if userCompany == "Sunstone":
+                fetchUnits = SQL.fetchFilteredUnitsSunstone(selectedFilter)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+            else:
+                fetchUnits = SQL.fetchFilteredUnits(selectedFilter, userCompany)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+
+        j = 0
+
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
+
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
+
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
+
+            self.unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
     def openUnitDashboard(self, unitName):
         global selectedUnit

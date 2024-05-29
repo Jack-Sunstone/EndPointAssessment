@@ -13,18 +13,36 @@ def connection():
 def fetchUnitsSunstone():
     connection()
     cursor = cnxn.cursor()
-    cursor.execute("SELECT Name FROM dbo.AllUnits ORDER BY Name")
+    cursor.execute("SELECT Name, Location FROM dbo.AllUnits ORDER BY Name")
 
     for row in cursor.fetchall():
-        yield row[0]
+        yield row
+
+def fetchFilteredUnitsSunstone(Filter):
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute(f"SELECT Name, Location FROM dbo.AllUnits WHERE Location = '{Filter}' ORDER By Name")
+
+    for row in cursor.fetchall():
+        yield row
+
+def fetchFilteredUnits(Filter, Company):
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute(f"SELECT Name, Location FROM dbo.AllUnits WHERE Location = '{Filter}' AND Company = '{Company}' ORDER By Name")
+
+    for row in cursor.fetchall():
+        yield row
+
+
 
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"SELECT Name FROM dbo.AllUnits WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Name, Location FROM dbo.AllUnits WHERE Company = '{Company}' ORDER BY Name")
 
     for row in cursor.fetchall():
-        yield row[0]
+        yield row
 
 def fetchUnitsManagement():
     connection()
@@ -104,6 +122,7 @@ def fetchGeneratorLocation(Company):
 
     for row in cursor.fetchall():
         yield row
+
 def fetchCompanies():
     connection()
     cursor = cnxn.cursor()
@@ -264,7 +283,7 @@ def updateGen(genName, Location, Company):
 
     cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{genName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
-    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{genName}'")
 
     cnxn.commit()
 
@@ -274,7 +293,7 @@ def updateGenSuper(genName, Location, Company, Victron, Efoy1, Efoy2, Lat, Lon):
 
     cursor.execute(f"UPDATE dbo.Generators SET Location = '{Location.strip()}', Company = '{Company.strip()}', victronID = {Victron.strip()}, efoy1ID = '{Efoy1.strip()}', efoy2ID = '{Efoy2.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{genName}'")
     cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{genName}'")
-    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{genName}'")
 
     cnxn.commit()
 
