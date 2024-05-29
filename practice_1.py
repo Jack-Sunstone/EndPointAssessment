@@ -2138,82 +2138,121 @@ class genManagement(QWidget):
         layout.addWidget(self.genName, 1, 0, 1, 2)
 
         self.locationEdit = QLineEdit()
-        # self.locationEdit.textChanged.connect(self.getUpdatedLocation)
+        self.locationEdit.textChanged.connect(self.getUpdatedLocation)
         self.locationEdit.hide()
 
         layout.addWidget(self.locationEdit, 1, 2)
 
         self.companyEdit = QLineEdit()
-        # self.companyEdit.textChanged.connect(self.getUpdatedCompany)
+        self.companyEdit.textChanged.connect(self.getUpdatedCompany)
         self.companyEdit.hide()
 
         layout.addWidget(self.companyEdit, 1, 3)
 
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUnit)
+
+        layout.addWidget(changeButton, 2, 0, 1, 2)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUnit)
+
+        layout.addWidget(deleteButton, 2, 2, 1, 2)
+
         addNewUnitLabel = QLabel("--------------- Add New Generator ---------------")
         addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUnitLabel, 2, 0, 1, 4)
+        layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
 
         self.genNameAdd = QLineEdit()
         self.genNameAdd.setPlaceholderText("Unit ID")
         self.genNameAdd.textChanged.connect(self.genNameAdd)
 
-        layout.addWidget(self.genNameAdd, 3, 0)
+        layout.addWidget(self.genNameAdd, 4, 0)
 
         self.locationAdd = QLineEdit()
         self.locationAdd.setPlaceholderText("Location")
         self.locationAdd.textChanged.connect(self.getNewLocation)
 
-        layout.addWidget(self.locationAdd, 3, 1)
+        layout.addWidget(self.locationAdd, 4, 1)
 
         self.companyAdd = QLineEdit()
         self.companyAdd.setPlaceholderText("Company")
         self.companyAdd.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(self.companyAdd, 3, 2)
+        layout.addWidget(self.companyAdd, 4, 2)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd, 3, 3)
+        layout.addWidget(self.victronAdd, 4, 3)
 
         self.efoy1Add = QLineEdit()
         self.efoy1Add.setPlaceholderText("Efoy ID")
         self.efoy1Add.textChanged.connect(self.getNewEfoy)
 
-        layout.addWidget(self.efoy1Add, 4, 0)
+        layout.addWidget(self.efoy1Add, 5, 0)
 
         self.efoy2Add = QLineEdit()
         self.efoy2Add.setPlaceholderText("Efoy ID")
-        # self.efoy2Add.textChanged.connect(self.getNewEfoy)
+        self.efoy2Add.textChanged.connect(self.getNewEfoy)
 
-        layout.addWidget(self.efoy2Add, 4, 1)
+        layout.addWidget(self.efoy2Add, 5, 1)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
-        # self.latAdd.textChanged.connect(self.getNewLat)
+        self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd, 4, 2)
+        layout.addWidget(self.latAdd, 5, 2)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
-        # self.lonAdd.textChanged.connect(self.getNewLon)
+        self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd, 4, 3)
+        layout.addWidget(self.lonAdd, 5, 3)
 
         addUnit = QPushButton("Add New Generator")
-        # addUnit.clicked.connect(self.addNewUnit)
+        addUnit.clicked.connect(self.addNewGen)
 
-        layout.addWidget(addUnit, 5, 0, 1, 4)
+        layout.addWidget(addUnit, 6, 0, 1, 4)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 6, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         self.setLayout(layout)
+
+    def getUpdatedLocation(self, Location):
+        self.selectedLocation = Location
+
+    def getUpdatedCompany(self, Company):
+        self.selectedCompany = Company
+    def getNewGenName(self, Name):
+        self.newGenName = Name
+
+    def getNewLocation(self, Location):
+        self.newLocation = Location
+
+    def getNewCompany(self, Company):
+        self.newCompany = Company
+
+    def getNewVictronID(self, ID):
+        self.newVictronID = ID
+
+    def getNewEfoy1(self, Efoy):
+        self.newEfoy1 = Efoy
+
+    def getNewEfoy2(self, Efoy):
+        self.newEfoy2 = Efoy
+
+    def getNewLat(self, Lat):
+        self.newLat = Lat
+
+    def getNewLon(self, Lon):
+        self.newLon = Lon
 
     def unitChanged(self, index):
 
@@ -2357,69 +2396,79 @@ class superGenManagement(QWidget):
 
         layout.addWidget(self.Lon, 2, 3)
 
+        changeButton = QPushButton("Change Details")
+        changeButton.clicked.connect(self.changeUnit)
+
+        layout.addWidget(changeButton, 3, 0, 1, 2)
+
+        deleteButton = QPushButton("Delete")
+        deleteButton.clicked.connect(self.deleteUnit)
+
+        layout.addWidget(deleteButton, 3, 2, 1, 2)
+
         addNewUnitLabel = QLabel("--------------- Add New Generator ---------------")
         addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
+        layout.addWidget(addNewUnitLabel, 4, 0, 1, 4)
 
         self.genNameAdd = QLineEdit()
         self.genNameAdd.setPlaceholderText("Unit ID")
         self.genNameAdd.textChanged.connect(self.getNewGenName)
 
-        layout.addWidget(self.genNameAdd, 4, 0)
+        layout.addWidget(self.genNameAdd, 5, 0)
 
         self.locationAdd = QLineEdit()
         self.locationAdd.setPlaceholderText("Location")
         self.locationAdd.textChanged.connect(self.getNewLocation)
 
-        layout.addWidget(self.locationAdd, 4, 1)
+        layout.addWidget(self.locationAdd, 5, 1)
 
         self.companyAdd = QLineEdit()
         self.companyAdd.setPlaceholderText("Company")
         self.companyAdd.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(self.companyAdd, 4, 2)
+        layout.addWidget(self.companyAdd, 5, 2)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd, 4, 3)
+        layout.addWidget(self.victronAdd, 5, 3)
 
         self.efoy1Add = QLineEdit()
         self.efoy1Add.setPlaceholderText("Efoy 1 ID")
         self.efoy1Add.textChanged.connect(self.getNewEfoy1)
 
-        layout.addWidget(self.efoy1Add, 5, 0)
+        layout.addWidget(self.efoy1Add, 6, 0)
 
         self.efoy2Add = QLineEdit()
         self.efoy2Add.setPlaceholderText("Efoy 2 ID (Can be Null)")
         self.efoy2Add.textChanged.connect(self.getNewEfoy2)
 
-        layout.addWidget(self.efoy2Add, 5, 1)
+        layout.addWidget(self.efoy2Add, 6, 1)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
         self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd, 5, 2)
+        layout.addWidget(self.latAdd, 6, 2)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
         self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd, 5, 3)
+        layout.addWidget(self.lonAdd, 6, 3)
 
         addUnit = QPushButton("Add New Generator")
         addUnit.clicked.connect(self.addNewGen)
 
-        layout.addWidget(addUnit, 6, 0, 1, 4)
+        layout.addWidget(addUnit, 7, 0, 1, 4)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 7, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
 
         self.setLayout(layout)
 
