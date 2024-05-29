@@ -13,7 +13,7 @@ def connection():
 def fetchUnitsSunstone():
     connection()
     cursor = cnxn.cursor()
-    cursor.execute("SELECT Name FROM dbo.CCTVUnits ORDER BY Name")
+    cursor.execute("SELECT Name FROM dbo.AllUnits ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]
@@ -21,7 +21,15 @@ def fetchUnitsSunstone():
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
-    cursor.execute(f"SELECT Name FROM dbo.CCTVUnits WHERE Company = '{Company}' ORDER BY Name")
+    cursor.execute(f"SELECT Name FROM dbo.AllUnits WHERE Company = '{Company}' ORDER BY Name")
+
+    for row in cursor.fetchall():
+        yield row[0]
+
+def fetchUnitsManagement():
+    connection()
+    cursor = cnxn.cursor()
+    cursor.execute("SELECT Name FROM dbo.CCTVUnits ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row[0]

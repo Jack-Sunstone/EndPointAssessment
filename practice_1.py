@@ -1556,7 +1556,7 @@ class unitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnitsSunstone()
+        fetchUnits = SQL.fetchUnitsManagement()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -1881,7 +1881,7 @@ class superUnitManagement(QWidget):
 
         self.listOfUnits = []
 
-        fetchUnits = SQL.fetchUnitsSunstone()
+        fetchUnits = SQL.fetchUnitsManagement()
         for item in fetchUnits:
             self.listOfUnits.append(item)
 
@@ -3685,8 +3685,6 @@ class loginUI(QMainWindow):
                 userRights = SQL.fetchRights(self.username)
                 userCompany = SQL.fetchCompany(self.username)
                 if "ADMIN" == userRights or "SUPERADMIN" == userRights:
-                    self.testing = generatorDashboard()
-                    self.testing.show()
 
                     self.adminMonitoring = adminMonitoring()
                     self.adminMonitoring.show()
