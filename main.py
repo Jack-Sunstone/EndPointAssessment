@@ -45,6 +45,7 @@ mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTVi
 
 geocoder = what3words.Geocoder("RMNUBSDA")
 
+
 def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
@@ -58,15 +59,18 @@ def pullVictronData(unitName):
         unitVoltage = altered[1]
         unitLoad = altered[2]
 
+
 def axisPath(IPaddress, cameraNumber):
     Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
+
 def hikPath(IPaddress, cameraNumber):
     Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
+
 
 def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
@@ -88,6 +92,7 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
+
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(Timeout)
@@ -98,6 +103,7 @@ def checkURL(IPAddress, Port, Timeout):
     else:
         socketOpen.close()
         return 1
+
 
 class CameraWidget(QWidget):
 
@@ -193,6 +199,7 @@ class CameraWidget(QWidget):
 
     def getVideoFrame(self):
         return self.videoFrame
+
 
 class allCamerasView(QWidget):
     def __init__(self):
@@ -348,6 +355,7 @@ class allCamerasView(QWidget):
 
             self.hide()
 
+
 class singleCameraView(QWidget):
     def __init__(self):
 
@@ -413,6 +421,7 @@ class singleCameraView(QWidget):
             self.openIODashboard.move(Geo.topLeft())
 
             self.hide()
+
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -643,6 +652,7 @@ class ioDashboard(QWidget):
             self.openMonitoring.move(Geo.topLeft())
 
             self.hide()
+
 
 class arcDashboard(QWidget):
     def __init__(self):
@@ -1018,6 +1028,7 @@ class arcDashboard(QWidget):
 
             self.hide()
 
+
 class generatorDashboard(QWidget):
     def __init__(self):
         global unitVoltage
@@ -1071,7 +1082,7 @@ class generatorDashboard(QWidget):
         genLabel.setStyleSheet("font: bold 14px;")
         genLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(genLabel,0,1)
+        layout.addWidget(genLabel, 0, 1)
 
         sunPixmap = QPixmap(self.sunPath)
         batteryPixmap = QPixmap(self.batteryPath)
@@ -1127,7 +1138,6 @@ class generatorDashboard(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateData)
         self.timer.start(60000)
-
 
     def updateData(self):
         global unitVoltage
@@ -1212,6 +1222,7 @@ class generatorDashboard(QWidget):
             self.openMonitoring.move(Geo.topLeft())
 
             self.hide()
+
 
 class userManagement(QWidget):
     def __init__(self):
@@ -1368,6 +1379,7 @@ class userManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class superUserManagement(QWidget):
     def __init__(self):
@@ -1548,6 +1560,7 @@ class superUserManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class unitManagement(QWidget):
     def __init__(self):
@@ -1873,6 +1886,7 @@ class unitManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class superUnitManagement(QWidget):
     def __init__(self):
@@ -2210,8 +2224,8 @@ class superUnitManagement(QWidget):
         if int(self.selectedCameras) < 1 or int(self.selectedCameras) > 4:
             self.errorMessage.setText("Number of Cameras should be between 1-4")
         elif any(x == "" for x in (
-        self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon,
-        self.selectedCameraType)):
+                self.selectedIP, self.selectedLocation, self.selectedCompany, self.selectedLat, self.selectedLon,
+                self.selectedCameraType)):
             self.errorMessage.setText("One or More fields empty.")
         elif len(self.selectedIP) < 8:
             self.errorMessage.setText("IP Address too short")
@@ -2291,6 +2305,7 @@ class superUnitManagement(QWidget):
 
         self.hide()
 
+
 class genManagement(QWidget):
     def __init__(self):
 
@@ -2352,7 +2367,7 @@ class genManagement(QWidget):
         layout.addWidget(changeButton, 2, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        #deleteButton.clicked.connect(self.deleteGen)
+        # deleteButton.clicked.connect(self.deleteGen)
 
         layout.addWidget(deleteButton, 2, 2, 1, 2)
 
@@ -2427,6 +2442,7 @@ class genManagement(QWidget):
 
     def getUpdatedCompany(self, Company):
         self.selectedCompany = Company
+
     def getNewGenName(self, Name):
         self.newGenName = Name
 
@@ -2486,7 +2502,8 @@ class genManagement(QWidget):
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
+            SQL.addGenerator(self.newGenName, self.newVictronID, self.newLocation, self.newCompany, self.newLat,
+                             self.newLon, self.newEfoy1, self.newEfoy2)
             self.errorMessage.setText("Generator Added")
             self.genNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2507,6 +2524,7 @@ class genManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class superGenManagement(QWidget):
     def __init__(self):
@@ -2551,7 +2569,7 @@ class superGenManagement(QWidget):
         genManagementDropdown.setPlaceholderText("Generator Management")
         genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
-        layout.addWidget(genManagementDropdown,0,0,1,4)
+        layout.addWidget(genManagementDropdown, 0, 0, 1, 4)
 
         self.genName = QLabel("")
         layout.addWidget(self.genName, 1, 0)
@@ -2604,7 +2622,7 @@ class superGenManagement(QWidget):
         layout.addWidget(changeButton, 3, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        #deleteButton.clicked.connect(self.deleteGen)
+        # deleteButton.clicked.connect(self.deleteGen)
 
         layout.addWidget(deleteButton, 3, 2, 1, 2)
 
@@ -2759,10 +2777,10 @@ class superGenManagement(QWidget):
         elif "." not in self.selectedLat or "." not in self.selectedLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany, self.selectedVictronID, self.selectedEfoy1, self.selectedEfoy2, self.selectedLat, self.selectedLon)
+            SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany, self.selectedVictronID,
+                               self.selectedEfoy1, self.selectedEfoy2, self.selectedLat, self.selectedLon)
 
             self.errorMessage.setText("Generator Updated")
-
 
     def addNewGen(self):
         checkGen = SQL.checkGen(self.newGenName)
@@ -2774,7 +2792,8 @@ class superGenManagement(QWidget):
         elif "." not in self.newLat or "." not in self.newLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
         else:
-            SQL.addGenerator(self.newGenName,self.newVictronID,self.newLocation,self.newCompany,self.newLat,self.newLon,self.newEfoy1,self.newEfoy2)
+            SQL.addGenerator(self.newGenName, self.newVictronID, self.newLocation, self.newCompany, self.newLat,
+                             self.newLon, self.newEfoy1, self.newEfoy2)
             self.errorMessage.setText("Generator Added")
             self.genNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2795,6 +2814,7 @@ class superGenManagement(QWidget):
         self.openAdminMenu.move(Geo.topLeft())
 
         self.hide()
+
 
 class adminMenu(QWidget):
     def __init__(self):
@@ -2908,6 +2928,7 @@ class adminMenu(QWidget):
 
         self.hide()
 
+
 class interactiveMap(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
@@ -2969,7 +2990,6 @@ class interactiveMap(QWidget):
                 lat.append(altered[1])
                 lon.append(altered[2])
 
-
         config = {'displayModeBar': False}
 
         fig = go.Figure(go.Scattermapbox(
@@ -2998,6 +3018,7 @@ class interactiveMap(QWidget):
         fig.update_traces()
 
         self.mapBrowser.setHtml(fig.to_html(include_plotlyjs='cdn', config=config))
+
 
 class victronOverview(QWidget):
     def __init__(self):
@@ -3102,13 +3123,13 @@ class victronOverview(QWidget):
             self.unitName = QLabel(f"{i}")
             self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.unitName.setStyleSheet("border-radius: 8px;"
-                                   "color: black;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #c8eacf;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
 
-            self.unitsLayout.addWidget(self.unitName, j+1, 0)
+            self.unitsLayout.addWidget(self.unitName, j + 1, 0)
 
             unitVoltage = self.listOfVoltage[j]
             unitLoad = self.listOfLoad[j]
@@ -3117,35 +3138,35 @@ class victronOverview(QWidget):
             self.batteryVoltage = QLabel(str(unitVoltage) + " V")
             self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.batteryVoltage.setStyleSheet("border-radius: 8px;"
-                                   "color: black;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #c8eacf;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+                                              "color: black;"
+                                              "border: 1px solid #46a15b;"
+                                              "background-color: #c8eacf;"
+                                              "padding: 5px 15px;"
+                                              "font-size: 14pt;")
 
-            self.unitsLayout.addWidget(self.batteryVoltage, j+1, 1)
+            self.unitsLayout.addWidget(self.batteryVoltage, j + 1, 1)
 
             self.solarPower = QLabel(str(unitSolar) + " W")
             self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.solarPower.setStyleSheet("border-radius: 8px;"
-                                   "color: black;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #c8eacf;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+                                          "color: black;"
+                                          "border: 1px solid #46a15b;"
+                                          "background-color: #c8eacf;"
+                                          "padding: 5px 15px;"
+                                          "font-size: 14pt;")
 
-            self.unitsLayout.addWidget(self.solarPower, j+1, 2)
+            self.unitsLayout.addWidget(self.solarPower, j + 1, 2)
 
             self.loadDraw = QLabel(str(unitLoad) + " W")
             self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.loadDraw.setStyleSheet("border-radius: 8px;"
-                                   "color: black;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #c8eacf;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
 
-            self.unitsLayout.addWidget(self.loadDraw, j+1, 3)
+            self.unitsLayout.addWidget(self.loadDraw, j + 1, 3)
 
             j = j + 1
 
@@ -3295,6 +3316,7 @@ class victronOverview(QWidget):
 
             j = j + 1
 
+
 class adminMonitoring(QWidget):
     def __init__(self):
 
@@ -3302,25 +3324,16 @@ class adminMonitoring(QWidget):
 
         self.listOfUnits = []
         self.listOfLocations = []
-        self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
 
         fetchUnits = SQL.fetchUnitsSunstone()
 
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
+        for row in fetchUnits:
+            altered = list(row)
+            self.listOfUnits.append(altered[0])
+            self.listOfLocations.append(altered[1])
 
-        if userCompany == "Sunstone":
-            fetchSites = SQL.fetchSitesSunstone()
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
-
-        else:
-            fetchSites = SQL.fetchSites(userCompany)
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
-                print(self.listOfLocations)
+        self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
+        self.dropdownLocations.insert(0,"All Units")
 
         super().__init__()
 
@@ -3331,14 +3344,13 @@ class adminMonitoring(QWidget):
 
         mainLayout = QVBoxLayout()
 
-        unitsLayout = QVBoxLayout()
+        self.unitsLayout = QVBoxLayout()
 
         groupBox = QGroupBox()
 
         j = 0
 
         for i in self.listOfUnits:
-
             self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
 
             buttonText = (self.testButton.text()).split()
@@ -3347,11 +3359,17 @@ class adminMonitoring(QWidget):
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
-            unitsLayout.addWidget(self.testButton)
+            self.unitsLayout.addWidget(self.testButton)
 
             j = j + 1
 
-        groupBox.setLayout(unitsLayout)
+        groupBox.setLayout(self.unitsLayout)
+
+        self.filterDropdown = QComboBox()
+        self.filterDropdown.addItems(self.dropdownLocations)
+        self.filterDropdown.currentIndexChanged.connect(self.filterChanged)
+
+        mainLayout.addWidget(self.filterDropdown)
 
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
@@ -3375,6 +3393,51 @@ class adminMonitoring(QWidget):
         mainLayout.addWidget(adminButton)
 
         self.setLayout(mainLayout)
+
+    def filterChanged(self, index):
+
+        selectedFilter = self.dropdownLocations[index]
+
+        for i in reversed(range(self.unitsLayout.count())):
+            widgetToRemove = self.unitsLayout.itemAt(i).widget()
+            self.unitsLayout.removeWidget(widgetToRemove)
+            widgetToRemove.deleteLater()
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+
+        if selectedFilter == "All Units":
+
+            fetchUnits = SQL.fetchUnitsSunstone()
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
+
+        else:
+
+            fetchUnits = SQL.fetchFilteredUnitsSunstone(selectedFilter)
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
+
+        j = 0
+
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
+
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
+
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
+
+            self.unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
     def openUnitDashboard(self, unitName):
         global selectedUnit
@@ -3498,6 +3561,7 @@ class adminMonitoring(QWidget):
 
         self.hide()
 
+
 class userMonitoring(QWidget):
     def __init__(self):
 
@@ -3508,23 +3572,21 @@ class userMonitoring(QWidget):
 
         if userCompany == "Sunstone":
             fetchUnits = SQL.fetchUnitsSunstone()
+
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
         else:
             fetchUnits = SQL.fetchUnits(userCompany)
 
-        for item in fetchUnits:
-            self.listOfUnits.append(item)
+            for row in fetchUnits:
+                altered = list(row)
+                self.listOfUnits.append(altered[0])
+                self.listOfLocations.append(altered[1])
 
-        if userCompany == "Sunstone":
-            fetchSites = SQL.fetchSitesSunstone()
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
-
-        else:
-            fetchSites = SQL.fetchSites(userCompany)
-
-            for i in fetchSites:
-                self.listOfLocations.append(i)
+        self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
+        self.dropdownLocations.insert(0, "All Units")
 
         super().__init__()
 
@@ -3535,14 +3597,13 @@ class userMonitoring(QWidget):
 
         mainLayout = QVBoxLayout()
 
-        unitsLayout = QVBoxLayout()
+        self.unitsLayout = QVBoxLayout()
 
         groupBox = QGroupBox()
 
         j = 0
 
         for i in self.listOfUnits:
-
             self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
 
             buttonText = (self.testButton.text()).split()
@@ -3551,11 +3612,17 @@ class userMonitoring(QWidget):
 
             self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
 
-            unitsLayout.addWidget(self.testButton)
+            self.unitsLayout.addWidget(self.testButton)
 
             j = j + 1
 
-        groupBox.setLayout(unitsLayout)
+        groupBox.setLayout(self.unitsLayout)
+
+        self.filterDropdown = QComboBox()
+        self.filterDropdown.addItems(self.dropdownLocations)
+        self.filterDropdown.currentIndexChanged.connect(self.filterChanged)
+
+        mainLayout.addWidget(self.filterDropdown)
 
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
@@ -3574,6 +3641,65 @@ class userMonitoring(QWidget):
         mainLayout.addWidget(victronButton)
 
         self.setLayout(mainLayout)
+
+    def filterChanged(self, index):
+
+        selectedFilter = self.dropdownLocations[index]
+
+        for i in reversed(range(self.unitsLayout.count())):
+            widgetToRemove = self.unitsLayout.itemAt(i).widget()
+            self.unitsLayout.removeWidget(widgetToRemove)
+            widgetToRemove.deleteLater()
+
+        self.listOfUnits = []
+        self.listOfLocations = []
+
+        if selectedFilter == "All Units":
+            if userCompany == "Sunstone":
+
+                fetchUnits = SQL.fetchUnitsSunstone()
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+            else:
+                fetchUnits = SQL.fetchUnits(userCompany)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+        else:
+            if userCompany == "Sunstone":
+                fetchUnits = SQL.fetchFilteredUnitsSunstone(selectedFilter)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+            else:
+                fetchUnits = SQL.fetchFilteredUnits(selectedFilter, userCompany)
+
+                for row in fetchUnits:
+                    altered = list(row)
+                    self.listOfUnits.append(altered[0])
+                    self.listOfLocations.append(altered[1])
+
+        j = 0
+
+        for i in self.listOfUnits:
+            self.testButton = QPushButton(str(f"{i} {self.listOfLocations[j]}"))
+
+            buttonText = (self.testButton.text()).split()
+
+            buttonText = buttonText[0]
+
+            self.testButton.clicked.connect(lambda checked=None, text=buttonText: self.openUnitDashboard(text))
+
+            self.unitsLayout.addWidget(self.testButton)
+
+            j = j + 1
 
     def openUnitDashboard(self, unitName):
         global selectedUnit
@@ -3686,6 +3812,7 @@ class userMonitoring(QWidget):
 
         self.hide()
 
+
 class loginUI(QMainWindow):
     def __init__(self):
 
@@ -3795,6 +3922,7 @@ class loginUI(QMainWindow):
             else:
                 self.errorMessage.show()
 
+
 class errorMessage(QMainWindow):
 
     def __init__(self):
@@ -3820,6 +3948,7 @@ class errorMessage(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
+
 
 if hasattr(Qt, 'AA_EnableHighDpiScaling'):
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
