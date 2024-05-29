@@ -55,7 +55,7 @@ def fetchGenDetails(genName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT victronID, Location, Company, efoy1ID, efoy2ID, Lat, Lon FROM dbo.Units WHERE Name = '{genName}'")
+    cursor.execute(f"SELECT victronID, Location, Company, efoy1ID, efoy2ID, Lat, Lon FROM dbo.Generators WHERE Name = '{genName}'")
 
     for row in cursor.fetchall():
         yield row
@@ -225,7 +225,7 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     cursor = cnxn.cursor()
 
     cursor.execute(f"UPDATE dbo.Units SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 

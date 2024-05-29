@@ -2131,6 +2131,7 @@ class genManagement(QWidget):
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
         genManagementDropdown.setPlaceholderText("Generator Management")
+        genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
         layout.addWidget(genManagementDropdown, 0, 0, 1, 4)
 
@@ -2150,12 +2151,12 @@ class genManagement(QWidget):
         layout.addWidget(self.companyEdit, 1, 3)
 
         changeButton = QPushButton("Change Details")
-        changeButton.clicked.connect(self.changeUnit)
+        changeButton.clicked.connect(self.changeGen)
 
         layout.addWidget(changeButton, 2, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteUnit)
+        #deleteButton.clicked.connect(self.deleteGen)
 
         layout.addWidget(deleteButton, 2, 2, 1, 2)
 
@@ -2166,7 +2167,7 @@ class genManagement(QWidget):
 
         self.genNameAdd = QLineEdit()
         self.genNameAdd.setPlaceholderText("Unit ID")
-        self.genNameAdd.textChanged.connect(self.genNameAdd)
+        self.genNameAdd.textChanged.connect(self.getNewGenName)
 
         layout.addWidget(self.genNameAdd, 4, 0)
 
@@ -2189,14 +2190,14 @@ class genManagement(QWidget):
         layout.addWidget(self.victronAdd, 4, 3)
 
         self.efoy1Add = QLineEdit()
-        self.efoy1Add.setPlaceholderText("Efoy ID")
-        self.efoy1Add.textChanged.connect(self.getNewEfoy)
+        self.efoy1Add.setPlaceholderText("Efoy 1 ID")
+        self.efoy1Add.textChanged.connect(self.getNewEfoy1)
 
         layout.addWidget(self.efoy1Add, 5, 0)
 
         self.efoy2Add = QLineEdit()
-        self.efoy2Add.setPlaceholderText("Efoy ID")
-        self.efoy2Add.textChanged.connect(self.getNewEfoy)
+        self.efoy2Add.setPlaceholderText("Efoy 2 ID (Can be Null)")
+        self.efoy2Add.textChanged.connect(self.getNewEfoy2)
 
         layout.addWidget(self.efoy2Add, 5, 1)
 
@@ -2254,7 +2255,7 @@ class genManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
-    def unitChanged(self, index):
+    def genChanged(self, index):
 
         self.selectedGen = self.listOfGen[index]
 
@@ -2272,6 +2273,12 @@ class genManagement(QWidget):
         self.genName.setText(self.selectedGen)
         self.locationEdit.setText(self.selectedLocation)
         self.companyEdit.setText(self.selectedCompany)
+
+    def changeGen(self):
+
+        SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany)
+
+        self.errorMessage.setText("Generator Updated")
 
     def addNewGen(self):
         checkGen = SQL.checkGen(self.newGenName)
@@ -2293,12 +2300,6 @@ class genManagement(QWidget):
             self.efoy2Add.setText("")
             self.latAdd.setText("")
             self.lonAdd.setText("")
-
-    def changeUnit(self):
-
-        SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany)
-
-        self.errorMessage.setText("Generator Updated ")
 
     def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
@@ -2352,7 +2353,7 @@ class superGenManagement(QWidget):
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
         genManagementDropdown.setPlaceholderText("Generator Management")
-
+        genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
         layout.addWidget(genManagementDropdown,0,0,1,4)
 
@@ -2407,7 +2408,7 @@ class superGenManagement(QWidget):
         layout.addWidget(changeButton, 3, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
-        deleteButton.clicked.connect(self.deleteGen)
+        #deleteButton.clicked.connect(self.deleteGen)
 
         layout.addWidget(deleteButton, 3, 2, 1, 2)
 
@@ -2522,8 +2523,7 @@ class superGenManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
-
-    def unitChanged(self, index):
+    def genChanged(self, index):
 
         self.selectedGen = self.listOfGen[index]
 
@@ -2535,9 +2535,9 @@ class superGenManagement(QWidget):
             self.selectedLocation = altered[1]
             self.selectedCompany = altered[2]
             self.selectedEfoy1 = altered[3]
-            self.selectedEfoy2 = altered[3]
+            self.selectedEfoy2 = altered[4]
             self.selectedLat = str(altered[5])
-            self.selectedLon = str(altered[1])
+            self.selectedLon = str(altered[6])
 
         self.locationEdit.show()
         self.companyEdit.show()
@@ -2551,21 +2551,21 @@ class superGenManagement(QWidget):
         self.locationEdit.setText(self.selectedLocation)
         self.companyEdit.setText(self.selectedCompany)
         self.Victron.setText(self.selectedVictronID)
-        self.Efoy1.setText(self.selectedEfoy)
-        self.Efoy2.setText(self.selectedEfoy)
+        self.Efoy1.setText(self.selectedEfoy1)
+        self.Efoy2.setText(self.selectedEfoy2)
         self.Lat.setText(self.selectedLat)
         self.Lon.setText(self.selectedLon)
 
-    def changeUnit(self):
+    def changeGen(self):
 
-        if any(x == "" for x in (self.newGenName, self.newVictronID, self.newEfoy1)):
+        if any(x == "" for x in (self.selectedVictronID, self.selectedEfoy1)):
             self.errorMessage.setText("One or All Field Is Empty")
-        elif "." not in self.newLat or "." not in self.newLon:
+        elif "." not in self.selectedLat or "." not in self.selectedLon:
             self.errorMessage.setText("Lat and Lon do not Compute")
         else:
             SQL.updateGenSuper(self.selectedGen, self.selectedLocation, self.selectedCompany, self.selectedVictronID, self.selectedEfoy1, self.selectedEfoy2, self.selectedLat, self.selectedLon)
 
-            self.errorMessage.setText("Generator Updated ")
+            self.errorMessage.setText("Generator Updated")
 
 
     def addNewGen(self):
