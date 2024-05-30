@@ -1256,6 +1256,7 @@ class userManagement(QWidget):
 
         self.userSelection = QComboBox()
         self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.userSelection.setPlaceholderText("User Selection")
         self.userSelection.currentIndexChanged.connect(self.userChanged)
 
@@ -1415,6 +1416,7 @@ class superUserManagement(QWidget):
 
         self.userSelection = QComboBox()
         self.userSelection.addItems(self.listOfUsers)
+        self.userSelection.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.userSelection.setPlaceholderText("User Selection")
         self.userSelection.currentIndexChanged.connect(self.userChanged)
 
@@ -1605,6 +1607,7 @@ class unitManagement(QWidget):
 
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.addItems(self.listOfUnits)
+        unitManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         unitManagementDropdown.setPlaceholderText("Unit Management")
         unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
@@ -1938,6 +1941,7 @@ class superUnitManagement(QWidget):
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.addItems(self.listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
+        unitManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
@@ -2341,6 +2345,7 @@ class genManagement(QWidget):
 
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
+        genManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         genManagementDropdown.setPlaceholderText("Generator Management")
         genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
@@ -2566,6 +2571,7 @@ class superGenManagement(QWidget):
 
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
+        genManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         genManagementDropdown.setPlaceholderText("Generator Management")
         genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
@@ -3976,6 +3982,7 @@ app.setStyleSheet("""
     QComboBox {
         border: 1px solid #000000;
         padding: 5px 15px;
+        combobox-popup: 0;
     }
     QPushButton {
         border-radius: 8px;
