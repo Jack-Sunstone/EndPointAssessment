@@ -261,8 +261,10 @@ def updateUnit(unitName, Location, Company, CCTV):
     cursor = cnxn.cursor()
 
     cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()} WHERE Name = '{unitName}'")
-    cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
     cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+
+    if "ARC" in unitName:
+        cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
@@ -304,8 +306,10 @@ def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
     cursor.execute(f"DELETE FROM dbo.CCTVUnits WHERE Name = '{Name}'")
-    cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
     cursor.execute(f"DELETE FROM dbo.AllUnits WHERE Name = '{Name}'")
+
+    if "ARC" in Name:
+        cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
 
     cnxn.commit()
 

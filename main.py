@@ -1,4 +1,4 @@
-import ctypes
+#importing all used libaries
 import sys
 import os
 import webbrowser
@@ -8,8 +8,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import QtWebEngineWidgets
 import SQL
-import requests
-import json
 from threading import *
 import socket
 import plotly.graph_objects as go
@@ -17,6 +15,7 @@ from collections import deque
 import time
 import what3words
 
+#These will be used to store the data from SQL of the open unit dashboard
 selectedUnit = ""
 selectedIP = ""
 selectedVictron = ""
@@ -27,63 +26,71 @@ selectedCamera = ""
 selectedEfoyID = ""
 selectedEfoyID2 = ""
 
+#Storing the logged in users details
 userRights = ""
 userCompany = ""
 
+#If the unit has no victron data then the 0 will be displayed
 unitSolar = 0
 unitVoltage = 0
 unitLoad = 0
 
+#Stores the user name of the logged in user
 username = ""
 
+#Default camera 1 when viewing
 CameraNumber = 1
 
+#Passwords for cameras
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
+#Token for the interactive map
 mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTViajJqbjI0N3RuOGhhOCJ9.Kl6jwZjBEtGoM1C_5NyLJg"
 
+#Token to login to W3W API
 geocoder = what3words.Geocoder("RMNUBSDA")
 
-
+#This function gets the data stored in the SQL database and stores it within the program in the variables above
 def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
     global unitLoad
 
-    data = SQL.fetchVictronData(unitName)
+    data = SQL.fetchVictronData(unitName) #Calling Function in the SQL document using the selected units name
 
+    #Storing data
     for row in data:
         altered = list(row)
         unitSolar = altered[0]
         unitVoltage = altered[1]
         unitLoad = altered[2]
 
-
+#Returns the RTSP link for viewing specific Axis Cameras
 def axisPath(IPaddress, cameraNumber):
     Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
-
+#Returns the RTSP link for viewing specific Hikvision Cameras
 def hikPath(IPaddress, cameraNumber):
     Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
 
-
+#Returns the RTSP link for viewing specific Hanwha Cameras
 def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
 
-
+#Returns the RTSP link for viewing specific Dahua Cameras
 def dahuaPath(IPaddress, cameraNumber):
     Dahua = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/live"
 
     return Dahua
 
-
+#Returns the absolute path of any document called within the program i.e Images
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -92,7 +99,7 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
-
+#Checking whether a unit is online or not and returning True or False
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(Timeout)
@@ -431,14 +438,14 @@ class ioDashboard(QWidget):
 
         super().__init__()
 
-        self.setWindowTitle("IO Box Dashboard")
+        self.setWindowTitle(selectedUnit)
         self.setGeometry(0, 0, 760, 200)
         self.setWindowIcon(QIcon(ioBoxIcon))
         self.setWindowIconText("IO Box")
 
         layout = QGridLayout()
 
-        unitLabel = QLabel(selectedUnit)
+        unitLabel = QLabel(selectedIP)
         unitLabel.setStyleSheet("font: bold 14px;")
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -697,14 +704,14 @@ class arcDashboard(QWidget):
 
         super().__init__()
 
-        self.setWindowTitle("ARC Dashboard")
+        self.setWindowTitle(selectedUnit)
         self.setGeometry(0, 0, 600, 300)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("ARC")
 
         layout = QGridLayout()
 
-        unitLabel = QLabel(selectedUnit)
+        unitLabel = QLabel(selectedIP)
         unitLabel.setStyleSheet("font: bold 14px;")
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -718,6 +725,7 @@ class arcDashboard(QWidget):
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.solarPower = QLabel(str(unitSolar) + " W")
+        self.solarPower.setStyleSheet("font: bold 14px;")
 
         layout.addWidget(self.sunImage, 1, 0)
         layout.addWidget(self.solarPower, 1, 1)
@@ -728,6 +736,19 @@ class arcDashboard(QWidget):
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
 
+        if unitVoltage >= 25.5:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: green;")
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: yellow;")
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: red;")
+        elif unitVoltage < 23.6:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: red;")
+
         layout.addWidget(self.batteryImage, 2, 0)
         layout.addWidget(self.batteryVoltage, 2, 1)
 
@@ -736,6 +757,14 @@ class arcDashboard(QWidget):
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
+
+        if unitLoad <= 0:
+            self.loadDraw.setStyleSheet("font: bold 14px;"
+                                        "color: green;")
+
+        else:
+            self.loadDraw.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -1093,6 +1122,7 @@ class generatorDashboard(QWidget):
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.solarPower = QLabel(str(unitSolar) + " W")
+        self.solarPower.setStyleSheet("font: bold 14px;")
 
         layout.addWidget(self.sunImage, 1, 0)
         layout.addWidget(self.solarPower, 1, 1)
@@ -1103,6 +1133,19 @@ class generatorDashboard(QWidget):
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
 
+        if unitVoltage >= 25.5:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: green;")
+        elif unitVoltage >= 24 and unitVoltage < 25.5:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: yellow;")
+        elif unitVoltage < 24 and unitVoltage >= 23.6:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: red;")
+        elif unitVoltage < 23.6:
+            self.batteryVoltage.setStyleSheet("font: bold 14px;"
+                                              "color: red;")
+
         layout.addWidget(self.batteryImage, 2, 0)
         layout.addWidget(self.batteryVoltage, 2, 1)
 
@@ -1111,6 +1154,14 @@ class generatorDashboard(QWidget):
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
+
+        if unitLoad <= 0:
+            self.loadDraw.setStyleSheet("font: bold 14px;"
+                                        "color: green;")
+
+        else:
+            self.loadDraw.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -3128,12 +3179,13 @@ class victronOverview(QWidget):
         for i in self.listOfUnits:
             self.unitName = QLabel(f"{i}")
             self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.unitName.setStyleSheet("border-radius: 8px;"
-                                        "color: black;"
-                                        "border: 1px solid #46a15b;"
-                                        "background-color: #c8eacf;"
-                                        "padding: 5px 15px;"
-                                        "font-size: 14pt;")
+            self.unitName.setStyleSheet("font-weight: bold;"
+                                   "border-radius: 8px;"
+                                   "color: white;"
+                                   "border: 1px solid #46a15b;"
+                                   "background-color: #358446;"
+                                   "padding: 5px 15px;"
+                                   "font-size: 14pt;")
 
             self.unitsLayout.addWidget(self.unitName, j + 1, 0)
 
@@ -3458,7 +3510,7 @@ class adminMonitoring(QWidget):
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
-        if str(unitType) == "" or str(unitType) == "IO":
+        if str(unitType) == "ARC" or str(unitType) == "IO":
             data = SQL.fetchUnitDetails(unitName)
             selectedUnit = unitName
             selectedUnitType = unitType
@@ -3720,7 +3772,7 @@ class userMonitoring(QWidget):
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
-        if str(unitType) == "" or str(unitType) == "IO":
+        if str(unitType) == "ARC" or str(unitType) == "IO":
             data = SQL.fetchUnitDetails(unitName)
             selectedUnit = unitName
             selectedUnitType = unitType
