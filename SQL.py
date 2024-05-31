@@ -35,7 +35,6 @@ def fetchFilteredUnits(Filter, Company):
         yield row
 
 
-
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
@@ -271,8 +270,12 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+    if Victron == 'None':
+        cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+    else:
+        cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+        cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
+
     cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
