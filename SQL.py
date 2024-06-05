@@ -332,7 +332,10 @@ def addUsers(Username, Password, Company, Rights):
 def updateUser(Username, Password, Rights):
     connection()
     cursor = cnxn.cursor()
+    print(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
     cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
+
+    cnxn.commit()
 
 def deleteUsers(Username):
     connection()

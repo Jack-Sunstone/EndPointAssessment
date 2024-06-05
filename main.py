@@ -64,7 +64,7 @@ baseSheet = """
             }
             QComboBox {
                 background-color: #358446;
-                border: 1px solid #46a15b;;
+                border: 1px solid white;
                 color: #FFFFFF;
                 padding: 5px 15px;
                 combobox-popup: 0;
@@ -72,7 +72,7 @@ baseSheet = """
             QPushButton {
                 border-radius: 8px;
                 color: white;
-                border: 1px solid #46a15b;
+                border: 1px solid white;
                 background-color: #358446;
                 padding: 5px 15px; 
 
@@ -83,11 +83,9 @@ baseSheet = """
             }
             QSpinBox {
                 border: 1px solid #e0e4e7;
-                color: black;
+                color: white;
                 padding: 5px 15px; 
             }
-            
-            
             QLabel {
                 font: bold;
                 color: white;
@@ -1751,8 +1749,11 @@ class superUserManagement(QWidget):
         self.rightLineEdit.setText(self.selectedRights)
 
     def changeUser(self):
-        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
-        self.errorMessage.setText("User Updated")
+        if self.selectedRights == "SUPERADMIN":
+            self.errorMessage.setText("Only one Super Admin Account Allowed")
+        else:
+            SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
+            self.errorMessage.setText("User Updated")
 
     def deleteUser(self):
 
@@ -3242,6 +3243,8 @@ class interactiveMap(QWidget):
 
         self.setLayout(layout)
 
+        self.setStyleSheet(baseSheet)
+
     def importMap(self):
         names = []
 
@@ -3484,31 +3487,7 @@ class victronOverview(QWidget):
         layout.addWidget(backButton)
 
         self.setLayout(layout)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #358446;
-            }
-            QComboBox {
-                background-color: #358446;
-                border: 1px solid #46a15b;;
-                color: #FFFFFF;
-                padding: 5px 15px;
-                combobox-popup: 0;
-            }
-            QPushButton {
-                border-radius: 8px;
-                color: white;
-                border: 1px solid #46a15b;
-                background-color: #358446;
-                padding: 5px 15px; 
-
-            }
-            QPushButton:hover {
-                background-color: #358446;
-                border: 1px solid #2d683a;
-            }
-
-        """)
+        self.setStyleSheet(baseSheet)
 
     def filterChanged(self, index):
 
