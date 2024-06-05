@@ -1,4 +1,4 @@
-#importing all used libaries
+import ctypes
 import sys
 import os
 import webbrowser
@@ -8,6 +8,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5 import QtWebEngineWidgets
 import SQL
+import requests
+import json
 from threading import *
 import socket
 import plotly.graph_objects as go
@@ -15,7 +17,6 @@ from collections import deque
 import time
 import what3words
 
-#These will be used to store the data from SQL of the open unit dashboard
 selectedUnit = ""
 selectedIP = ""
 selectedVictron = ""
@@ -26,142 +27,63 @@ selectedCamera = ""
 selectedEfoyID = ""
 selectedEfoyID2 = ""
 
-#Storing the logged in users details
 userRights = ""
 userCompany = ""
 
-#If the unit has no victron data then the 0 will be displayed
 unitSolar = 0
 unitVoltage = 0
 unitLoad = 0
 
-#Stores the user name of the logged in user
 username = ""
 
-#Default camera 1 when viewing
 CameraNumber = 1
 
-#Passwords for cameras
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
-#Token for the interactive map
 mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTViajJqbjI0N3RuOGhhOCJ9.Kl6jwZjBEtGoM1C_5NyLJg"
 
-#Token to login to W3W API
 geocoder = what3words.Geocoder("RMNUBSDA")
 
-baseSheet = """
-            QLineEdit {
-                    border-radius: 10px;
-                    border: 1px solid #e0e4e7;
-                    background-color: #c8eacf;
-                    color: white;
-                    padding: 5px 15px; 
-                }
-            QWidget {
-                background-color: #358446;
-            }
-            QComboBox {
-                background-color: #358446;
-                border: 1px solid #46a15b;;
-                color: #FFFFFF;
-                padding: 5px 15px;
-                combobox-popup: 0;
-            }
-            QPushButton {
-                border-radius: 8px;
-                color: white;
-                border: 1px solid #46a15b;
-                background-color: #358446;
-                padding: 5px 15px; 
 
-            }
-            QPushButton:hover {
-                background-color: #358446;
-                border: 1px solid #2d683a;
-            }
-            QSpinBox {
-                border: 1px solid #e0e4e7;
-                color: black;
-                padding: 5px 15px; 
-            }
-            
-            
-            QLabel {
-                font: bold;
-                color: white;
-            }
-            
-
-        """
-
-graidentSheet = """
-                    QWidget {
-                        background-color: qlineargradient(x1: 0, x2: 1, stop: 0 #358446, stop: 1 #6FFF63);
-                    }
-                    QComboBox {
-                        background-color: #358446;
-                        border: 1px solid #46a15b;;
-                        color: #FFFFFF;
-                        padding: 5px 15px;
-                        combobox-popup: 0;
-                    }
-                    QPushButton {
-                        border-radius: 8px;
-                        color: white;
-                        border: 1px solid #46a15b;
-                        background-color: #358446;
-                        padding: 5px 15px; 
-
-                    }
-                    QPushButton:hover {
-                        background-color: #358446;
-                        border: 1px solid #2d683a;
-                    }
-
-                """
-
-#This function gets the data stored in the SQL database and stores it within the program in the variables above
 def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
     global unitLoad
 
-    data = SQL.fetchVictronData(unitName) #Calling Function in the SQL document using the selected units name
+    data = SQL.fetchVictronData(unitName)
 
-    #Storing data
     for row in data:
         altered = list(row)
         unitSolar = altered[0]
         unitVoltage = altered[1]
         unitLoad = altered[2]
 
-#Returns the RTSP link for viewing specific Axis Cameras
+
 def axisPath(IPaddress, cameraNumber):
     Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
-#Returns the RTSP link for viewing specific Hikvision Cameras
+
 def hikPath(IPaddress, cameraNumber):
     Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
 
-#Returns the RTSP link for viewing specific Hanwha Cameras
+
 def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
 
-#Returns the RTSP link for viewing specific Dahua Cameras
+
 def dahuaPath(IPaddress, cameraNumber):
     Dahua = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/live"
 
     return Dahua
 
-#Returns the absolute path of any document called within the program i.e Images
+
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -170,7 +92,7 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
-#Checking whether a unit is online or not and returning True or False
+
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(Timeout)
@@ -509,35 +431,29 @@ class ioDashboard(QWidget):
 
         super().__init__()
 
-        self.setWindowTitle(selectedUnit)
+        self.setWindowTitle("IO Box Dashboard")
         self.setGeometry(0, 0, 760, 200)
         self.setWindowIcon(QIcon(ioBoxIcon))
         self.setWindowIconText("IO Box")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
-        unitLabel = QLabel(selectedIP)
-        unitLabel.setStyleSheet("font: bold 14px;"
-                                "color: white;")
+        unitLabel = QLabel(selectedUnit)
+        unitLabel.setStyleSheet("font: bold 14px;")
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        unitLabel.setAttribute(Qt.WA_TranslucentBackground)
 
         pixmap = QPixmap(cameraPath)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(pixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.allCameras.setAttribute(Qt.WA_TranslucentBackground)
 
         self.allCamerasButton = QPushButton("All Cameras")
         self.allCamerasButton.clicked.connect(self.viewAllCameras)
 
-
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera1.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera1Button = QPushButton("Camera 1")
         self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
@@ -545,7 +461,6 @@ class ioDashboard(QWidget):
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(pixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera2.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera2Button = QPushButton("Camera 2")
         self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
@@ -556,7 +471,6 @@ class ioDashboard(QWidget):
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(pixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera3.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera3Button = QPushButton("Camera 3")
         self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
@@ -567,7 +481,6 @@ class ioDashboard(QWidget):
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(pixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera4.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera4Button = QPushButton("Camera 4")
         self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
@@ -578,17 +491,8 @@ class ioDashboard(QWidget):
         self.routerButton = QPushButton("Router Webpage")
         self.routerButton.clicked.connect(self.openRouter)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                color: white;
-                border: 1px solid #202E23;
-                background-color: #295231;
-                padding: 5px 15px;""")
-
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
 
         if selectedCCTV == 1:
 
@@ -611,9 +515,7 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 0)
 
-            layout.addWidget(self.backButton, 4, 0)
-
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.errorMessage, 4, 0)
 
         elif selectedCCTV == 2:
 
@@ -633,9 +535,7 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 1)
 
-            layout.addWidget(self.backButton, 3, 1, 1, 1)
-
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.errorMessage, 4, 0)
 
 
         elif selectedCCTV == 3:
@@ -653,9 +553,7 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 2)
 
-            layout.addWidget(self.backButton, 4, 1, 1,2)
-
-            layout.addWidget(self.errorMessage, 5, 1, 1, 2)
+            layout.addWidget(self.errorMessage, 4, 1, 1, 2)
 
 
         else:
@@ -670,15 +568,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 3)
 
-            layout.addWidget(self.backButton, 4, 1, 1, 3)
-
-            layout.addWidget(self.errorMessage, 5, 2)
+            layout.addWidget(self.errorMessage, 4, 2)
 
         self.checkUnitStatus()
 
         self.setLayout(layout)
-
-        self.setStyleSheet(graidentSheet)
 
     def viewAllCameras(self):
 
@@ -737,7 +631,7 @@ class ioDashboard(QWidget):
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
@@ -803,19 +697,16 @@ class arcDashboard(QWidget):
 
         super().__init__()
 
-        self.setWindowTitle(selectedUnit)
+        self.setWindowTitle("ARC Dashboard")
         self.setGeometry(0, 0, 600, 300)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("ARC")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
-        unitLabel = QLabel(selectedIP)
-        unitLabel.setStyleSheet("font: bold 14px;"
-                                "color: white;")
+        unitLabel = QLabel(selectedUnit)
+        unitLabel.setStyleSheet("font: bold 14px;")
         unitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        unitLabel.setAttribute(Qt.WA_TranslucentBackground)
 
         sunPixmap = QPixmap(self.sunPath)
         batteryPixmap = QPixmap(self.batteryPath)
@@ -825,12 +716,8 @@ class arcDashboard(QWidget):
         self.sunImage = QLabel()
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.sunImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.solarPower = QLabel(str(unitSolar) + " W")
-        self.solarPower.setStyleSheet("font: bold 14px;"
-                                      "color: white;")
-        self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
 
         layout.addWidget(self.sunImage, 1, 0)
         layout.addWidget(self.solarPower, 1, 1)
@@ -838,23 +725,8 @@ class arcDashboard(QWidget):
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.batteryImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
-        self.batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
-
-        if unitVoltage >= 25.5:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: #1eff00;")
-        elif unitVoltage >= 24 and unitVoltage < 25.5:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: yellow;")
-        elif unitVoltage < 24 and unitVoltage >= 23.6:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: red;")
-        elif unitVoltage < 23.6:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: red;")
 
         layout.addWidget(self.batteryImage, 2, 0)
         layout.addWidget(self.batteryVoltage, 2, 1)
@@ -862,18 +734,8 @@ class arcDashboard(QWidget):
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.loadImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
-        self.loadDraw.setAttribute(Qt.WA_TranslucentBackground)
-
-        if unitLoad <= 0:
-            self.loadDraw.setStyleSheet("font: bold 14px;"
-                                        "color: #1eff00;")
-
-        else:
-            self.loadDraw.setStyleSheet("font: bold 14px;"
-                                        "color: red;")
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -881,7 +743,6 @@ class arcDashboard(QWidget):
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.allCameras.setAttribute(Qt.WA_TranslucentBackground)
 
         self.allCamerasButton = QPushButton("All Cameras")
         self.allCamerasButton.clicked.connect(self.viewAllCameras)
@@ -889,7 +750,6 @@ class arcDashboard(QWidget):
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(cameraPixmap)
         self.Camera1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera1.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera1Button = QPushButton("Camera 1")
         self.camera1Button.clicked.connect(lambda checked=None, text=1: self.viewIndividualCamera(text))
@@ -897,7 +757,6 @@ class arcDashboard(QWidget):
         self.Camera2 = QLabel()
         self.Camera2.setPixmap(cameraPixmap)
         self.Camera2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera2.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera2Button = QPushButton("Camera 2")
         self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
@@ -908,7 +767,6 @@ class arcDashboard(QWidget):
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(cameraPixmap)
         self.Camera3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera3.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera3Button = QPushButton("Camera 3")
         self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
@@ -919,7 +777,6 @@ class arcDashboard(QWidget):
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(cameraPixmap)
         self.Camera4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.Camera4.setAttribute(Qt.WA_TranslucentBackground)
 
         self.camera4Button = QPushButton("Camera 4")
         self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
@@ -936,19 +793,8 @@ class arcDashboard(QWidget):
         efoyButton = QPushButton("Efoy Webpage")
         efoyButton.clicked.connect(self.openEfoy)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-        color: white;
-        border: 1px solid #202E23;
-        background-color: #295231;
-        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 0,0)
-
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
 
         if selectedCCTV == 1:
 
@@ -1039,8 +885,6 @@ class arcDashboard(QWidget):
 
         self.setLayout(layout)
 
-        self.setStyleSheet(graidentSheet)
-
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateData)
         self.timer.start(60000)
@@ -1097,7 +941,7 @@ class arcDashboard(QWidget):
 
         else:
             self.errorMessage.setText("Unit Online")
-            self.errorMessage.setStyleSheet("color: #1eff00;"
+            self.errorMessage.setStyleSheet("color: green;"
                                             "font: bold 14px;")
 
     def updateData(self):
@@ -1162,7 +1006,7 @@ class arcDashboard(QWidget):
     def openEfoy(self):
         webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
             self.openMonitoring.show()
@@ -1231,15 +1075,12 @@ class generatorDashboard(QWidget):
         self.setGeometry(0, 0, 400, 300)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("Generator")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         genLabel = QLabel(selectedUnit)
-        genLabel.setStyleSheet("font: bold 14px;"
-                               "color: white;")
+        genLabel.setStyleSheet("font: bold 14px;")
         genLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        genLabel.setAttribute(Qt.WA_TranslucentBackground)
 
         layout.addWidget(genLabel, 0, 1)
 
@@ -1250,12 +1091,8 @@ class generatorDashboard(QWidget):
         self.sunImage = QLabel()
         self.sunImage.setPixmap(sunPixmap)
         self.sunImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.sunImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.solarPower = QLabel(str(unitSolar) + " W")
-        self.solarPower.setStyleSheet("font: bold 14px;"
-                                      "color: white;")
-        self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
 
         layout.addWidget(self.sunImage, 1, 0)
         layout.addWidget(self.solarPower, 1, 1)
@@ -1263,23 +1100,8 @@ class generatorDashboard(QWidget):
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
         self.batteryImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.batteryImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
-        self.batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
-
-        if unitVoltage >= 25.5:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: #1eff00;")
-        elif unitVoltage >= 24 and unitVoltage < 25.5:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: yellow;")
-        elif unitVoltage < 24 and unitVoltage >= 23.6:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: red;")
-        elif unitVoltage < 23.6:
-            self.batteryVoltage.setStyleSheet("font: bold 14px;"
-                                              "color: red;")
 
         layout.addWidget(self.batteryImage, 2, 0)
         layout.addWidget(self.batteryVoltage, 2, 1)
@@ -1287,17 +1109,8 @@ class generatorDashboard(QWidget):
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
         self.loadImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.loadImage.setAttribute(Qt.WA_TranslucentBackground)
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
-        self.loadDraw.setAttribute(Qt.WA_TranslucentBackground)
-
-        if unitLoad <= 0:
-            self.loadDraw.setStyleSheet("font: bold 14px;"
-                                        "color: #1eff00;")
-        else:
-            self.loadDraw.setStyleSheet("font: bold 14px;"
-                                        "color: red;")
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -1320,19 +1133,7 @@ class generatorDashboard(QWidget):
         if selectedEfoyID2 == "":
             efoy2Button.hide()
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                color: white;
-                border: 1px solid #202E23;
-                background-color: #295231;
-                padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 4, 1)
-
         self.setLayout(layout)
-
-        self.setStyleSheet(graidentSheet)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateData)
@@ -1450,13 +1251,11 @@ class userManagement(QWidget):
         self.setGeometry(0, 0, 350, 250)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         self.userSelection = QComboBox()
         self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.userSelection.setPlaceholderText("User Selection")
         self.userSelection.currentIndexChanged.connect(self.userChanged)
 
@@ -1511,26 +1310,13 @@ class userManagement(QWidget):
 
         layout.addWidget(addUserButton, 5, 1)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 6, 1)
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 7, 1)
-
+        layout.addWidget(self.errorMessage, 6, 1)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getPasswordChanged(self, Password):
         self.selectedPassword = Password
@@ -1583,7 +1369,7 @@ class userManagement(QWidget):
         else:
             self.errorMessage.setText("Username Already Exists")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -1624,13 +1410,11 @@ class superUserManagement(QWidget):
         self.setGeometry(0, 0, 350, 250)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         self.userSelection = QComboBox()
         self.userSelection.addItems(self.listOfUsers)
-        self.userSelection.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.userSelection.setPlaceholderText("User Selection")
         self.userSelection.currentIndexChanged.connect(self.userChanged)
 
@@ -1697,25 +1481,13 @@ class superUserManagement(QWidget):
 
         layout.addWidget(addUserButton, 6, 1)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 7, 1)
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 8, 1)
+        layout.addWidget(self.errorMessage, 7, 1)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getPasswordChanged(self, Password):
         self.selectedPassword = Password
@@ -1778,7 +1550,7 @@ class superUserManagement(QWidget):
         else:
             self.errorMessage.setText("Username Already Exists")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -1828,13 +1600,11 @@ class unitManagement(QWidget):
         self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.addItems(self.listOfUnits)
-        unitManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         unitManagementDropdown.setPlaceholderText("Unit Management")
         unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
@@ -1963,25 +1733,13 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.w3wButton, 8, 2, 1, 2)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 9, 1, 1, 2)
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 10, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 9, 1, 1, 2)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getUpdatedLocation(self, Location):
         self.selectedLocation = Location
@@ -2118,7 +1876,7 @@ class unitManagement(QWidget):
 
             self.errorMessage.setText("Converted")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -2174,14 +1932,12 @@ class superUnitManagement(QWidget):
         self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         unitManagementDropdown = QComboBox()
         unitManagementDropdown.addItems(self.listOfUnits)
         unitManagementDropdown.setPlaceholderText("Unit Management")
-        unitManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         unitManagementDropdown.currentIndexChanged.connect(self.unitChanged)
 
         layout.addWidget(unitManagementDropdown, 0, 0, 1, 4)
@@ -2343,25 +2099,17 @@ class superUnitManagement(QWidget):
 
         layout.addWidget(self.w3wButton, 10, 2, 1, 2)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton,11,1,1,2)
+        self.errorMessage = QLabel("")
+        self.errorMessage.setStyleSheet("color: red")
+        self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 12, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 11, 1, 1, 2)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getUpdatedLocation(self, Location):
         self.selectedLocation = Location
@@ -2546,7 +2294,7 @@ class superUnitManagement(QWidget):
 
             self.errorMessage.setText("Converted")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -2588,13 +2336,11 @@ class genManagement(QWidget):
         self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
-        genManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         genManagementDropdown.setPlaceholderText("Generator Management")
         genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
@@ -2683,25 +2429,13 @@ class genManagement(QWidget):
 
         layout.addWidget(addUnit, 6, 0, 1, 4)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 7, 0, 1, 4)
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getUpdatedLocation(self, Location):
         self.selectedLocation = Location
@@ -2780,7 +2514,7 @@ class genManagement(QWidget):
             self.latAdd.setText("")
             self.lonAdd.setText("")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -2827,13 +2561,11 @@ class superGenManagement(QWidget):
         self.setGeometry(0, 0, 650, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
         genManagementDropdown = QComboBox()
         genManagementDropdown.addItems(self.listOfGen)
-        genManagementDropdown.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         genManagementDropdown.setPlaceholderText("Generator Management")
         genManagementDropdown.currentIndexChanged.connect(self.genChanged)
 
@@ -2952,25 +2684,13 @@ class superGenManagement(QWidget):
 
         layout.addWidget(addUnit, 7, 0, 1, 4)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton, 8, 1, 1, 2)
-
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 9, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 8, 1, 1, 2)
 
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def getUpdatedLocation(self, Location):
         self.selectedLocation = Location
@@ -3084,7 +2804,7 @@ class superGenManagement(QWidget):
             self.latAdd.setText("")
             self.lonAdd.setText("")
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.openAdminMenu = adminMenu()
         self.openAdminMenu.show()
 
@@ -3106,7 +2826,6 @@ class adminMenu(QWidget):
         self.setGeometry(0, 0, 430, 180)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QVBoxLayout()
 
@@ -3125,19 +2844,7 @@ class adminMenu(QWidget):
 
         layout.addWidget(genManagementButton)
 
-        self.backButton = QPushButton("Back")
-        self.backButton.clicked.connect(self.closeEvent)
-        self.backButton.setStyleSheet("""border-radius: 8px;
-                        color: white;
-                        border: 1px solid #202E23;
-                        background-color: #295231;
-                        padding: 5px 15px;""")
-
-        layout.addWidget(self.backButton)
-
         self.setLayout(layout)
-
-        self.setStyleSheet(baseSheet)
 
     def openUser(self):
         if userRights == "ADMIN":
@@ -3209,7 +2916,7 @@ class adminMenu(QWidget):
 
             self.hide()
 
-    def closeEvent(self):
+    def closeEvent(self, event):
 
         self.openMonitoring = adminMonitoring()
         self.openMonitoring.show()
@@ -3352,9 +3059,9 @@ class victronOverview(QWidget):
 
         self.setWindowTitle("Victron Data Overview")
         self.setGeometry(0, 0, 700, 700)
+
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QVBoxLayout()
 
@@ -3381,28 +3088,28 @@ class victronOverview(QWidget):
                                    "border-radius: 8px;"
                                    "color: white;"
                                    "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
+                                   "background-color: #358446;"
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
         self.Header2.setStyleSheet("font-weight: bold;"
                                    "border-radius: 8px;"
                                    "color: white;"
                                    "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
+                                   "background-color: #358446;"
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
         self.Header3.setStyleSheet("font-weight: bold;"
                                    "border-radius: 8px;"
                                    "color: white;"
                                    "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
+                                   "background-color: #358446;"
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
         self.Header4.setStyleSheet("font-weight: bold;"
                                    "border-radius: 8px;"
                                    "color: white;"
                                    "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
+                                   "background-color: #358446;"
                                    "padding: 5px 15px;"
                                    "font-size: 14pt;")
 
@@ -3415,13 +3122,12 @@ class victronOverview(QWidget):
         for i in self.listOfUnits:
             self.unitName = QLabel(f"{i}")
             self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.unitName.setStyleSheet("font-weight: bold;"
-                                   "border-radius: 8px;"
-                                   "color: white;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+            self.unitName.setStyleSheet("border-radius: 8px;"
+                                        "color: black;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #c8eacf;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
 
             self.unitsLayout.addWidget(self.unitName, j + 1, 0)
 
@@ -3469,46 +3175,10 @@ class victronOverview(QWidget):
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
         scrollArea.setWidgetResizable(True)
-        scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         layout.addWidget(scrollArea)
 
-        backButton = QPushButton("Back")
-        backButton.clicked.connect(self.closeEvent)
-        backButton.setStyleSheet("""border-radius: 8px;
-                color: white;
-                border: 1px solid #202E23;
-                background-color: #295231;
-                padding: 5px 15px;""")
-
-        layout.addWidget(backButton)
-
         self.setLayout(layout)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #358446;
-            }
-            QComboBox {
-                background-color: #358446;
-                border: 1px solid #46a15b;;
-                color: #FFFFFF;
-                padding: 5px 15px;
-                combobox-popup: 0;
-            }
-            QPushButton {
-                border-radius: 8px;
-                color: white;
-                border: 1px solid #46a15b;
-                background-color: #358446;
-                padding: 5px 15px; 
-
-            }
-            QPushButton:hover {
-                background-color: #358446;
-                border: 1px solid #2d683a;
-            }
-
-        """)
 
     def filterChanged(self, index):
 
@@ -3646,8 +3316,6 @@ class victronOverview(QWidget):
 
             j = j + 1
 
-    def closeEvent(self):
-        self.hide()
 
 class adminMonitoring(QWidget):
     def __init__(self):
@@ -3673,7 +3341,6 @@ class adminMonitoring(QWidget):
         self.setGeometry(0, 0, 255, 600)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         mainLayout = QVBoxLayout()
 
@@ -3707,7 +3374,6 @@ class adminMonitoring(QWidget):
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
         scrollArea.setWidgetResizable(True)
-        scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         mainLayout.addWidget(scrollArea)
 
@@ -3726,19 +3392,7 @@ class adminMonitoring(QWidget):
 
         mainLayout.addWidget(adminButton)
 
-        logoutButton = QPushButton("Logout")
-        logoutButton.clicked.connect(self.closeEvent)
-        logoutButton.setStyleSheet("""border-radius: 8px;
-        color: white;
-        border: 1px solid #202E23;
-        background-color: #295231;
-        padding: 5px 15px;""")
-
-        mainLayout.addWidget(logoutButton)
-
         self.setLayout(mainLayout)
-
-        self.setStyleSheet(baseSheet)
 
     def filterChanged(self, index):
 
@@ -3798,7 +3452,7 @@ class adminMonitoring(QWidget):
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
-        if str(unitType) == "ARC" or str(unitType) == "IO":
+        if str(unitType) == "" or str(unitType) == "IO":
             data = SQL.fetchUnitDetails(unitName)
             selectedUnit = unitName
             selectedUnitType = unitType
@@ -3893,7 +3547,7 @@ class adminMonitoring(QWidget):
 
         self.hide()
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.login = loginUI()
         self.login.show()
 
@@ -3940,7 +3594,6 @@ class userMonitoring(QWidget):
         self.setGeometry(0, 0, 255, 600)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         mainLayout = QVBoxLayout()
 
@@ -3974,7 +3627,6 @@ class userMonitoring(QWidget):
         scrollArea = QScrollArea()
         scrollArea.setWidget(groupBox)
         scrollArea.setWidgetResizable(True)
-        scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         mainLayout.addWidget(scrollArea)
 
@@ -3988,20 +3640,7 @@ class userMonitoring(QWidget):
 
         mainLayout.addWidget(victronButton)
 
-        logoutButton = QPushButton("Logout")
-        logoutButton.clicked.connect(self.closeEvent)
-        logoutButton.setStyleSheet("""border-radius: 8px;
-                color: white;
-                border: 1px solid #202E23;
-                background-color: #295231;
-                padding: 5px 15px;""")
-
-        mainLayout.addWidget(logoutButton)
-
         self.setLayout(mainLayout)
-
-        self.setStyleSheet(baseSheet)
-
 
     def filterChanged(self, index):
 
@@ -4075,7 +3714,7 @@ class userMonitoring(QWidget):
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
-        if str(unitType) == "ARC" or str(unitType) == "IO":
+        if str(unitType) == "" or str(unitType) == "IO":
             data = SQL.fetchUnitDetails(unitName)
             selectedUnit = unitName
             selectedUnitType = unitType
@@ -4159,7 +3798,7 @@ class userMonitoring(QWidget):
         Geo.moveCenter(Center)
         self.openVictronPage.move(Geo.topLeft())
 
-    def closeEvent(self):
+    def closeEvent(self, event):
         self.login = loginUI()
         self.login.show()
 
@@ -4172,6 +3811,7 @@ class userMonitoring(QWidget):
         self.openMapPage.hide()
 
         self.hide()
+
 
 class loginUI(QMainWindow):
     def __init__(self):
@@ -4189,7 +3829,6 @@ class loginUI(QMainWindow):
         self.setGeometry(0, 0, 380, 320)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         layout = QGridLayout()
 
@@ -4229,45 +3868,6 @@ class loginUI(QMainWindow):
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
-
-        self.setStyleSheet("""
-
-    QLineEdit {
-        border-radius: 10px;
-        border: 1px solid #e0e4e7;
-        background-color: #c8eacf;
-        color: #0e2515;
-        padding: 5px 15px; 
-    }
-    QComboBox {
-        border: 1px solid #000000;
-        padding: 5px 15px;
-        combobox-popup: 0;
-    }
-    QPushButton {
-        border-radius: 8px;
-        color: white;
-        border: 1px solid #202E23;
-        background-color: #295231;
-        padding: 5px 15px; 
-
-    }
-    QPushButton:hover {
-        background-color: #295231;
-        border: 1px solid #2d683a;
-    }
-    QSpinBox {
-        border: 1px solid #e0e4e7;Jack
-        background-color: #c8eacf;
-        color: #0e2515;
-        padding: 5px 15px; 
-
-    }
-    QMainWindow {
-        background-color: qlineargradient(x1: 0, x2: 1, stop: 0 #358446, stop: 1 #6FFF63)
-    }
-
-""")
 
     def getUser(self, Username):
         global username
@@ -4322,6 +3922,7 @@ class loginUI(QMainWindow):
             else:
                 self.errorMessage.show()
 
+
 class errorMessage(QMainWindow):
 
     def __init__(self):
@@ -4363,9 +3964,42 @@ if hasattr(Qt, 'AA_EnableHighDpiScaling'):
 if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
+app.setStyleSheet("""
+
+    QLineEdit {
+        border-radius: 10px;
+        border: 1px solid #e0e4e7;
+        background-color: #c8eacf;
+        color: #0e2515;
+        padding: 5px 15px; 
+    }
+    QComboBox {
+        border: 1px solid #000000;
+        padding: 5px 15px;
+    }
+    QPushButton {
+        border-radius: 8px;
+        color: white;
+        border: 1px solid #46a15b;
+        background-color: #358446;
+        padding: 5px 15px; 
+
+    }
+    QPushButton:hover {
+        background-color: #358446;
+        border: 1px solid #2d683a;
+    }
+    QSpinBox {
+        border: 1px solid #e0e4e7;
+        background-color: #c8eacf;
+        color: #0e2515;
+        padding: 5px 15px; 
+
+    }
+
+""")
 
 app.setStyle('Fusion')
-
 
 socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socketOpen.settimeout(2)
