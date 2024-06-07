@@ -22,5 +22,4 @@ while True:
             print("Invalid Relay")
 
     time.sleep(60)
-    if(result.status_code == 200): print("Relay set")
 
