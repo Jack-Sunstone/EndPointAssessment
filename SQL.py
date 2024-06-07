@@ -395,3 +395,21 @@ def fetchFilteredVictron(Company, Filter):
     for row in cursor.fetchall():
         yield row
 
+
+
+
+
+
+
+
+
+def fetchRelayState(Name):
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Relay1, Relay2, Relay3, Relay4 FROM dbo.Relays WHERE Name = {Name}")
+
+    for row in cursor.fetchall():
+        yield row
+
