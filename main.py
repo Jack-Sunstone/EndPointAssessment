@@ -819,6 +819,12 @@ class ioDashboard(QWidget):
                 background-color: #295231;
                 padding: 5px 15px;""")
 
+        self.relaysButton = QPushButton("Relays")
+        self.relaysButton.clicked.connect(self.openRelays)
+
+        if selectedTextDevice == None:
+            self.relaysButton.hide()
+
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
@@ -844,9 +850,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 0)
 
-            layout.addWidget(self.backButton, 4, 0)
+            layout.addWidget(self.relaysButton, 4, 0)
 
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.backButton, 5, 0)
+
+            layout.addWidget(self.errorMessage, 6, 0)
 
         elif selectedCCTV == 2:
 
@@ -866,9 +874,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 1)
 
-            layout.addWidget(self.backButton, 3, 1, 1, 1)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 1)
 
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.backButton, 5, 1, 1, 1)
+
+            layout.addWidget(self.errorMessage, 6, 0)
 
 
         elif selectedCCTV == 3:
@@ -886,9 +896,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 2)
 
-            layout.addWidget(self.backButton, 4, 1, 1,2)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 2)
 
-            layout.addWidget(self.errorMessage, 5, 1, 1, 2)
+            layout.addWidget(self.backButton, 5, 1, 1,2)
+
+            layout.addWidget(self.errorMessage, 6, 1, 1, 2)
 
 
         else:
@@ -903,9 +915,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 3)
 
-            layout.addWidget(self.backButton, 4, 1, 1, 3)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 3)
 
-            layout.addWidget(self.errorMessage, 5, 2)
+            layout.addWidget(self.backButton, 5, 1, 1, 3)
+
+            layout.addWidget(self.errorMessage, 6, 2)
 
         self.checkUnitStatus()
 
@@ -969,6 +983,15 @@ class ioDashboard(QWidget):
 
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
+
+    def openRelays(self):
+        self.openRelaysPage = relays()
+        self.openRelaysPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openRelaysPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openRelaysPage.move(Geo.topLeft())
 
     def closeEvent(self):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
