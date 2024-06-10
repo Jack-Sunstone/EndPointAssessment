@@ -506,7 +506,7 @@ class relays(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
 
-        response = requests.get(f"http://81.179.155.109:79/{selectedUnit}/lastSeen.php")
+        response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
         lastSeen = response.text
 
         datalst = lastSeen.split()
@@ -551,57 +551,139 @@ class relays(QWidget):
 
         layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
 
-        relay1Button = QPushButton("Relay 1")
+        self.relay1Button = QPushButton("Relay 1")
+        self.relay1Button.clicked.connect(self.Relay1Clicked)
 
         if self.Relay1 == 0:
-            relay1Button.setStyleSheet("border: 2px solid red")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
         else:
-            relay1Button.setStyleSheet("border: 2px solid green")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                           "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(relay1Button,1,0)
+        layout.addWidget(self.relay1Button,1,0)
 
-        relay2Button = QPushButton("Relay 2")
+        self.relay2Button = QPushButton("Relay 2")
+        self.relay2Button.clicked.connect(self.Relay2Clicked)
 
         if self.Relay2 == 0:
-            relay2Button.setStyleSheet("border: 2px solid red")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
         else:
-            relay2Button.setStyleSheet("border: 2px solid green")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(relay2Button, 1, 1)
+        layout.addWidget(self.relay2Button, 1, 1)
 
-        relay3Button = QPushButton("Relay 3")
+        self.relay3Button = QPushButton("Relay 3")
+        self.relay3Button.clicked.connect(self.Relay3Clicked)
 
         if self.Relay3 == 0:
-            relay3Button.setStyleSheet("border: 2px solid red")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
         else:
-            relay3Button.setStyleSheet("border: 2px solid green")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(relay3Button, 1, 2)
+        layout.addWidget(self.relay3Button, 1, 2)
 
-        relay4Button = QPushButton("Relay 4")
+        self.relay4Button = QPushButton("Relay 4")
+        self.relay4Button.clicked.connect(self.Relay4Clicked)
 
         if self.Relay4 == 0:
-            relay4Button.setStyleSheet("border: 2px solid red")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
         else:
-            relay4Button.setStyleSheet("border: 2px solid green")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(relay4Button, 1, 3)
+        layout.addWidget(self.relay4Button, 1, 3)
 
         if differenceMinutes > 6:
-            relay1Button.setEnabled(False)
-            relay2Button.setEnabled(False)
-            relay3Button.setEnabled(False)
-            relay4Button.setEnabled(False)
+            self.relay1Button.setEnabled(False)
+            self.relay2Button.setEnabled(False)
+            self.relay3Button.setEnabled(False)
+            self.relay4Button.setEnabled(False)
 
-            relay1Button.setStyleSheet("background-color: red;")
-            relay2Button.setStyleSheet("background-color: red;")
-            relay3Button.setStyleSheet("background-color: red;")
-            relay4Button.setStyleSheet("background-color: red;")
+            self.relay1Button.setStyleSheet("background-color: red;")
+            self.relay2Button.setStyleSheet("background-color: red;")
+            self.relay3Button.setStyleSheet("background-color: red;")
+            self.relay4Button.setStyleSheet("background-color: red;")
 
 
         self.setLayout(layout)
 
+    def Relay1Clicked(self):
+        Relays.Relay1(selectedUnit)
+        if self.Relay1 == 0:
+            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            self.Relay1 = 1
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
 
+        elif self.Relay1 == 1:
+            SQL.setRelayState(selectedUnit, "Relay1", 0)
+            self.Relay1 = 0
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay2Clicked(self):
+        Relays.Relay2(selectedUnit)
+        if self.Relay2 == 0:
+            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            self.Relay2 = 1
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay2 == 1:
+            SQL.setRelayState(selectedUnit, "Relay2", 0)
+            self.Relay2 = 0
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay3Clicked(self):
+        Relays.Relay3(selectedUnit)
+        if self.Relay3 == 0:
+            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            self.Relay3 = 1
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay3 == 1:
+            SQL.setRelayState(selectedUnit, "Relay3", 0)
+            self.Relay3 = 0
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay4Clicked(self):
+        Relays.Relay4(selectedUnit)
+        if self.Relay4 == 0:
+            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            self.Relay4 = 1
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay4 == 1:
+            SQL.setRelayState(selectedUnit, "Relay4", 0)
+            self.Relay4 = 0
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
 class ioDashboard(QWidget):
     def __init__(self):
 
