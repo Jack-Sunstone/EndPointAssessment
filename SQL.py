@@ -408,8 +408,17 @@ def fetchRelayState(Name):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Relay1, Relay2, Relay3, Relay4 FROM dbo.Relays WHERE Name = {Name}")
+    cursor.execute(f"SELECT Relay1, Relay2, Relay3, Relay4 FROM dbo.Relays WHERE Name = '{Name}'")
 
     for row in cursor.fetchall():
         yield row
 
+
+def setRelayState(Name, Relay, State)
+
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"UPDATE dbo.Relays SET {Relay} = {State} WHERE Name = '{Name}'")
+
+    cnxn.commit()
