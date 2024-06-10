@@ -414,7 +414,7 @@ def fetchRelayState(Name):
         yield row
 
 
-def setRelayState(Name, Relay, State)
+def setRelayState(Name, Relay, State):
 
     connection()
     cursor = cnxn.cursor()
