@@ -733,6 +733,7 @@ class relays(QWidget):
             self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
 class ioDashboard(QWidget):
     def __init__(self):
 
@@ -1178,6 +1179,12 @@ class arcDashboard(QWidget):
 
         layout.addWidget(self.backButton, 0,0)
 
+        self.relaysButton = QPushButton("Relays")
+        self.relaysButton.clicked.connect(self.openRelays)
+
+        if selectedTextDevice == None:
+            self.relaysButton.hide()
+
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
@@ -1205,7 +1212,10 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 1)
+            layout.addWidget(self.relaysButton, 7, 1)
+
+            layout.addWidget(self.errorMessage, 8, 1)
+
 
         elif selectedCCTV == 2:
 
@@ -1223,11 +1233,13 @@ class arcDashboard(QWidget):
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(self.camera1Button, 5, 1)
 
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(self.routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
+            layout.addWidget(victronButton, 6, 0)
+            layout.addWidget(self.routerButton, 6, 1)
+            layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 1)
+            layout.addWidget(self.relaysButton, 7, 1)
+
+            layout.addWidget(self.errorMessage, 8, 1)
 
         elif selectedCCTV == 3:
 
@@ -1246,7 +1258,9 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 0)
+            layout.addWidget(self.relaysButton, 6, 3)
+
+            layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         else:
 
@@ -1262,7 +1276,9 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
 
-            layout.addWidget(self.errorMessage, 7, 2)
+            layout.addWidget(self.relaysButton, 7, 2)
+
+            layout.addWidget(self.errorMessage, 8, 2)
 
         if selectedEfoyID == "":
             efoyButton.hide()
@@ -1393,6 +1409,15 @@ class arcDashboard(QWidget):
 
     def openEfoy(self):
         webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
+
+    def openRelays(self):
+        self.openRelaysPage = relays()
+        self.openRelaysPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openRelaysPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openRelaysPage.move(Geo.topLeft())
 
     def closeEvent(self):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
@@ -4046,9 +4071,6 @@ class adminMonitoring(QWidget):
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
-
-            self.openText = relays()
-            self.openText.show()
 
             self.hide()
 
