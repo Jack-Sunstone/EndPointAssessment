@@ -14,6 +14,9 @@ import plotly.graph_objects as go
 from collections import deque
 import time
 import what3words
+import requests
+from datetime import *
+import Relays
 
 #These will be used to store the data from SQL of the open unit dashboard
 selectedUnit = ""
@@ -498,6 +501,105 @@ class singleCameraView(QWidget):
             self.openIODashboard.move(Geo.topLeft())
 
             self.hide()
+
+class relays(QWidget):
+    def __init__(self):
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        response = requests.get(f"http://81.179.155.109:79/{selectedUnit}/lastSeen.php")
+        lastSeen = response.text
+
+        datalst = lastSeen.split()
+
+        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]), int(datalst[9]))
+
+        datetimeNow = datetime.now()
+
+        difference = datetimeNow - datetimeFormat
+
+        differenceSeconds = difference.total_seconds()
+        differenceMinutes = divmod(differenceSeconds, 60)[0]
+
+        self.Relay1 = ""
+        self.Relay2 = ""
+        self.Relay3 = ""
+        self.Relay4 = ""
+
+        data = SQL.fetchRelayState(selectedUnit)
+
+        for row in data:
+            altered = list(row)
+            self.Relay1 = altered[0]
+            self.Relay2 = altered[1]
+            self.Relay3 = altered[2]
+            self.Relay4 = altered[3]
+
+        super().__init__()
+
+        self.setWindowTitle(selectedUnit)
+        self.setGeometry(0, 0, 760, 200)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setStyleSheet(baseSheet)
+
+        layout = QGridLayout()
+
+        lastSeenLabel = QLabel(lastSeen)
+        lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                "color: white;")
+        lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
+
+        relay1Button = QPushButton("Relay 1")
+
+        if self.Relay1 == 0:
+            relay1Button.setStyleSheet("border: 2px solid red")
+        else:
+            relay1Button.setStyleSheet("border: 2px solid green")
+
+        layout.addWidget(relay1Button,1,0)
+
+        relay2Button = QPushButton("Relay 2")
+
+        if self.Relay2 == 0:
+            relay2Button.setStyleSheet("border: 2px solid red")
+        else:
+            relay2Button.setStyleSheet("border: 2px solid green")
+
+        layout.addWidget(relay2Button, 1, 1)
+
+        relay3Button = QPushButton("Relay 3")
+
+        if self.Relay3 == 0:
+            relay3Button.setStyleSheet("border: 2px solid red")
+        else:
+            relay3Button.setStyleSheet("border: 2px solid green")
+
+        layout.addWidget(relay3Button, 1, 2)
+
+        relay4Button = QPushButton("Relay 4")
+
+        if self.Relay4 == 0:
+            relay4Button.setStyleSheet("border: 2px solid red")
+        else:
+            relay4Button.setStyleSheet("border: 2px solid green")
+
+        layout.addWidget(relay4Button, 1, 3)
+
+        if differenceMinutes > 6:
+            relay1Button.setEnabled(False)
+            relay2Button.setEnabled(False)
+            relay3Button.setEnabled(False)
+            relay4Button.setEnabled(False)
+
+            relay1Button.setStyleSheet("background-color: red;")
+            relay2Button.setStyleSheet("background-color: red;")
+            relay3Button.setStyleSheet("background-color: red;")
+            relay4Button.setStyleSheet("background-color: red;")
+
+
+        self.setLayout(layout)
 
 
 class ioDashboard(QWidget):
@@ -3813,6 +3915,9 @@ class adminMonitoring(QWidget):
 
             self.openARCDashboard = arcDashboard()
             self.openARCDashboard.show()
+
+            self.openText = relays()
+            self.openText.show()
 
             self.hide()
 
