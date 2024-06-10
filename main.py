@@ -25,6 +25,7 @@ selectedUnitType = ""
 selectedCamera = ""
 selectedEfoyID = ""
 selectedEfoyID2 = ""
+selectedTextDevice = ""
 
 #Storing the logged in users details
 userRights = ""
@@ -111,7 +112,7 @@ graidentSheet = """
                         border: 1px solid #46a15b;
                         background-color: #358446;
                         padding: 5px 15px; 
-
+                        margin: 5px;
                     }
                     QPushButton:hover {
                         background-color: #358446;
@@ -3774,6 +3775,7 @@ class adminMonitoring(QWidget):
         global selectedEfoyID2
         global selectedCamera
         global selectedCompany
+        global selectedTextDevice
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -3790,6 +3792,7 @@ class adminMonitoring(QWidget):
                 selectedCCTV = altered[4]
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
+                selectedTextDevice = altered[9]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
@@ -4051,6 +4054,7 @@ class userMonitoring(QWidget):
         global selectedEfoyID2
         global selectedCamera
         global selectedCompany
+        global selectedTextDevice
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -4067,6 +4071,7 @@ class userMonitoring(QWidget):
                 selectedCCTV = altered[4]
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
+                selectedTextDevice = altered[9]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
