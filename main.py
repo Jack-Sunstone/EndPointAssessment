@@ -15,7 +15,7 @@ from collections import deque
 import time
 import what3words
 import requests
-from datetime import *
+from datetime import datetime
 import Relays
 
 #These will be used to store the data from SQL of the open unit dashboard
@@ -91,6 +91,11 @@ baseSheet = """
                 padding: 5px 15px; 
             }
             QLabel {
+                font: bold;
+                color: white;
+            }
+            
+            QRadioButton {
                 font: bold;
                 color: white;
             }
@@ -539,7 +544,6 @@ class relays(QWidget):
         self.setWindowTitle(selectedUnit)
         self.setGeometry(0, 0, 760, 200)
         self.setWindowIcon(QIcon(sunstoneIcon))
-        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet(baseSheet)
 
         layout = QGridLayout()
@@ -2102,6 +2106,7 @@ class unitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+        self.newTextDevice = "NULL"
 
         self.w3w = ""
 
@@ -2230,6 +2235,11 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.lonAdd, 6, 2)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 6, 3)
+
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
@@ -2315,6 +2325,12 @@ class unitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
+    def textDeviceState(self, State):
+        if State.isChecked() == True:
+            self.newTextDevice = "Yes"
+        else:
+            self.newTextDevice = "NULL"
+
     def getW3W(self, W3W):
         self.w3w = W3W
 
@@ -2369,7 +2385,7 @@ class unitManagement(QWidget):
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
-                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
+                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy, self.newTextDevice)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2448,6 +2464,7 @@ class superUnitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+        self.newTextDevice = "NULL"
 
         self.w3w = ""
 
@@ -2610,6 +2627,11 @@ class superUnitManagement(QWidget):
 
         layout.addWidget(self.lonAdd, 8, 2)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 6, 3)
+
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
@@ -2713,6 +2735,12 @@ class superUnitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
+    def textDeviceState(self, State):
+        if State.isChecked() == True:
+            self.newTextDevice = "Yes"
+        else:
+            self.newTextDevice = "NULL"
+
     def getW3W(self, W3W):
         self.w3w = W3W
 
@@ -2771,7 +2799,7 @@ class superUnitManagement(QWidget):
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
                                 self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
-                                self.selectedLat, self.selectedLon)
+                                self.selectedLat, self.selectedLon, self.newTextDevice)
             self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):
