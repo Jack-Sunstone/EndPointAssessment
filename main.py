@@ -2325,8 +2325,8 @@ class unitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
-    def textDeviceState(self, State):
-        if State.isChecked() == True:
+    def textDeviceState(self):
+        if self.newTextDevice == "NULL":
             self.newTextDevice = "Yes"
         else:
             self.newTextDevice = "NULL"
@@ -2735,8 +2735,8 @@ class superUnitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
-    def textDeviceState(self, State):
-        if State.isChecked() == True:
+    def textDeviceState(self):
+        if self.newTextDevice == "NULL":
             self.newTextDevice = "Yes"
         else:
             self.newTextDevice = "NULL"
