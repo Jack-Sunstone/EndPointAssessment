@@ -643,9 +643,10 @@ class relays(QWidget):
         layout.addWidget(self.relay4Label, 1, 3)
         layout.addWidget(self.relay4Button, 2, 3)
 
-        warningMessage = QLabel("Disclaimer: Please Allow at least 60 Seconds for relay state to change.")
-        warningMessage.setStyleSheet("font: bold 14px;"
-                                    "color: white;")
+        warningMessage = QLabel("Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State. \n"
+                                "If Text Device has been text externally the Dashboard will not update. \n"
+                                "Changing a Relay from the Dashboard will ALWAYS be the True State.")
+        warningMessage.setStyleSheet("color: white;")
         warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(warningMessage, 3, 0, 1, 4)
@@ -746,6 +747,7 @@ class relays(QWidget):
             self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
 
 class ioDashboard(QWidget):
     def __init__(self):
