@@ -643,6 +643,13 @@ class relays(QWidget):
         layout.addWidget(self.relay4Label, 1, 3)
         layout.addWidget(self.relay4Button, 2, 3)
 
+        warningMessage = QLabel("Disclaimer: Please Allow at least 60 Seconds for relay state to change.")
+        warningMessage.setStyleSheet("font: bold 14px;"
+                                    "color: white;")
+        warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(warningMessage, 3, 0, 1, 4)
+
         if differenceMinutes > 6:
             self.relay1Button.setEnabled(False)
             self.relay2Button.setEnabled(False)
