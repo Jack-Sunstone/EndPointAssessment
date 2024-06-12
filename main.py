@@ -653,6 +653,8 @@ class relays(QWidget):
             self.relay2Button.setStyleSheet("background-color: red;")
             self.relay3Button.setStyleSheet("background-color: red;")
             self.relay4Button.setStyleSheet("background-color: red;")
+            lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
 
 
         self.setLayout(layout)
