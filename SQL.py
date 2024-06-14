@@ -413,6 +413,16 @@ def fetchRelayState(Name):
     for row in cursor.fetchall():
         yield row
 
+def fetchSolarState(Name):
+    connection()
+    cursor = cnxn.cursor()
+
+    cursor.execute(f"SELECT Solar FROM dbo.Relays WHERE Name = '{Name}'")
+
+    row = cursor.fetchone()
+
+    return row
+
 
 def setRelayState(Name, Relay, State):
 

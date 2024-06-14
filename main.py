@@ -1136,6 +1136,13 @@ class arcDashboard(QWidget):
         elif unitSolar < 100:
             self.sunPath = resourcePath("Assets/Images/cloud.png")
 
+
+
+        if selectedTextDevice != None:
+            self.solarStatus = SQL.fetchSolarState(selectedUnit)
+            self.solarStatus = int(self.solarStatus[0])
+        else:
+            self.solarStatus = "N/A"
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
@@ -1209,6 +1216,17 @@ class arcDashboard(QWidget):
         else:
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
+
+        self.solarPosition = QLabel("Closed")
+        self.solarPosition.setAttribute(Qt.WA_TranslucentBackground)
+        self.solarPosition.setStyleSheet("font: bold 14px;"
+                                        "color: white;")
+
+        if self.solarStatus == 1:
+            self.solarPosition.setText("Open")
+        elif self.solarStatus == "N/A":
+            self.solarPosition.setText("N/A")
+        layout.addWidget(self.solarPosition, 1,2)
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
