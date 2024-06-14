@@ -1103,6 +1103,8 @@ class arcDashboard(QWidget):
 
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
+        self.closedSolarPanels = resourcePath("Assets/Images/SolarShut.png")
+        self.openSolarPanels = resourcePath("Assets/Images/SolarOpen.png")
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1136,13 +1138,12 @@ class arcDashboard(QWidget):
         elif unitSolar < 100:
             self.sunPath = resourcePath("Assets/Images/cloud.png")
 
-
-
         if selectedTextDevice != None:
             self.solarStatus = SQL.fetchSolarState(selectedUnit)
             self.solarStatus = int(self.solarStatus[0])
         else:
             self.solarStatus = "N/A"
+
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
@@ -1218,15 +1219,29 @@ class arcDashboard(QWidget):
                                         "color: red;")
 
         self.solarPosition = QLabel("Closed")
+        self.solarPosition.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.solarPosition.setAttribute(Qt.WA_TranslucentBackground)
         self.solarPosition.setStyleSheet("font: bold 14px;"
                                         "color: white;")
 
+
+        self.solarPanelsImage = QLabel()
+        self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.solarPanelsImage.setAttribute(Qt.WA_TranslucentBackground)
+
+
         if self.solarStatus == 1:
             self.solarPosition.setText("Open")
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
         elif self.solarStatus == "N/A":
             self.solarPosition.setText("N/A")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+        elif self.solarStatus == 0:
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+
+        self.solarPanelsImage.setPixmap(solarPanelsPixmap)
         layout.addWidget(self.solarPosition, 1,2)
+        layout.addWidget(self.solarPanelsImage, 2,2,2,1)
 
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
@@ -1475,6 +1490,12 @@ class arcDashboard(QWidget):
 
         pullVictronData(selectedUnit)
 
+        if selectedTextDevice != None:
+            self.solarStatus = SQL.fetchSolarState(selectedUnit)
+            self.solarStatus = int(self.solarStatus[0])
+        else:
+            self.solarStatus = "N/A"
+
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
             unitLoad = 0.0
@@ -1520,6 +1541,19 @@ class arcDashboard(QWidget):
         elif unitSolar < 100:
             self.sunPath = resourcePath("Assets/Images/cloud.png")
             self.sunImage.setPixmap(QPixmap(self.sunPath))
+
+        if self.solarStatus == 1:
+            self.solarPosition.setText("Open")
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        elif self.solarStatus == 0:
+            self.solarPosition.setText("Closed")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        elif self.solarStatus == "N/A":
+            self.solarPosition.setText("N/A")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
 
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
