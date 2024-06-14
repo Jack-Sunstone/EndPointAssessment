@@ -14,6 +14,9 @@ import plotly.graph_objects as go
 from collections import deque
 import time
 import what3words
+import requests
+from datetime import datetime
+import Relays
 
 #These will be used to store the data from SQL of the open unit dashboard
 selectedUnit = ""
@@ -25,6 +28,7 @@ selectedUnitType = ""
 selectedCamera = ""
 selectedEfoyID = ""
 selectedEfoyID2 = ""
+selectedTextDevice = ""
 
 #Storing the logged in users details
 userRights = ""
@@ -64,7 +68,7 @@ baseSheet = """
             }
             QComboBox {
                 background-color: #358446;
-                border: 1px solid #46a15b;;
+                border: 1px solid white;
                 color: #FFFFFF;
                 padding: 5px 15px;
                 combobox-popup: 0;
@@ -72,7 +76,7 @@ baseSheet = """
             QPushButton {
                 border-radius: 8px;
                 color: white;
-                border: 1px solid #46a15b;
+                border: 1px solid white;
                 background-color: #358446;
                 padding: 5px 15px; 
 
@@ -83,12 +87,15 @@ baseSheet = """
             }
             QSpinBox {
                 border: 1px solid #e0e4e7;
-                color: black;
+                color: white;
                 padding: 5px 15px; 
             }
-            
-            
             QLabel {
+                font: bold;
+                color: white;
+            }
+            
+            QRadioButton {
                 font: bold;
                 color: white;
             }
@@ -113,7 +120,7 @@ graidentSheet = """
                         border: 1px solid #46a15b;
                         background-color: #358446;
                         padding: 5px 15px; 
-
+                        margin: 5px;
                     }
                     QPushButton:hover {
                         background-color: #358446;
@@ -500,6 +507,311 @@ class singleCameraView(QWidget):
 
             self.hide()
 
+class relays(QWidget):
+    def __init__(self):
+        sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+
+        response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
+        lastSeen = response.text
+
+        datalst = lastSeen.split()
+
+        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]), int(datalst[9]))
+
+        datetimeNow = datetime.now()
+
+        difference = datetimeNow - datetimeFormat
+
+        differenceSeconds = difference.total_seconds()
+        differenceMinutes = divmod(differenceSeconds, 60)[0]
+
+        self.Relay1 = ""
+        self.Relay2 = ""
+        self.Relay3 = ""
+        self.Relay4 = ""
+
+        data = SQL.fetchRelayState(selectedUnit)
+
+        for row in data:
+            altered = list(row)
+            self.Relay1 = altered[0]
+            self.Relay2 = altered[1]
+            self.Relay3 = altered[2]
+            self.Relay4 = altered[3]
+
+        super().__init__()
+
+        self.setWindowTitle(selectedUnit)
+        self.setGeometry(0, 0, 760, 200)
+        self.setWindowIcon(QIcon(sunstoneIcon))
+        self.setStyleSheet(baseSheet)
+
+        layout = QGridLayout()
+
+        lastSeenLabel = QLabel(lastSeen)
+        lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                "color: white;")
+        lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
+
+        self.relay1Button = QPushButton("Relay 1")
+        self.relay1Button.clicked.connect(self.Relay1Clicked)
+
+        self.relay1Label = QLabel()
+        self.relay1Label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if self.Relay1 == 0:
+            self.relay1Label.setText("Relay OFF")
+            self.relay1Label.setStyleSheet("color: red")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay1Label.setText("Relay ON")
+            self.relay1Label.setStyleSheet("color: #1eff00")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                           "QPushButton:hover { border: 2px solid red; }")
+
+        layout.addWidget(self.relay1Label, 1, 0)
+        layout.addWidget(self.relay1Button,2,0)
+
+        self.relay2Button = QPushButton("Relay 2")
+        self.relay2Button.clicked.connect(self.Relay2Clicked)
+
+        self.relay2Label = QLabel()
+        self.relay2Label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if self.Relay2 == 0:
+            self.relay2Label.setText("Relay OFF")
+            self.relay2Label.setStyleSheet("color: red")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay2Label.setText("Relay ON")
+            self.relay2Label.setStyleSheet("color: #1eff00")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        layout.addWidget(self.relay2Label, 1, 1)
+        layout.addWidget(self.relay2Button, 2, 1)
+
+        self.relay3Button = QPushButton("Relay 3")
+        self.relay3Button.clicked.connect(self.Relay3Clicked)
+
+        self.relay3Label = QLabel()
+        self.relay3Label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if self.Relay3 == 0:
+            self.relay3Label.setText("Relay OFF")
+            self.relay3Label.setStyleSheet("color: red")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay3Label.setText("Relay ON")
+            self.relay3Label.setStyleSheet("color: #1eff00")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        layout.addWidget(self.relay3Label, 1, 2)
+        layout.addWidget(self.relay3Button, 2, 2)
+
+        self.relay4Button = QPushButton("Relay 4")
+        self.relay4Button.clicked.connect(self.Relay4Clicked)
+
+        self.relay4Label = QLabel()
+        self.relay4Label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        if self.Relay4 == 0:
+            self.relay4Label.setText("Relay OFF")
+            self.relay4Label.setStyleSheet("color: red")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay4Label.setText("Relay ON")
+            self.relay4Label.setStyleSheet("color: #1eff00")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        layout.addWidget(self.relay4Label, 1, 3)
+        layout.addWidget(self.relay4Button, 2, 3)
+
+        warningMessage = QLabel("Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State.")
+        warningMessage.setStyleSheet("color: white;")
+        warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addWidget(warningMessage, 3, 0, 1, 4)
+
+        if differenceMinutes > 6:
+            self.relay1Button.setEnabled(False)
+            self.relay2Button.setEnabled(False)
+            self.relay3Button.setEnabled(False)
+            self.relay4Button.setEnabled(False)
+
+            self.relay1Button.setStyleSheet("background-color: red;")
+            self.relay2Button.setStyleSheet("background-color: red;")
+            self.relay3Button.setStyleSheet("background-color: red;")
+            self.relay4Button.setStyleSheet("background-color: red;")
+            lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
+
+
+        self.setLayout(layout)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.relayCheck)
+        self.timer.start(60000)
+
+    def relayCheck(self):
+
+        data = SQL.fetchRelayState(selectedUnit)
+
+        for row in data:
+            altered = list(row)
+            self.Relay1 = altered[0]
+            self.Relay2 = altered[1]
+            self.Relay3 = altered[2]
+            self.Relay4 = altered[3]
+
+        if self.Relay1 == 0:
+            self.relay1Label.setText("Relay OFF")
+            self.relay1Label.setStyleSheet("color: red")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay1Label.setText("Relay ON")
+            self.relay1Label.setStyleSheet("color: #1eff00")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                           "QPushButton:hover { border: 2px solid red; }")
+
+        if self.Relay2 == 0:
+            self.relay2Label.setText("Relay OFF")
+            self.relay2Label.setStyleSheet("color: red")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay2Label.setText("Relay ON")
+            self.relay2Label.setStyleSheet("color: #1eff00")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        if self.Relay3 == 0:
+            self.relay3Label.setText("Relay OFF")
+            self.relay3Label.setStyleSheet("color: red")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay3Label.setText("Relay ON")
+            self.relay3Label.setStyleSheet("color: #1eff00")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        if self.Relay4 == 0:
+            self.relay4Label.setText("Relay OFF")
+            self.relay4Label.setStyleSheet("color: red")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+        else:
+            self.relay4Label.setText("Relay ON")
+            self.relay4Label.setStyleSheet("color: #1eff00")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+    def Relay1Clicked(self):
+        Relays.Relay1(selectedUnit)
+        if self.Relay1 == 0:
+            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            self.Relay1 = 1
+            self.relay1Label.setText("Relay ON")
+            self.relay1Label.setStyleSheet("color: #1eff00")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay1 == 1:
+            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            self.Relay1 = 0
+            self.relay1Label.setText("Relay OFF")
+            self.relay1Label.setStyleSheet("color: red")
+            self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay2Clicked(self):
+        Relays.Relay2(selectedUnit)
+        if self.Relay2 == 0:
+            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            self.Relay2 = 1
+
+            self.relay2Label.setText("Relay ON")
+            self.relay2Label.setStyleSheet("color: #1eff00")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay2 == 1:
+            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            self.Relay2 = 0
+            self.relay2Label.setText("Relay OFF")
+            self.relay2Label.setStyleSheet("color: red")
+            self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay3Clicked(self):
+        Relays.Relay3(selectedUnit)
+        if self.Relay3 == 0:
+            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            self.Relay3 = 1
+            self.relay3Label.setText("Relay ON")
+            self.relay3Label.setStyleSheet("color: #1eff00")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay3 == 1:
+            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            self.Relay3 = 0
+            self.relay3Label.setText("Relay OFF")
+            self.relay3Label.setStyleSheet("color: red")
+            self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
+
+    def Relay4Clicked(self):
+        Relays.Relay4(selectedUnit)
+        if self.Relay4 == 0:
+            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            self.Relay4 = 1
+            self.relay4Label.setText("Relay ON")
+            self.relay4Label.setStyleSheet("color: #1eff00")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
+                                            "background: #1eff00; }"
+                                            "QPushButton:hover { border: 2px solid red; }")
+
+        elif self.Relay4 == 1:
+            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            self.Relay4 = 0
+            self.relay4Label.setText("Relay OFF")
+            self.relay4Label.setStyleSheet("color: red")
+            self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
+                                            "background: red; }"
+                                            "QPushButton:hover { border: 2px solid #1eff00; }")
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -586,6 +898,12 @@ class ioDashboard(QWidget):
                 background-color: #295231;
                 padding: 5px 15px;""")
 
+        self.relaysButton = QPushButton("Relays")
+        self.relaysButton.clicked.connect(self.openRelays)
+
+        if selectedTextDevice == None:
+            self.relaysButton.hide()
+
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
@@ -611,9 +929,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 0)
 
-            layout.addWidget(self.backButton, 4, 0)
+            layout.addWidget(self.relaysButton, 4, 0)
 
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.backButton, 5, 0)
+
+            layout.addWidget(self.errorMessage, 6, 0)
 
         elif selectedCCTV == 2:
 
@@ -633,9 +953,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 1)
 
-            layout.addWidget(self.backButton, 3, 1, 1, 1)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 1)
 
-            layout.addWidget(self.errorMessage, 5, 0)
+            layout.addWidget(self.backButton, 5, 1, 1, 1)
+
+            layout.addWidget(self.errorMessage, 6, 0)
 
 
         elif selectedCCTV == 3:
@@ -653,9 +975,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 2)
 
-            layout.addWidget(self.backButton, 4, 1, 1,2)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 2)
 
-            layout.addWidget(self.errorMessage, 5, 1, 1, 2)
+            layout.addWidget(self.backButton, 5, 1, 1,2)
+
+            layout.addWidget(self.errorMessage, 6, 1, 1, 2)
 
 
         else:
@@ -670,9 +994,11 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.routerButton, 3, 1, 1, 3)
 
-            layout.addWidget(self.backButton, 4, 1, 1, 3)
+            layout.addWidget(self.relaysButton, 4, 1, 1, 3)
 
-            layout.addWidget(self.errorMessage, 5, 2)
+            layout.addWidget(self.backButton, 5, 1, 1, 3)
+
+            layout.addWidget(self.errorMessage, 6, 2)
 
         self.checkUnitStatus()
 
@@ -737,6 +1063,15 @@ class ioDashboard(QWidget):
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
 
+    def openRelays(self):
+        self.openRelaysPage = relays()
+        self.openRelaysPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openRelaysPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openRelaysPage.move(Geo.topLeft())
+
     def closeEvent(self):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
             self.openMonitoring = adminMonitoring()
@@ -768,6 +1103,8 @@ class arcDashboard(QWidget):
 
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
+        self.closedSolarPanels = resourcePath("Assets/Images/SolarShut.png")
+        self.openSolarPanels = resourcePath("Assets/Images/SolarOpen.png")
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -800,6 +1137,12 @@ class arcDashboard(QWidget):
             self.sunPath = resourcePath("Assets/Images/cloudy.png")
         elif unitSolar < 100:
             self.sunPath = resourcePath("Assets/Images/cloud.png")
+
+        if selectedTextDevice != None:
+            self.solarStatus = SQL.fetchSolarState(selectedUnit)
+            self.solarStatus = int(self.solarStatus[0])
+        else:
+            self.solarStatus = "N/A"
 
         super().__init__()
 
@@ -875,6 +1218,31 @@ class arcDashboard(QWidget):
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
+        self.solarPosition = QLabel("Closed")
+        self.solarPosition.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.solarPosition.setAttribute(Qt.WA_TranslucentBackground)
+        self.solarPosition.setStyleSheet("font: bold 14px;"
+                                        "color: white;")
+
+
+        self.solarPanelsImage = QLabel()
+        self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.solarPanelsImage.setAttribute(Qt.WA_TranslucentBackground)
+
+
+        if self.solarStatus == 1:
+            self.solarPosition.setText("Open")
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
+        elif self.solarStatus == "N/A":
+            self.solarPosition.setText("N/A")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+        elif self.solarStatus == 0:
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+
+        self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        layout.addWidget(self.solarPosition, 1,2)
+        layout.addWidget(self.solarPanelsImage, 2,2,2,1)
+
         layout.addWidget(self.loadImage, 3, 0)
         layout.addWidget(self.loadDraw, 3, 1)
 
@@ -946,6 +1314,12 @@ class arcDashboard(QWidget):
 
         layout.addWidget(self.backButton, 0,0)
 
+        self.relaysButton = QPushButton("Relays")
+        self.relaysButton.clicked.connect(self.openRelays)
+
+        if selectedTextDevice == None:
+            self.relaysButton.hide()
+
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
@@ -973,7 +1347,10 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 1)
+            layout.addWidget(self.relaysButton, 7, 1)
+
+            layout.addWidget(self.errorMessage, 8, 1)
+
 
         elif selectedCCTV == 2:
 
@@ -991,11 +1368,13 @@ class arcDashboard(QWidget):
             layout.addWidget(self.Camera1, 4, 1)
             layout.addWidget(self.camera1Button, 5, 1)
 
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(self.routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
+            layout.addWidget(victronButton, 6, 0)
+            layout.addWidget(self.routerButton, 6, 1)
+            layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 1)
+            layout.addWidget(self.relaysButton, 7, 1)
+
+            layout.addWidget(self.errorMessage, 8, 1)
 
         elif selectedCCTV == 3:
 
@@ -1014,7 +1393,9 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 1)
             layout.addWidget(efoyButton, 6, 2)
 
-            layout.addWidget(self.errorMessage, 7, 0)
+            layout.addWidget(self.relaysButton, 6, 3)
+
+            layout.addWidget(self.errorMessage, 7, 1, 1, 2)
 
         else:
 
@@ -1030,7 +1411,9 @@ class arcDashboard(QWidget):
             layout.addWidget(self.routerButton, 6, 2)
             layout.addWidget(efoyButton, 6, 3)
 
-            layout.addWidget(self.errorMessage, 7, 2)
+            layout.addWidget(self.relaysButton, 7, 2)
+
+            layout.addWidget(self.errorMessage, 8, 2)
 
         if selectedEfoyID == "":
             efoyButton.hide()
@@ -1107,6 +1490,12 @@ class arcDashboard(QWidget):
 
         pullVictronData(selectedUnit)
 
+        if selectedTextDevice != None:
+            self.solarStatus = SQL.fetchSolarState(selectedUnit)
+            self.solarStatus = int(self.solarStatus[0])
+        else:
+            self.solarStatus = "N/A"
+
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
             unitLoad = 0.0
@@ -1153,6 +1542,19 @@ class arcDashboard(QWidget):
             self.sunPath = resourcePath("Assets/Images/cloud.png")
             self.sunImage.setPixmap(QPixmap(self.sunPath))
 
+        if self.solarStatus == 1:
+            self.solarPosition.setText("Open")
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        elif self.solarStatus == 0:
+            self.solarPosition.setText("Closed")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        elif self.solarStatus == "N/A":
+            self.solarPosition.setText("N/A")
+            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+
     def openVictron(self):
         webbrowser.open(f"https://vrm.victronenergy.com/installation/{selectedVictron}/dashboard")
 
@@ -1161,6 +1563,15 @@ class arcDashboard(QWidget):
 
     def openEfoy(self):
         webbrowser.open(f"https://www.efoy-cloud.com/devices/{selectedEfoyID}")
+
+    def openRelays(self):
+        self.openRelaysPage = relays()
+        self.openRelaysPage.show()
+
+        Center = QScreen.availableGeometry(QApplication.primaryScreen()).center()
+        Geo = self.openRelaysPage.frameGeometry()
+        Geo.moveCenter(Center)
+        self.openRelaysPage.move(Geo.topLeft())
 
     def closeEvent(self):
         if userRights == "ADMIN" or userRights == "SUPERADMIN":
@@ -1751,8 +2162,11 @@ class superUserManagement(QWidget):
         self.rightLineEdit.setText(self.selectedRights)
 
     def changeUser(self):
-        SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
-        self.errorMessage.setText("User Updated")
+        if self.selectedRights == "SUPERADMIN":
+            self.errorMessage.setText("Only one Super Admin Account Allowed")
+        else:
+            SQL.updateUser(self.selectedUser, self.selectedPassword, self.selectedRights)
+            self.errorMessage.setText("User Updated")
 
     def deleteUser(self):
 
@@ -1819,6 +2233,7 @@ class unitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+        self.newTextDevice = "NULL"
 
         self.w3w = ""
 
@@ -1947,6 +2362,11 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.lonAdd, 6, 2)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 6, 3)
+
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
@@ -2032,6 +2452,12 @@ class unitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
+    def textDeviceState(self):
+        if self.newTextDevice == "NULL":
+            self.newTextDevice = "Yes"
+        else:
+            self.newTextDevice = "NULL"
+
     def getW3W(self, W3W):
         self.w3w = W3W
 
@@ -2086,7 +2512,7 @@ class unitManagement(QWidget):
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
-                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
+                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy, self.newTextDevice)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2165,6 +2591,7 @@ class superUnitManagement(QWidget):
         self.newLat = ""
         self.newLon = ""
         self.newUnitType = ""
+        self.newTextDevice = "NULL"
 
         self.w3w = ""
 
@@ -2327,6 +2754,11 @@ class superUnitManagement(QWidget):
 
         layout.addWidget(self.lonAdd, 8, 2)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 6, 3)
+
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
@@ -2430,6 +2862,12 @@ class superUnitManagement(QWidget):
     def getNewLon(self, Lon):
         self.newLon = Lon
 
+    def textDeviceState(self):
+        if self.newTextDevice == "NULL":
+            self.newTextDevice = "Yes"
+        else:
+            self.newTextDevice = "NULL"
+
     def getW3W(self, W3W):
         self.w3w = W3W
 
@@ -2488,7 +2926,7 @@ class superUnitManagement(QWidget):
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
                                 self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
-                                self.selectedLat, self.selectedLon)
+                                self.selectedLat, self.selectedLon, self.newTextDevice)
             self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):
@@ -3242,6 +3680,8 @@ class interactiveMap(QWidget):
 
         self.setLayout(layout)
 
+        self.setStyleSheet(baseSheet)
+
     def importMap(self):
         names = []
 
@@ -3484,31 +3924,7 @@ class victronOverview(QWidget):
         layout.addWidget(backButton)
 
         self.setLayout(layout)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #358446;
-            }
-            QComboBox {
-                background-color: #358446;
-                border: 1px solid #46a15b;;
-                color: #FFFFFF;
-                padding: 5px 15px;
-                combobox-popup: 0;
-            }
-            QPushButton {
-                border-radius: 8px;
-                color: white;
-                border: 1px solid #46a15b;
-                background-color: #358446;
-                padding: 5px 15px; 
-
-            }
-            QPushButton:hover {
-                background-color: #358446;
-                border: 1px solid #2d683a;
-            }
-
-        """)
+        self.setStyleSheet(baseSheet)
 
     def filterChanged(self, index):
 
@@ -3795,6 +4211,7 @@ class adminMonitoring(QWidget):
         global selectedEfoyID2
         global selectedCamera
         global selectedCompany
+        global selectedTextDevice
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -3811,6 +4228,7 @@ class adminMonitoring(QWidget):
                 selectedCCTV = altered[4]
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
+                selectedTextDevice = altered[9]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
@@ -4072,6 +4490,7 @@ class userMonitoring(QWidget):
         global selectedEfoyID2
         global selectedCamera
         global selectedCompany
+        global selectedTextDevice
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -4088,6 +4507,7 @@ class userMonitoring(QWidget):
                 selectedCCTV = altered[4]
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
+                selectedTextDevice = altered[9]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
