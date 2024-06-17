@@ -1602,7 +1602,7 @@ class generatorDashboard(QWidget):
         global unitLoad
         global unitSolar
 
-        windowIcon = resourcePath("Assets/Images/ARCunit.png")
+        windowIcon = resourcePath("Assets/Images/ARCGen.png")
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
