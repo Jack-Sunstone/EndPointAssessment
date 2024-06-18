@@ -2892,7 +2892,7 @@ class superUnitManagement(QWidget):
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
                                 self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
-                                self.selectedLat, self.selectedLon, self.newTextDevice)
+                                self.selectedLat, self.selectedLon)
             self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):

@@ -2757,7 +2757,7 @@ class superUnitManagement(QWidget):
         self.textDevice = QRadioButton("Text Device")
         self.textDevice.toggled.connect(self.textDeviceState)
 
-        layout.addWidget(self.textDevice, 6, 3)
+        layout.addWidget(self.textDevice, 8, 3)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
@@ -2926,7 +2926,7 @@ class superUnitManagement(QWidget):
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
                                 self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
-                                self.selectedLat, self.selectedLon, self.newTextDevice)
+                                self.selectedLat, self.selectedLon)
             self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):
