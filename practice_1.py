@@ -130,6 +130,10 @@ graidentSheet = """
                 """
 
 
+def binToDec(n):
+
+    return int(n,2)
+
 # This function gets the data stored in the SQL database and stores it within the program in the variables above
 def pullVictronData(unitName):
     global unitSolar
@@ -549,7 +553,13 @@ class relays(QWidget):
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
 
+        intList = [self.Relay1, self.Relay2, self.Relay3, self.Relay4]
 
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(binary)
 
         super().__init__()
 
