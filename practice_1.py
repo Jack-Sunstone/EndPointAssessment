@@ -518,6 +518,7 @@ class singleCameraView(QWidget):
 class relays(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
+        RelaysOFF = resourcePath("Assets/Images/TextDevice/0.png")
 
         response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
         lastSeen = response.text
@@ -548,6 +549,8 @@ class relays(QWidget):
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
 
+
+
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
@@ -563,6 +566,13 @@ class relays(QWidget):
         lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
+
+        self.relayImage = QLabel()
+        self.relayImage.setPixmap(QPixmap(RelaysOFF))
+        self.relayImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.relayImage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.relayImage, 1,0,1,4)
 
         self.relay1Button = QPushButton("Relay 1")
         self.relay1Button.clicked.connect(self.Relay1Clicked)
@@ -583,8 +593,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay1Label, 1, 0)
-        layout.addWidget(self.relay1Button, 2, 0)
+        layout.addWidget(self.relay1Label, 2, 0)
+        layout.addWidget(self.relay1Button, 3, 0)
 
         self.relay2Button = QPushButton("Relay 2")
         self.relay2Button.clicked.connect(self.Relay2Clicked)
@@ -605,8 +615,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay2Label, 1, 1)
-        layout.addWidget(self.relay2Button, 2, 1)
+        layout.addWidget(self.relay2Label, 2, 1)
+        layout.addWidget(self.relay2Button, 3, 1)
 
         self.relay3Button = QPushButton("Relay 3")
         self.relay3Button.clicked.connect(self.Relay3Clicked)
@@ -627,8 +637,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay3Label, 1, 2)
-        layout.addWidget(self.relay3Button, 2, 2)
+        layout.addWidget(self.relay3Label, 2, 2)
+        layout.addWidget(self.relay3Button, 3, 2)
 
         self.relay4Button = QPushButton("Relay 4")
         self.relay4Button.clicked.connect(self.Relay4Clicked)
@@ -649,15 +659,15 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay4Label, 1, 3)
-        layout.addWidget(self.relay4Button, 2, 3)
+        layout.addWidget(self.relay4Label, 2, 3)
+        layout.addWidget(self.relay4Button, 3, 3)
 
         warningMessage = QLabel(
             "Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State.")
         warningMessage.setStyleSheet("color: white;")
         warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(warningMessage, 3, 0, 1, 4)
+        layout.addWidget(warningMessage, 4, 0, 1, 4)
 
         if differenceMinutes > 6:
             self.relay1Button.setEnabled(False)

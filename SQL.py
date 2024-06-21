@@ -219,7 +219,7 @@ def checkUnit(Name):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name FROM dbo.CCTVUnits WHERE Name = '{Name}'")
+    cursor.execute(f"SELECT Name FROM dbo.AllUnits WHERE Name = '{Name}'")
 
     for row in cursor.fetchall():
         return row[0]
@@ -238,12 +238,12 @@ def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType,
     cursor = cnxn.cursor()
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL, {TextDevice})")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL, '{TextDevice}')")
 
         if TextDevice == "Yes":
             cursor.execute(f"INSERT INTO dbo.Relays (Name, Relay1, Relay2, Relay3, Relay4, Solar) VALUES ('{Name.strip()}', 0, 0, 0, 0, NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}', {TextDevice})")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}', '{TextDevice}')")
 
         cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
 
