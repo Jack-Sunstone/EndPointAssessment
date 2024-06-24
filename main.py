@@ -667,7 +667,7 @@ class relays(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.relayCheck)
-        self.timer.start(60000)
+        self.timer.start(10000)
 
     def relayCheck(self):
 
