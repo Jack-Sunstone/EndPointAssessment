@@ -130,6 +130,10 @@ graidentSheet = """
                 """
 
 
+def binToDec(n):
+
+    return int(n,2)
+
 # This function gets the data stored in the SQL database and stores it within the program in the variables above
 def pullVictronData(unitName):
     global unitSolar
@@ -548,6 +552,17 @@ class relays(QWidget):
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
 
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
@@ -557,12 +572,19 @@ class relays(QWidget):
 
         layout = QGridLayout()
 
-        lastSeenLabel = QLabel(lastSeen)
-        lastSeenLabel.setStyleSheet("font: bold 14px;"
+        self.lastSeenLabel = QLabel(lastSeen)
+        self.lastSeenLabel.setStyleSheet("font: bold 14px;"
                                     "color: white;")
-        lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
+        layout.addWidget(self.lastSeenLabel, 0, 1, 1, 2)
+
+        self.relayImage = QLabel()
+        self.relayImage.setPixmap(QPixmap(relayImage))
+        self.relayImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.relayImage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.relayImage, 1,0,1,4)
 
         self.relay1Button = QPushButton("Relay 1")
         self.relay1Button.clicked.connect(self.Relay1Clicked)
@@ -583,8 +605,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay1Label, 1, 0)
-        layout.addWidget(self.relay1Button, 2, 0)
+        layout.addWidget(self.relay1Label, 2, 0)
+        layout.addWidget(self.relay1Button, 3, 0)
 
         self.relay2Button = QPushButton("Relay 2")
         self.relay2Button.clicked.connect(self.Relay2Clicked)
@@ -605,8 +627,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay2Label, 1, 1)
-        layout.addWidget(self.relay2Button, 2, 1)
+        layout.addWidget(self.relay2Label, 2, 1)
+        layout.addWidget(self.relay2Button, 3, 1)
 
         self.relay3Button = QPushButton("Relay 3")
         self.relay3Button.clicked.connect(self.Relay3Clicked)
@@ -627,8 +649,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay3Label, 1, 2)
-        layout.addWidget(self.relay3Button, 2, 2)
+        layout.addWidget(self.relay3Label, 2, 2)
+        layout.addWidget(self.relay3Button, 3, 2)
 
         self.relay4Button = QPushButton("Relay 4")
         self.relay4Button.clicked.connect(self.Relay4Clicked)
@@ -649,15 +671,15 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay4Label, 1, 3)
-        layout.addWidget(self.relay4Button, 2, 3)
+        layout.addWidget(self.relay4Label, 2, 3)
+        layout.addWidget(self.relay4Button, 3, 3)
 
         warningMessage = QLabel(
             "Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State.")
         warningMessage.setStyleSheet("color: white;")
         warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(warningMessage, 3, 0, 1, 4)
+        layout.addWidget(warningMessage, 4, 0, 1, 4)
 
         if differenceMinutes > 6:
             self.relay1Button.setEnabled(False)
@@ -676,9 +698,26 @@ class relays(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.relayCheck)
-        self.timer.start(10000)
+        self.timer.start(2000)
 
     def relayCheck(self):
+
+        response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
+        lastSeen = response.text
+
+        datalst = lastSeen.split()
+
+        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]),
+                                  int(datalst[9]))
+
+        datetimeNow = datetime.now()
+
+        difference = datetimeNow - datetimeFormat
+
+        differenceSeconds = difference.total_seconds()
+        differenceMinutes = divmod(differenceSeconds, 60)[0]
+
+        self.lastSeenLabel.setText(lastSeen)
 
         data = SQL.fetchRelayState(selectedUnit)
 
@@ -688,6 +727,19 @@ class relays(QWidget):
             self.Relay2 = altered[1]
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
+
 
         if self.Relay1 == 0:
             self.relay1Label.setText("Relay OFF")
@@ -741,6 +793,33 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
+        if differenceMinutes > 6:
+            self.relay1Button.setEnabled(False)
+            self.relay2Button.setEnabled(False)
+            self.relay3Button.setEnabled(False)
+            self.relay4Button.setEnabled(False)
+
+            self.relay1Button.setStyleSheet("background-color: red;")
+            self.relay2Button.setStyleSheet("background-color: red;")
+            self.relay3Button.setStyleSheet("background-color: red;")
+            self.relay4Button.setStyleSheet("background-color: red;")
+            lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
+
+    def setRelayImage(self):
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
+
     def Relay1Clicked(self):
         Relays.Relay1(selectedUnit)
         if self.Relay1 == 0:
@@ -753,13 +832,16 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay1 == 1:
-            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            SQL.setRelayState(selectedUnit, "Relay1", 0)
             self.Relay1 = 0
             self.relay1Label.setText("Relay OFF")
             self.relay1Label.setStyleSheet("color: red")
             self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
+
 
     def Relay2Clicked(self):
         Relays.Relay2(selectedUnit)
@@ -774,13 +856,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay2 == 1:
-            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            SQL.setRelayState(selectedUnit, "Relay2", 0)
             self.Relay2 = 0
             self.relay2Label.setText("Relay OFF")
             self.relay2Label.setStyleSheet("color: red")
             self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay3Clicked(self):
         Relays.Relay3(selectedUnit)
@@ -794,13 +878,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay3 == 1:
-            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            SQL.setRelayState(selectedUnit, "Relay3", 0)
             self.Relay3 = 0
             self.relay3Label.setText("Relay OFF")
             self.relay3Label.setStyleSheet("color: red")
             self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay4Clicked(self):
         Relays.Relay4(selectedUnit)
@@ -814,7 +900,7 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay4 == 1:
-            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            SQL.setRelayState(selectedUnit, "Relay4", 0)
             self.Relay4 = 0
             self.relay4Label.setText("Relay OFF")
             self.relay4Label.setStyleSheet("color: red")
@@ -822,6 +908,7 @@ class relays(QWidget):
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
 
+        self.setRelayImage()
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -1580,6 +1667,8 @@ class generatorDashboard(QWidget):
         global unitSolar
 
         windowIcon = resourcePath("Assets/Images/ARCGen.png")
+        generatorImage = resourcePath("Assets/Images/ARCGenLeft.PNG")
+        solarPanelsPixmap = QPixmap(generatorImage)
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1616,7 +1705,7 @@ class generatorDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle("Generator Dashboard")
-        self.setGeometry(0, 0, 400, 300)
+        self.setGeometry(0, 0, 500, 500)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("Generator")
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -1644,9 +1733,10 @@ class generatorDashboard(QWidget):
         self.solarPower.setStyleSheet("font: bold 14px;"
                                       "color: white;")
         self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
+        self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.sunImage, 1, 0)
-        layout.addWidget(self.solarPower, 1, 1)
+        layout.addWidget(self.sunImage, 1, 2)
+        layout.addWidget(self.solarPower, 2, 2)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
@@ -1655,6 +1745,7 @@ class generatorDashboard(QWidget):
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
         self.batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
+        self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitVoltage >= 25.5:
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
@@ -1669,8 +1760,8 @@ class generatorDashboard(QWidget):
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
                                               "color: red;")
 
-        layout.addWidget(self.batteryImage, 2, 0)
-        layout.addWidget(self.batteryVoltage, 2, 1)
+        layout.addWidget(self.batteryImage, 4, 1)
+        layout.addWidget(self.batteryVoltage, 5, 1)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
@@ -1679,6 +1770,7 @@ class generatorDashboard(QWidget):
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
         self.loadDraw.setAttribute(Qt.WA_TranslucentBackground)
+        self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitLoad <= 0:
             self.loadDraw.setStyleSheet("font: bold 14px;"
@@ -1687,23 +1779,31 @@ class generatorDashboard(QWidget):
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
-        layout.addWidget(self.loadImage, 3, 0)
-        layout.addWidget(self.loadDraw, 3, 1)
+        layout.addWidget(self.loadImage, 1, 0)
+        layout.addWidget(self.loadDraw, 2, 0)
+
+        self.solarPanelsImage = QLabel()
+        self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        #self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.solarPanelsImage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.solarPanelsImage, 1,1,3,1)
 
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
 
-        layout.addWidget(victronButton, 1, 2)
+        layout.addWidget(victronButton, 6, 0)
 
         efoy1Button = QPushButton("Efoy No.1")
         efoy1Button.clicked.connect(self.openEfoy1)
 
-        layout.addWidget(efoy1Button, 2, 2)
+        layout.addWidget(efoy1Button, 6, 1)
 
         efoy2Button = QPushButton("Efoy No.2")
         efoy2Button.clicked.connect(self.openEfoy2)
 
-        layout.addWidget(efoy2Button, 3, 2)
+        layout.addWidget(efoy2Button, 6, 2)
 
         if selectedEfoyID2 == "":
             efoy2Button.hide()
@@ -1716,7 +1816,7 @@ class generatorDashboard(QWidget):
                 background-color: #295231;
                 padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 4, 1)
+        layout.addWidget(self.backButton, 7, 1)
 
         self.setLayout(layout)
 
