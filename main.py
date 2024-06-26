@@ -1130,7 +1130,7 @@ class ioDashboard(QWidget):
         self.singleCamera.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
@@ -1523,7 +1523,7 @@ class arcDashboard(QWidget):
         self.allCameras.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
