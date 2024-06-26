@@ -71,7 +71,7 @@ def fetchUnitDetails(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon, TextDevice FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon, TextDevice, UnitSize FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row

@@ -29,6 +29,7 @@ selectedCamera = ""
 selectedEfoyID = ""
 selectedEfoyID2 = ""
 selectedTextDevice = ""
+selectedUnitSize = ""
 
 # Storing the logged in users details
 userRights = ""
@@ -915,6 +916,7 @@ class ioDashboard(QWidget):
 
         ioBoxIcon = resourcePath("Assets/Images/IOBox.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
+        ioBox = resourcePath("Assets/Images/IOBoxLeft.png")
 
         super().__init__()
 
@@ -933,6 +935,7 @@ class ioDashboard(QWidget):
         unitLabel.setAttribute(Qt.WA_TranslucentBackground)
 
         pixmap = QPixmap(cameraPath)
+        ioBoxPixmap = QPixmap(ioBox)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(pixmap)
@@ -983,6 +986,11 @@ class ioDashboard(QWidget):
         layout.addWidget(self.Camera4, 1, 4)
         layout.addWidget(self.camera4Button, 2, 4)
 
+        ioBoxImage = QLabel()
+        ioBoxImage.setPixmap(ioBoxPixmap)
+        ioBoxImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        ioBoxImage.setAttribute(Qt.WA_TranslucentBackground)
+
         self.routerButton = QPushButton("Router Webpage")
         self.routerButton.clicked.connect(self.openRouter)
 
@@ -1023,13 +1031,15 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 0)
             layout.addWidget(self.camera1Button, 2, 0)
 
-            layout.addWidget(self.routerButton, 3, 0)
+            layout.addWidget(ioBoxImage, 3, 0, 2, 1)
 
-            layout.addWidget(self.relaysButton, 4, 0)
+            layout.addWidget(self.routerButton, 5, 0)
 
-            layout.addWidget(self.backButton, 5, 0)
+            layout.addWidget(self.relaysButton, 6, 0)
 
-            layout.addWidget(self.errorMessage, 6, 0)
+            layout.addWidget(self.backButton, 7, 0)
+
+            layout.addWidget(self.errorMessage, 8, 0)
 
         elif selectedCCTV == 2:
 
@@ -1039,7 +1049,7 @@ class ioDashboard(QWidget):
             self.Camera3.hide()
             self.camera3Button.hide()
 
-            layout.addWidget(unitLabel, 0, 2)
+            layout.addWidget(unitLabel, 0, 1)
 
             layout.addWidget(self.allCameras, 1, 0)
             layout.addWidget(self.allCamerasButton, 2, 0)
@@ -1047,13 +1057,15 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(self.routerButton, 3, 1, 1, 1)
+            layout.addWidget(ioBoxImage, 3, 1, 2, 1)
 
-            layout.addWidget(self.relaysButton, 4, 1, 1, 1)
+            layout.addWidget(self.routerButton, 5, 1, 1, 1)
 
-            layout.addWidget(self.backButton, 5, 1, 1, 1)
+            layout.addWidget(self.relaysButton, 6, 1, 1, 1)
 
-            layout.addWidget(self.errorMessage, 6, 0)
+            layout.addWidget(self.backButton, 7, 1, 1, 1)
+
+            layout.addWidget(self.errorMessage, 8, 1)
 
 
         elif selectedCCTV == 3:
@@ -1061,7 +1073,7 @@ class ioDashboard(QWidget):
             self.Camera4.hide()
             self.camera4Button.hide()
 
-            layout.addWidget(unitLabel, 0, 0)
+            layout.addWidget(unitLabel, 0, 1, 1, 2)
 
             layout.addWidget(self.allCameras, 1, 0)
             layout.addWidget(self.allCamerasButton, 2, 0)
@@ -1069,13 +1081,15 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(self.routerButton, 3, 1, 1, 2)
+            layout.addWidget(ioBoxImage, 3, 0, 2, 4)
 
-            layout.addWidget(self.relaysButton, 4, 1, 1, 2)
+            layout.addWidget(self.routerButton, 5, 1, 1, 2)
 
-            layout.addWidget(self.backButton, 5, 1, 1, 2)
+            layout.addWidget(self.relaysButton, 6, 1, 1, 2)
 
-            layout.addWidget(self.errorMessage, 6, 1, 1, 2)
+            layout.addWidget(self.backButton, 7, 1, 1, 2)
+
+            layout.addWidget(self.errorMessage, 8, 1, 1, 2)
 
 
         else:
@@ -1088,13 +1102,15 @@ class ioDashboard(QWidget):
             layout.addWidget(self.Camera1, 1, 1)
             layout.addWidget(self.camera1Button, 2, 1)
 
-            layout.addWidget(self.routerButton, 3, 1, 1, 3)
+            layout.addWidget(ioBoxImage, 3, 0, 2, 5)
 
-            layout.addWidget(self.relaysButton, 4, 1, 1, 3)
+            layout.addWidget(self.routerButton, 5, 1, 1, 3)
 
-            layout.addWidget(self.backButton, 5, 1, 1, 3)
+            layout.addWidget(self.relaysButton, 6, 1, 1, 3)
 
-            layout.addWidget(self.errorMessage, 6, 2)
+            layout.addWidget(self.backButton, 7, 1, 1, 3)
+
+            layout.addWidget(self.errorMessage, 8, 2)
 
         self.checkUnitStatus()
 
@@ -1199,8 +1215,20 @@ class arcDashboard(QWidget):
 
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
-        self.closedSolarPanels = resourcePath("Assets/Images/SolarClosedLeft.png")
-        self.openSolarPanels = resourcePath("Assets/Images/SolarOpenLeft.png")
+
+        self.closed6M = resourcePath("Assets/Images/SolarClosedLeft6M.png")
+        self.open6M = resourcePath("Assets/Images/SolarOpenLeft6M.png")
+        self.closed4M = resourcePath("Assets/Images/SolarClosedLeft.png")
+        self.open4M = resourcePath("Assets/Images/SolarOpenLeft.png")
+
+
+        print(selectedUnitSize)
+        if selectedUnitSize.strip() == "6M":
+            self.closedSolarPanels = self.closed6M
+            self.openSolarPanels = self.open6M
+        else:
+            self.closedSolarPanels = self.closed4M
+            self.openSolarPanels = self.open4M
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -4290,6 +4318,8 @@ class adminMonitoring(QWidget):
         global selectedCamera
         global selectedCompany
         global selectedTextDevice
+        global selectedUnitSize
+
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -4307,6 +4337,7 @@ class adminMonitoring(QWidget):
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
                 selectedTextDevice = altered[9]
+                selectedUnitSize = altered[10]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
@@ -4568,6 +4599,7 @@ class userMonitoring(QWidget):
         global selectedCamera
         global selectedCompany
         global selectedTextDevice
+        global selectedUnitSize
 
         unitType = SQL.fetchUnitType(unitName).strip()
 
@@ -4585,6 +4617,7 @@ class userMonitoring(QWidget):
                 selectedCamera = altered[5]
                 selectedEfoyID = altered[6]
                 selectedTextDevice = altered[9]
+                selectedUnitSize = altered[10]
 
         elif str(unitType) == "GEN":
             data = SQL.fetchGenDetails(unitName)
