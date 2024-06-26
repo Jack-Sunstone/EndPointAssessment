@@ -522,7 +522,6 @@ class singleCameraView(QWidget):
 class relays(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-        RelaysOFF = resourcePath("Assets/Images/TextDevice/0.png")
 
         response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
         lastSeen = response.text
@@ -553,13 +552,15 @@ class relays(QWidget):
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
 
-        intList = [self.Relay1, self.Relay2, self.Relay3, self.Relay4]
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
 
         strList = [str(i) for i in intList]
 
         Binary = "".join(strList)
 
-        Decimal = binToDec(binary)
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
 
         super().__init__()
 
@@ -578,7 +579,7 @@ class relays(QWidget):
         layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
 
         self.relayImage = QLabel()
-        self.relayImage.setPixmap(QPixmap(RelaysOFF))
+        self.relayImage.setPixmap(QPixmap(relayImage))
         self.relayImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.relayImage.setAttribute(Qt.WA_TranslucentBackground)
 
@@ -696,7 +697,7 @@ class relays(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.relayCheck)
-        self.timer.start(60000)
+        self.timer.start(10000)
 
     def relayCheck(self):
 
@@ -708,6 +709,18 @@ class relays(QWidget):
             self.Relay2 = altered[1]
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
 
         if self.Relay1 == 0:
             self.relay1Label.setText("Relay OFF")
@@ -761,6 +774,20 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
+    def setRelayImage(self):
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
+
     def Relay1Clicked(self):
         Relays.Relay1(selectedUnit)
         if self.Relay1 == 0:
@@ -773,13 +800,16 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay1 == 1:
-            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            SQL.setRelayState(selectedUnit, "Relay1", 0)
             self.Relay1 = 0
             self.relay1Label.setText("Relay OFF")
             self.relay1Label.setStyleSheet("color: red")
             self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
+
 
     def Relay2Clicked(self):
         Relays.Relay2(selectedUnit)
@@ -794,13 +824,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay2 == 1:
-            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            SQL.setRelayState(selectedUnit, "Relay2", 0)
             self.Relay2 = 0
             self.relay2Label.setText("Relay OFF")
             self.relay2Label.setStyleSheet("color: red")
             self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay3Clicked(self):
         Relays.Relay3(selectedUnit)
@@ -814,13 +846,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay3 == 1:
-            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            SQL.setRelayState(selectedUnit, "Relay3", 0)
             self.Relay3 = 0
             self.relay3Label.setText("Relay OFF")
             self.relay3Label.setStyleSheet("color: red")
             self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay4Clicked(self):
         Relays.Relay4(selectedUnit)
@@ -834,13 +868,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay4 == 1:
-            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            SQL.setRelayState(selectedUnit, "Relay4", 0)
             self.Relay4 = 0
             self.relay4Label.setText("Relay OFF")
             self.relay4Label.setStyleSheet("color: red")
             self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
 
 class ioDashboard(QWidget):
@@ -1063,7 +1099,7 @@ class ioDashboard(QWidget):
         self.singleCamera.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
@@ -1460,7 +1496,7 @@ class arcDashboard(QWidget):
         self.allCameras.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
