@@ -35,6 +35,7 @@ def fetchFilteredUnits(Filter, Company):
         yield row
 
 
+
 def fetchUnits(Company):
     connection()
     cursor = cnxn.cursor()
@@ -71,7 +72,7 @@ def fetchUnitDetails(unitName):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon, TextDevice FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
+    cursor.execute(f"SELECT IP, victronID, Location, Company, NoCCTV, CameraType, efoyID, Lat, Lon FROM dbo.CCTVUnits WHERE Name = '{unitName}'")
 
     for row in cursor.fetchall():
         yield row
@@ -219,7 +220,7 @@ def checkUnit(Name):
     connection()
     cursor = cnxn.cursor()
 
-    cursor.execute(f"SELECT Name FROM dbo.AllUnits WHERE Name = '{Name}'")
+    cursor.execute(f"SELECT Name FROM dbo.CCTVUnits WHERE Name = '{Name}'")
 
     for row in cursor.fetchall():
         return row[0]
@@ -233,22 +234,16 @@ def checkGen(Name):
     for row in cursor.fetchall():
         return row[0]
 
-def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, EfoyID, TextDevice):
+def addUnits(Name, IP, victronID, Location, NoCCTV, Company, Lon, UnitType, CameraType, EfoyID):
     connection()
     cursor = cnxn.cursor()
 
     if victronID == "":
-        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL, '{TextDevice}')")
-
-        if TextDevice == "Yes":
-            cursor.execute(f"INSERT INTO dbo.Relays (Name, Relay1, Relay2, Relay3, Relay4, Solar) VALUES ('{Name.strip()}', 0, 0, 0, 0, NULL)")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', NULL, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', NULL)")
     else:
-        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID, TextDevice) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}', '{TextDevice}')")
+        cursor.execute(f"INSERT INTO dbo.CCTVUnits (Name, IP, victronID, Location, NoCCTV, Company, Lat, Lon, UnitType, CameraType, efoyID) VALUES ('{Name.strip()}', '{IP.strip()}', {victronID.strip()}, '{Location.strip()}', {NoCCTV.strip()}, '{Company.strip()}', {Lat.strip()}, {Lon.strip()}, '{UnitType.strip()}', '{CameraType.strip()}', '{EfoyID.strip()}')")
 
         cursor.execute(f"INSERT INTO dbo.VictronData (Name, Solar, Voltage, Load, victronID, Company) VALUES ('{Name.strip()}', NULL, NULL, NULL, {victronID.strip()}, '{Company.strip()}')")
-
-        if TextDevice == "Yes":
-            cursor.execute(f"INSERT INTO dbo.Relays (Name, Relay1, Relay2, Relay3, Relay4, Solar) VALUES ('{Name.strip()}', 0, 0, 0, 0, 0)")
     cursor.execute(f"INSERT INTO dbo.AllUnits (Name, Location, Company, UnitType) VALUES ('{Name.strip()}', '{Location.strip()}', '{Company.strip()}', '{UnitType.strip()}')")
     cnxn.commit()
 
@@ -267,10 +262,8 @@ def updateUnit(unitName, Location, Company, CCTV):
     cursor = cnxn.cursor()
 
     cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
     cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
-
-    if "ARC" in unitName:
-        cursor.execute(f"UPDATE dbo.VictronData SET Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
 
@@ -278,12 +271,8 @@ def updateUnitSuper(unitName, Location, Company, CCTV, Type, IP, Victron, Efoy, 
     connection()
     cursor = cnxn.cursor()
 
-    if Victron == 'None':
-        cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-    else:
-        cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
-        cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
-
+    cursor.execute(f"UPDATE dbo.CCTVUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}', NoCCTV = {CCTV.strip()}, CameraType = '{Type.strip()}', IP = '{IP.strip()}', victronID = {Victron.strip()}, efoyID = '{Efoy.strip()}', Lat = {Lat.strip()}, Lon = {Lon.strip()} WHERE Name = '{unitName}'")
+    cursor.execute(f"UPDATE dbo.VictronData SET victronID = {Victron.strip()}, Company = '{Company.strip()}' WHERE Name = '{unitName}'")
     cursor.execute(f"UPDATE dbo.AllUnits SET Location = '{Location.strip()}', Company = '{Company.strip()}' WHERE Name = '{unitName}'")
 
     cnxn.commit()
@@ -312,10 +301,8 @@ def deleteUnits(Name):
     connection()
     cursor = cnxn.cursor()
     cursor.execute(f"DELETE FROM dbo.CCTVUnits WHERE Name = '{Name}'")
+    cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
     cursor.execute(f"DELETE FROM dbo.AllUnits WHERE Name = '{Name}'")
-
-    if "ARC" in Name:
-        cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
 
     cnxn.commit()
 
@@ -338,10 +325,7 @@ def addUsers(Username, Password, Company, Rights):
 def updateUser(Username, Password, Rights):
     connection()
     cursor = cnxn.cursor()
-    print(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
     cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
-
-    cnxn.commit()
 
 def deleteUsers(Username):
     connection()
@@ -401,40 +385,3 @@ def fetchFilteredVictron(Company, Filter):
     for row in cursor.fetchall():
         yield row
 
-
-
-
-
-
-
-
-
-def fetchRelayState(Name):
-
-    connection()
-    cursor = cnxn.cursor()
-
-    cursor.execute(f"SELECT Relay1, Relay2, Relay3, Relay4 FROM dbo.Relays WHERE Name = '{Name}'")
-
-    for row in cursor.fetchall():
-        yield row
-
-def fetchSolarState(Name):
-    connection()
-    cursor = cnxn.cursor()
-
-    cursor.execute(f"SELECT Solar FROM dbo.Relays WHERE Name = '{Name}'")
-
-    row = cursor.fetchone()
-
-    return row
-
-
-def setRelayState(Name, Relay, State):
-
-    connection()
-    cursor = cnxn.cursor()
-
-    cursor.execute(f"UPDATE dbo.Relays SET {Relay} = {State} WHERE Name = '{Name}'")
-
-    cnxn.commit()
