@@ -1,4 +1,4 @@
-#importing all used libaries
+# importing all used libaries
 import sys
 import os
 import webbrowser
@@ -18,7 +18,7 @@ import requests
 from datetime import datetime
 import Relays
 
-#These will be used to store the data from SQL of the open unit dashboard
+# These will be used to store the data from SQL of the open unit dashboard
 selectedUnit = ""
 selectedIP = ""
 selectedVictron = ""
@@ -30,29 +30,29 @@ selectedEfoyID = ""
 selectedEfoyID2 = ""
 selectedTextDevice = ""
 
-#Storing the logged in users details
+# Storing the logged in users details
 userRights = ""
 userCompany = ""
 
-#If the unit has no victron data then the 0 will be displayed
+# If the unit has no victron data then the 0 will be displayed
 unitSolar = 0
 unitVoltage = 0
 unitLoad = 0
 
-#Stores the user name of the logged in user
+# Stores the user name of the logged in user
 username = ""
 
-#Default camera 1 when viewing
+# Default camera 1 when viewing
 CameraNumber = 1
 
-#Passwords for cameras
+# Passwords for cameras
 sunstonePassword = "(10GIN$t0n3)"
 wjPassword = "12Sunstone34"
 
-#Token for the interactive map
+# Token for the interactive map
 mapboxAccessToken = "pk.eyJ1IjoiamFja2dhbmRlcmNvbXB0b24iLCJhIjoiY2x1bW16MmVzMTViajJqbjI0N3RuOGhhOCJ9.Kl6jwZjBEtGoM1C_5NyLJg"
 
-#Token to login to W3W API
+# Token to login to W3W API
 geocoder = what3words.Geocoder("RMNUBSDA")
 
 baseSheet = """
@@ -94,12 +94,12 @@ baseSheet = """
                 font: bold;
                 color: white;
             }
-            
+
             QRadioButton {
                 font: bold;
                 color: white;
             }
-            
+
 
         """
 
@@ -129,46 +129,56 @@ graidentSheet = """
 
                 """
 
-#This function gets the data stored in the SQL database and stores it within the program in the variables above
+
+def binToDec(n):
+
+    return int(n,2)
+
+# This function gets the data stored in the SQL database and stores it within the program in the variables above
 def pullVictronData(unitName):
     global unitSolar
     global unitVoltage
     global unitLoad
 
-    data = SQL.fetchVictronData(unitName) #Calling Function in the SQL document using the selected units name
+    data = SQL.fetchVictronData(unitName)  # Calling Function in the SQL document using the selected units name
 
-    #Storing data
+    # Storing data
     for row in data:
         altered = list(row)
         unitSolar = altered[0]
         unitVoltage = altered[1]
         unitLoad = altered[2]
 
-#Returns the RTSP link for viewing specific Axis Cameras
+
+# Returns the RTSP link for viewing specific Axis Cameras
 def axisPath(IPaddress, cameraNumber):
     Axis = f"rtsp://root:12Sunstone34@{IPaddress}:{cameraNumber}554/axis-media/media.amp"
 
     return Axis
 
-#Returns the RTSP link for viewing specific Hikvision Cameras
+
+# Returns the RTSP link for viewing specific Hikvision Cameras
 def hikPath(IPaddress, cameraNumber):
     Hik = f"rtsp://admin:(10GIN$t0n3)@{IPaddress}:{cameraNumber}554/Streaming/Channels/102/?transportmode=unicast"
 
     return Hik
 
-#Returns the RTSP link for viewing specific Hanwha Cameras
+
+# Returns the RTSP link for viewing specific Hanwha Cameras
 def hanwhaPath(IPaddress, cameraNumber):
     Hanwha = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/profile2/media.smp"
 
     return Hanwha
 
-#Returns the RTSP link for viewing specific Dahua Cameras
+
+# Returns the RTSP link for viewing specific Dahua Cameras
 def dahuaPath(IPaddress, cameraNumber):
     Dahua = f"rtsp://admin:12Sunstone34@{IPaddress}:{cameraNumber}554/live"
 
     return Dahua
 
-#Returns the absolute path of any document called within the program i.e Images
+
+# Returns the absolute path of any document called within the program i.e Images
 def resourcePath(relativePath):
     try:
         basePath = sys._MEIPASS
@@ -177,7 +187,8 @@ def resourcePath(relativePath):
 
     return os.path.join(basePath, relativePath)
 
-#Checking whether a unit is online or not and returning True or False
+
+# Checking whether a unit is online or not and returning True or False
 def checkURL(IPAddress, Port, Timeout):
     socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketOpen.settimeout(Timeout)
@@ -507,6 +518,7 @@ class singleCameraView(QWidget):
 
             self.hide()
 
+
 class relays(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
@@ -516,7 +528,8 @@ class relays(QWidget):
 
         datalst = lastSeen.split()
 
-        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]), int(datalst[9]))
+        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]),
+                                  int(datalst[9]))
 
         datetimeNow = datetime.now()
 
@@ -539,6 +552,17 @@ class relays(QWidget):
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
 
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
@@ -548,12 +572,19 @@ class relays(QWidget):
 
         layout = QGridLayout()
 
-        lastSeenLabel = QLabel(lastSeen)
-        lastSeenLabel.setStyleSheet("font: bold 14px;"
-                                "color: white;")
-        lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lastSeenLabel = QLabel(lastSeen)
+        self.lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                    "color: white;")
+        self.lastSeenLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(lastSeenLabel, 0, 1, 1, 2)
+        layout.addWidget(self.lastSeenLabel, 0, 1, 1, 2)
+
+        self.relayImage = QLabel()
+        self.relayImage.setPixmap(QPixmap(relayImage))
+        self.relayImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.relayImage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.relayImage, 1,0,1,4)
 
         self.relay1Button = QPushButton("Relay 1")
         self.relay1Button.clicked.connect(self.Relay1Clicked)
@@ -572,10 +603,10 @@ class relays(QWidget):
             self.relay1Label.setStyleSheet("color: #1eff00")
             self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
                                             "background: #1eff00; }"
-                                           "QPushButton:hover { border: 2px solid red; }")
+                                            "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay1Label, 1, 0)
-        layout.addWidget(self.relay1Button,2,0)
+        layout.addWidget(self.relay1Label, 2, 0)
+        layout.addWidget(self.relay1Button, 3, 0)
 
         self.relay2Button = QPushButton("Relay 2")
         self.relay2Button.clicked.connect(self.Relay2Clicked)
@@ -596,8 +627,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay2Label, 1, 1)
-        layout.addWidget(self.relay2Button, 2, 1)
+        layout.addWidget(self.relay2Label, 2, 1)
+        layout.addWidget(self.relay2Button, 3, 1)
 
         self.relay3Button = QPushButton("Relay 3")
         self.relay3Button.clicked.connect(self.Relay3Clicked)
@@ -618,8 +649,8 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay3Label, 1, 2)
-        layout.addWidget(self.relay3Button, 2, 2)
+        layout.addWidget(self.relay3Label, 2, 2)
+        layout.addWidget(self.relay3Button, 3, 2)
 
         self.relay4Button = QPushButton("Relay 4")
         self.relay4Button.clicked.connect(self.Relay4Clicked)
@@ -640,14 +671,15 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
-        layout.addWidget(self.relay4Label, 1, 3)
-        layout.addWidget(self.relay4Button, 2, 3)
+        layout.addWidget(self.relay4Label, 2, 3)
+        layout.addWidget(self.relay4Button, 3, 3)
 
-        warningMessage = QLabel("Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State.")
+        warningMessage = QLabel(
+            "Disclaimer: Please allow 60 Seconds for Text Device to update when changing Relay State.")
         warningMessage.setStyleSheet("color: white;")
         warningMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(warningMessage, 3, 0, 1, 4)
+        layout.addWidget(warningMessage, 4, 0, 1, 4)
 
         if differenceMinutes > 6:
             self.relay1Button.setEnabled(False)
@@ -662,14 +694,30 @@ class relays(QWidget):
             lastSeenLabel.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
-
         self.setLayout(layout)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.relayCheck)
-        self.timer.start(60000)
+        self.timer.start(2000)
 
     def relayCheck(self):
+
+        response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
+        lastSeen = response.text
+
+        datalst = lastSeen.split()
+
+        datetimeFormat = datetime(int(datalst[6]), int(datalst[5]), int(datalst[4]), int(datalst[7]), int(datalst[8]),
+                                  int(datalst[9]))
+
+        datetimeNow = datetime.now()
+
+        difference = datetimeNow - datetimeFormat
+
+        differenceSeconds = difference.total_seconds()
+        differenceMinutes = divmod(differenceSeconds, 60)[0]
+
+        self.lastSeenLabel.setText(lastSeen)
 
         data = SQL.fetchRelayState(selectedUnit)
 
@@ -679,6 +727,19 @@ class relays(QWidget):
             self.Relay2 = altered[1]
             self.Relay3 = altered[2]
             self.Relay4 = altered[3]
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
+
 
         if self.Relay1 == 0:
             self.relay1Label.setText("Relay OFF")
@@ -691,7 +752,7 @@ class relays(QWidget):
             self.relay1Label.setStyleSheet("color: #1eff00")
             self.relay1Button.setStyleSheet("QPushButton { border: 2px solid #1eff00;"
                                             "background: #1eff00; }"
-                                           "QPushButton:hover { border: 2px solid red; }")
+                                            "QPushButton:hover { border: 2px solid red; }")
 
         if self.Relay2 == 0:
             self.relay2Label.setText("Relay OFF")
@@ -732,6 +793,33 @@ class relays(QWidget):
                                             "background: #1eff00; }"
                                             "QPushButton:hover { border: 2px solid red; }")
 
+        if differenceMinutes > 6:
+            self.relay1Button.setEnabled(False)
+            self.relay2Button.setEnabled(False)
+            self.relay3Button.setEnabled(False)
+            self.relay4Button.setEnabled(False)
+
+            self.relay1Button.setStyleSheet("background-color: red;")
+            self.relay2Button.setStyleSheet("background-color: red;")
+            self.relay3Button.setStyleSheet("background-color: red;")
+            self.relay4Button.setStyleSheet("background-color: red;")
+            lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                        "color: red;")
+
+    def setRelayImage(self):
+
+        intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
+
+        strList = [str(i) for i in intList]
+
+        Binary = "".join(strList)
+
+        Decimal = binToDec(Binary)
+
+        relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
+
+        self.relayImage.setPixmap(QPixmap(relayImage))
+
     def Relay1Clicked(self):
         Relays.Relay1(selectedUnit)
         if self.Relay1 == 0:
@@ -744,13 +832,16 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay1 == 1:
-            SQL.setRelayState(selectedUnit, "Relay1", 1)
+            SQL.setRelayState(selectedUnit, "Relay1", 0)
             self.Relay1 = 0
             self.relay1Label.setText("Relay OFF")
             self.relay1Label.setStyleSheet("color: red")
             self.relay1Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
+
 
     def Relay2Clicked(self):
         Relays.Relay2(selectedUnit)
@@ -765,13 +856,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay2 == 1:
-            SQL.setRelayState(selectedUnit, "Relay2", 1)
+            SQL.setRelayState(selectedUnit, "Relay2", 0)
             self.Relay2 = 0
             self.relay2Label.setText("Relay OFF")
             self.relay2Label.setStyleSheet("color: red")
             self.relay2Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay3Clicked(self):
         Relays.Relay3(selectedUnit)
@@ -785,13 +878,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay3 == 1:
-            SQL.setRelayState(selectedUnit, "Relay3", 1)
+            SQL.setRelayState(selectedUnit, "Relay3", 0)
             self.Relay3 = 0
             self.relay3Label.setText("Relay OFF")
             self.relay3Label.setStyleSheet("color: red")
             self.relay3Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
     def Relay4Clicked(self):
         Relays.Relay4(selectedUnit)
@@ -805,13 +900,15 @@ class relays(QWidget):
                                             "QPushButton:hover { border: 2px solid red; }")
 
         elif self.Relay4 == 1:
-            SQL.setRelayState(selectedUnit, "Relay4", 1)
+            SQL.setRelayState(selectedUnit, "Relay4", 0)
             self.Relay4 = 0
             self.relay4Label.setText("Relay OFF")
             self.relay4Label.setStyleSheet("color: red")
             self.relay4Button.setStyleSheet("QPushButton { border: 2px solid red;"
                                             "background: red; }"
                                             "QPushButton:hover { border: 2px solid #1eff00; }")
+
+        self.setRelayImage()
 
 class ioDashboard(QWidget):
     def __init__(self):
@@ -844,7 +941,6 @@ class ioDashboard(QWidget):
 
         self.allCamerasButton = QPushButton("All Cameras")
         self.allCamerasButton.clicked.connect(self.viewAllCameras)
-
 
         self.Camera1 = QLabel()
         self.Camera1.setPixmap(pixmap)
@@ -977,7 +1073,7 @@ class ioDashboard(QWidget):
 
             layout.addWidget(self.relaysButton, 4, 1, 1, 2)
 
-            layout.addWidget(self.backButton, 5, 1, 1,2)
+            layout.addWidget(self.backButton, 5, 1, 1, 2)
 
             layout.addWidget(self.errorMessage, 6, 1, 1, 2)
 
@@ -1034,7 +1130,7 @@ class ioDashboard(QWidget):
         self.singleCamera.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
@@ -1103,8 +1199,8 @@ class arcDashboard(QWidget):
 
         windowIcon = resourcePath("Assets/Images/ARCunit.png")
         cameraPath = resourcePath("Assets/Images/CCTV.png")
-        self.closedSolarPanels = resourcePath("Assets/Images/SolarShut.png")
-        self.openSolarPanels = resourcePath("Assets/Images/SolarOpen.png")
+        self.closedSolarPanels = resourcePath("Assets/Images/SolarClosedLeft.png")
+        self.openSolarPanels = resourcePath("Assets/Images/SolarOpenLeft.png")
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1174,9 +1270,10 @@ class arcDashboard(QWidget):
         self.solarPower.setStyleSheet("font: bold 14px;"
                                       "color: white;")
         self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
+        self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.sunImage, 1, 0)
-        layout.addWidget(self.solarPower, 1, 1)
+        layout.addWidget(self.sunImage, 4, 4)
+        layout.addWidget(self.solarPower, 5, 4)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
@@ -1185,6 +1282,7 @@ class arcDashboard(QWidget):
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
         self.batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
+        self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitVoltage >= 25.5:
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
@@ -1199,8 +1297,8 @@ class arcDashboard(QWidget):
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
                                               "color: red;")
 
-        layout.addWidget(self.batteryImage, 2, 0)
-        layout.addWidget(self.batteryVoltage, 2, 1)
+        layout.addWidget(self.batteryImage, 13, 2)
+        layout.addWidget(self.batteryVoltage, 14, 2)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
@@ -1209,6 +1307,7 @@ class arcDashboard(QWidget):
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
         self.loadDraw.setAttribute(Qt.WA_TranslucentBackground)
+        self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitLoad <= 0:
             self.loadDraw.setStyleSheet("font: bold 14px;"
@@ -1218,33 +1317,23 @@ class arcDashboard(QWidget):
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
-        self.solarPosition = QLabel("Closed")
-        self.solarPosition.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.solarPosition.setAttribute(Qt.WA_TranslucentBackground)
-        self.solarPosition.setStyleSheet("font: bold 14px;"
-                                        "color: white;")
-
+        layout.addWidget(self.loadImage, 4, 0)
+        layout.addWidget(self.loadDraw, 5, 0)
 
         self.solarPanelsImage = QLabel()
         self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.solarPanelsImage.setAttribute(Qt.WA_TranslucentBackground)
 
-
         if self.solarStatus == 1:
-            self.solarPosition.setText("Open")
             solarPanelsPixmap = QPixmap(self.openSolarPanels)
         elif self.solarStatus == "N/A":
-            self.solarPosition.setText("N/A")
-            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
         elif self.solarStatus == 0:
             solarPanelsPixmap = QPixmap(self.closedSolarPanels)
 
         self.solarPanelsImage.setPixmap(solarPanelsPixmap)
-        layout.addWidget(self.solarPosition, 1,2)
-        layout.addWidget(self.solarPanelsImage, 2,2,2,1)
 
-        layout.addWidget(self.loadImage, 3, 0)
-        layout.addWidget(self.loadDraw, 3, 1)
+        layout.addWidget(self.solarPanelsImage, 2, 1, 5,3)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
@@ -1270,8 +1359,8 @@ class arcDashboard(QWidget):
         self.camera2Button = QPushButton("Camera 2")
         self.camera2Button.clicked.connect(lambda checked=None, text=2: self.viewIndividualCamera(text))
 
-        layout.addWidget(self.Camera2, 4, 2)
-        layout.addWidget(self.camera2Button, 5, 2)
+        layout.addWidget(self.Camera2, 0, 2)
+        layout.addWidget(self.camera2Button, 1, 2)
 
         self.Camera3 = QLabel()
         self.Camera3.setPixmap(cameraPixmap)
@@ -1281,8 +1370,8 @@ class arcDashboard(QWidget):
         self.camera3Button = QPushButton("Camera 3")
         self.camera3Button.clicked.connect(lambda checked=None, text=3: self.viewIndividualCamera(text))
 
-        layout.addWidget(self.Camera3, 4, 3)
-        layout.addWidget(self.camera3Button, 5, 3)
+        layout.addWidget(self.Camera3, 0, 3)
+        layout.addWidget(self.camera3Button, 1, 3)
 
         self.Camera4 = QLabel()
         self.Camera4.setPixmap(cameraPixmap)
@@ -1292,8 +1381,8 @@ class arcDashboard(QWidget):
         self.camera4Button = QPushButton("Camera 4")
         self.camera4Button.clicked.connect(lambda checked=None, text=4: self.viewIndividualCamera(text))
 
-        layout.addWidget(self.Camera4, 4, 4)
-        layout.addWidget(self.camera4Button, 5, 4)
+        layout.addWidget(self.Camera4, 0, 4)
+        layout.addWidget(self.camera4Button, 1, 4)
 
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
@@ -1304,6 +1393,10 @@ class arcDashboard(QWidget):
         efoyButton = QPushButton("Efoy Webpage")
         efoyButton.clicked.connect(self.openEfoy)
 
+        layout.addWidget(victronButton, 15, 1)
+        layout.addWidget(self.routerButton, 15, 2)
+        layout.addWidget(efoyButton, 15, 3)
+
         self.backButton = QPushButton("Back")
         self.backButton.clicked.connect(self.closeEvent)
         self.backButton.setStyleSheet("""border-radius: 8px;
@@ -1312,10 +1405,12 @@ class arcDashboard(QWidget):
         background-color: #295231;
         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 0,0)
+        layout.addWidget(self.backButton, 17, 2)
 
         self.relaysButton = QPushButton("Relays")
         self.relaysButton.clicked.connect(self.openRelays)
+
+        layout.addWidget(self.relaysButton, 16, 2)
 
         if selectedTextDevice == None:
             self.relaysButton.hide()
@@ -1323,6 +1418,8 @@ class arcDashboard(QWidget):
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.errorMessage, 18, 2)
 
         if selectedCCTV == 1:
 
@@ -1338,23 +1435,16 @@ class arcDashboard(QWidget):
             self.allCameras.hide()
             self.allCamerasButton.hide()
 
-            layout.addWidget(unitLabel, 0, 1)
+            #layout.addWidget(unitLabel, 0, 1)
 
-            layout.addWidget(self.Camera1, 4, 0)
-            layout.addWidget(self.camera1Button, 5, 0)
+            layout.addWidget(self.Camera1, 0, 0)
+            layout.addWidget(self.camera1Button, 1, 0)
 
-            layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(self.routerButton, 6, 1)
-            layout.addWidget(efoyButton, 6, 2)
-
-            layout.addWidget(self.relaysButton, 7, 1)
-
-            layout.addWidget(self.errorMessage, 8, 1)
 
 
         elif selectedCCTV == 2:
 
-            layout.addWidget(unitLabel, 0, 2)
+            #layout.addWidget(unitLabel, 0, 2)
 
             self.Camera4.hide()
             self.camera4Button.hide()
@@ -1362,58 +1452,35 @@ class arcDashboard(QWidget):
             self.Camera3.hide()
             self.camera3Button.hide()
 
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton, 5, 0)
+            layout.addWidget(self.allCameras, 0, 0)
+            layout.addWidget(self.allCamerasButton, 1, 0)
 
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
+            layout.addWidget(self.Camera1, 0, 1)
+            layout.addWidget(self.camera1Button, 1, 1)
 
-            layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(self.routerButton, 6, 1)
-            layout.addWidget(efoyButton, 6, 2)
-
-            layout.addWidget(self.relaysButton, 7, 1)
-
-            layout.addWidget(self.errorMessage, 8, 1)
 
         elif selectedCCTV == 3:
 
-            layout.addWidget(unitLabel, 0, 2)
+            #layout.addWidget(unitLabel, 0, 2)
 
             self.Camera4.hide()
             self.camera4Button.hide()
 
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton, 5, 0)
+            layout.addWidget(self.allCameras, 0, 0)
+            layout.addWidget(self.allCamerasButton, 1, 0)
 
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
-
-            layout.addWidget(victronButton, 6, 0)
-            layout.addWidget(self.routerButton, 6, 1)
-            layout.addWidget(efoyButton, 6, 2)
-
-            layout.addWidget(self.relaysButton, 6, 3)
-
-            layout.addWidget(self.errorMessage, 7, 1, 1, 2)
+            layout.addWidget(self.Camera1, 0, 1)
+            layout.addWidget(self.camera1Button, 1, 1)
 
         else:
 
-            layout.addWidget(unitLabel, 0, 2)
+            #layout.addWidget(unitLabel, 0, 2)
 
-            layout.addWidget(self.allCameras, 4, 0)
-            layout.addWidget(self.allCamerasButton, 5, 0)
+            layout.addWidget(self.allCameras, 0, 0)
+            layout.addWidget(self.allCamerasButton, 1, 0)
 
-            layout.addWidget(self.Camera1, 4, 1)
-            layout.addWidget(self.camera1Button, 5, 1)
-
-            layout.addWidget(victronButton, 6, 1)
-            layout.addWidget(self.routerButton, 6, 2)
-            layout.addWidget(efoyButton, 6, 3)
-
-            layout.addWidget(self.relaysButton, 7, 2)
-
-            layout.addWidget(self.errorMessage, 8, 2)
+            layout.addWidget(self.Camera1, 0, 1)
+            layout.addWidget(self.camera1Button, 1, 1)
 
         if selectedEfoyID == "":
             efoyButton.hide()
@@ -1456,7 +1523,7 @@ class arcDashboard(QWidget):
         self.allCameras.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 1)
+        status = checkURL(selectedIP, 64430, 5)
         if status == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
@@ -1543,16 +1610,13 @@ class arcDashboard(QWidget):
             self.sunImage.setPixmap(QPixmap(self.sunPath))
 
         if self.solarStatus == 1:
-            self.solarPosition.setText("Open")
             solarPanelsPixmap = QPixmap(self.openSolarPanels)
             self.solarPanelsImage.setPixmap(solarPanelsPixmap)
         elif self.solarStatus == 0:
-            self.solarPosition.setText("Closed")
             solarPanelsPixmap = QPixmap(self.closedSolarPanels)
             self.solarPanelsImage.setPixmap(solarPanelsPixmap)
         elif self.solarStatus == "N/A":
-            self.solarPosition.setText("N/A")
-            solarPanelsPixmap = QPixmap(self.closedSolarPanels)
+            solarPanelsPixmap = QPixmap(self.openSolarPanels)
             self.solarPanelsImage.setPixmap(solarPanelsPixmap)
 
     def openVictron(self):
@@ -1602,7 +1666,9 @@ class generatorDashboard(QWidget):
         global unitLoad
         global unitSolar
 
-        windowIcon = resourcePath("Assets/Images/ARCunit.png")
+        windowIcon = resourcePath("Assets/Images/ARCGen.png")
+        generatorImage = resourcePath("Assets/Images/ARCGenLeft.PNG")
+        solarPanelsPixmap = QPixmap(generatorImage)
 
         if unitVoltage == None or unitLoad == None or unitSolar == None:
             unitVoltage = 0.0
@@ -1639,7 +1705,7 @@ class generatorDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle("Generator Dashboard")
-        self.setGeometry(0, 0, 400, 300)
+        self.setGeometry(0, 0, 500, 500)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("Generator")
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -1667,9 +1733,10 @@ class generatorDashboard(QWidget):
         self.solarPower.setStyleSheet("font: bold 14px;"
                                       "color: white;")
         self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
+        self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.sunImage, 1, 0)
-        layout.addWidget(self.solarPower, 1, 1)
+        layout.addWidget(self.sunImage, 1, 2)
+        layout.addWidget(self.solarPower, 2, 2)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
@@ -1678,6 +1745,7 @@ class generatorDashboard(QWidget):
 
         self.batteryVoltage = QLabel(str(unitVoltage) + " V")
         self.batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
+        self.batteryVoltage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitVoltage >= 25.5:
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
@@ -1692,8 +1760,8 @@ class generatorDashboard(QWidget):
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
                                               "color: red;")
 
-        layout.addWidget(self.batteryImage, 2, 0)
-        layout.addWidget(self.batteryVoltage, 2, 1)
+        layout.addWidget(self.batteryImage, 4, 1)
+        layout.addWidget(self.batteryVoltage, 5, 1)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
@@ -1702,6 +1770,7 @@ class generatorDashboard(QWidget):
 
         self.loadDraw = QLabel(str(unitLoad) + " W")
         self.loadDraw.setAttribute(Qt.WA_TranslucentBackground)
+        self.loadDraw.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         if unitLoad <= 0:
             self.loadDraw.setStyleSheet("font: bold 14px;"
@@ -1710,23 +1779,31 @@ class generatorDashboard(QWidget):
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
-        layout.addWidget(self.loadImage, 3, 0)
-        layout.addWidget(self.loadDraw, 3, 1)
+        layout.addWidget(self.loadImage, 1, 0)
+        layout.addWidget(self.loadDraw, 2, 0)
+
+        self.solarPanelsImage = QLabel()
+        self.solarPanelsImage.setPixmap(solarPanelsPixmap)
+        self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        #self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignBottom)
+        self.solarPanelsImage.setAttribute(Qt.WA_TranslucentBackground)
+
+        layout.addWidget(self.solarPanelsImage, 1,1,3,1)
 
         victronButton = QPushButton("Victron Webpage")
         victronButton.clicked.connect(self.openVictron)
 
-        layout.addWidget(victronButton, 1, 2)
+        layout.addWidget(victronButton, 6, 0)
 
         efoy1Button = QPushButton("Efoy No.1")
         efoy1Button.clicked.connect(self.openEfoy1)
 
-        layout.addWidget(efoy1Button, 2, 2)
+        layout.addWidget(efoy1Button, 6, 1)
 
         efoy2Button = QPushButton("Efoy No.2")
         efoy2Button.clicked.connect(self.openEfoy2)
 
-        layout.addWidget(efoy2Button, 3, 2)
+        layout.addWidget(efoy2Button, 6, 2)
 
         if selectedEfoyID2 == "":
             efoy2Button.hide()
@@ -1739,7 +1816,7 @@ class generatorDashboard(QWidget):
                 background-color: #295231;
                 padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 4, 1)
+        layout.addWidget(self.backButton, 7, 1)
 
         self.setLayout(layout)
 
@@ -1937,7 +2014,6 @@ class userManagement(QWidget):
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         layout.addWidget(self.errorMessage, 7, 1)
-
 
         self.setLayout(layout)
 
@@ -2512,7 +2588,8 @@ class unitManagement(QWidget):
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
-                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy, self.newTextDevice)
+                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy,
+                         self.newTextDevice)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2757,7 +2834,7 @@ class superUnitManagement(QWidget):
         self.textDevice = QRadioButton("Text Device")
         self.textDevice.toggled.connect(self.textDeviceState)
 
-        layout.addWidget(self.textDevice, 6, 3)
+        layout.addWidget(self.textDevice, 8, 3)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
@@ -2783,7 +2860,7 @@ class superUnitManagement(QWidget):
                         background-color: #295231;
                         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton,11,1,1,2)
+        layout.addWidget(self.backButton, 11, 1, 1, 2)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
@@ -2926,7 +3003,7 @@ class superUnitManagement(QWidget):
         else:
             SQL.updateUnitSuper(self.selectedUnit, self.selectedLocation, self.selectedCompany, self.selectedCameras,
                                 self.selectedCameraType, self.selectedIP, self.selectedVictronID, self.selectedEfoy,
-                                self.selectedLat, self.selectedLon, self.newTextDevice)
+                                self.selectedLat, self.selectedLon)
             self.errorMessage.setText("Unit Updated")
 
     def deleteUnit(self):
@@ -3856,12 +3933,12 @@ class victronOverview(QWidget):
             self.unitName = QLabel(f"{i}")
             self.unitName.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.unitName.setStyleSheet("font-weight: bold;"
-                                   "border-radius: 8px;"
-                                   "color: white;"
-                                   "border: 1px solid #46a15b;"
-                                   "background-color: #295231;"
-                                   "padding: 5px 15px;"
-                                   "font-size: 14pt;")
+                                        "border-radius: 8px;"
+                                        "color: white;"
+                                        "border: 1px solid #46a15b;"
+                                        "background-color: #295231;"
+                                        "padding: 5px 15px;"
+                                        "font-size: 14pt;")
 
             self.unitsLayout.addWidget(self.unitName, j + 1, 0)
 
@@ -4065,6 +4142,7 @@ class victronOverview(QWidget):
     def closeEvent(self):
         self.hide()
 
+
 class adminMonitoring(QWidget):
     def __init__(self):
 
@@ -4081,7 +4159,7 @@ class adminMonitoring(QWidget):
             self.listOfLocations.append(altered[1])
 
         self.dropdownLocations = list(dict.fromkeys(self.listOfLocations))
-        self.dropdownLocations.insert(0,"All Units")
+        self.dropdownLocations.insert(0, "All Units")
 
         super().__init__()
 
@@ -4420,7 +4498,6 @@ class userMonitoring(QWidget):
 
         self.setStyleSheet(baseSheet)
 
-
     def filterChanged(self, index):
 
         selectedFilter = self.dropdownLocations[index]
@@ -4593,6 +4670,7 @@ class userMonitoring(QWidget):
 
         self.hide()
 
+
 class loginUI(QMainWindow):
     def __init__(self):
 
@@ -4742,6 +4820,7 @@ class loginUI(QMainWindow):
             else:
                 self.errorMessage.show()
 
+
 class errorMessage(QMainWindow):
 
     def __init__(self):
@@ -4783,9 +4862,7 @@ if hasattr(Qt, 'AA_EnableHighDpiScaling'):
 if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
     app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
-
 app.setStyle('Fusion')
-
 
 socketOpen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socketOpen.settimeout(2)
