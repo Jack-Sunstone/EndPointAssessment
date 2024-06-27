@@ -692,7 +692,7 @@ class relays(QWidget):
             self.relay2Button.setStyleSheet("background-color: red;")
             self.relay3Button.setStyleSheet("background-color: red;")
             self.relay4Button.setStyleSheet("background-color: red;")
-            lastSeenLabel.setStyleSheet("font: bold 14px;"
+            self.lastSeenLabel.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
         self.setLayout(layout)
@@ -804,7 +804,7 @@ class relays(QWidget):
             self.relay2Button.setStyleSheet("background-color: red;")
             self.relay3Button.setStyleSheet("background-color: red;")
             self.relay4Button.setStyleSheet("background-color: red;")
-            lastSeenLabel.setStyleSheet("font: bold 14px;"
+            self.lastSeenLabel.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
     def setRelayImage(self):
@@ -911,6 +911,9 @@ class relays(QWidget):
 
         self.setRelayImage()
 
+    def closeEvent(self, a0):
+        self.timer.stop()
+        self.close()
 class ioDashboard(QWidget):
     def __init__(self):
 
@@ -1221,8 +1224,6 @@ class arcDashboard(QWidget):
         self.closed4M = resourcePath("Assets/Images/SolarClosedLeft.png")
         self.open4M = resourcePath("Assets/Images/SolarOpenLeft.png")
 
-
-        print(selectedUnitSize)
         if selectedUnitSize.strip() == "6M":
             self.closedSolarPanels = self.closed6M
             self.openSolarPanels = self.open6M
@@ -1271,7 +1272,7 @@ class arcDashboard(QWidget):
         super().__init__()
 
         self.setWindowTitle(selectedUnit)
-        self.setGeometry(0, 0, 600, 300)
+        self.setGeometry(0, 0, 600, 600)
         self.setWindowIcon(QIcon(windowIcon))
         self.setWindowIconText("ARC")
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -1300,8 +1301,8 @@ class arcDashboard(QWidget):
         self.solarPower.setAttribute(Qt.WA_TranslucentBackground)
         self.solarPower.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.sunImage, 4, 4)
-        layout.addWidget(self.solarPower, 5, 4)
+        layout.addWidget(self.sunImage, 3, 4)
+        layout.addWidget(self.solarPower, 4, 4)
 
         self.batteryImage = QLabel()
         self.batteryImage.setPixmap(batteryPixmap)
@@ -1325,8 +1326,8 @@ class arcDashboard(QWidget):
             self.batteryVoltage.setStyleSheet("font: bold 14px;"
                                               "color: red;")
 
-        layout.addWidget(self.batteryImage, 13, 2)
-        layout.addWidget(self.batteryVoltage, 14, 2)
+        layout.addWidget(self.batteryImage, 7, 2)
+        layout.addWidget(self.batteryVoltage, 8, 2)
 
         self.loadImage = QLabel()
         self.loadImage.setPixmap(loadPixmap)
@@ -1345,8 +1346,8 @@ class arcDashboard(QWidget):
             self.loadDraw.setStyleSheet("font: bold 14px;"
                                         "color: red;")
 
-        layout.addWidget(self.loadImage, 4, 0)
-        layout.addWidget(self.loadDraw, 5, 0)
+        layout.addWidget(self.loadImage, 3, 0)
+        layout.addWidget(self.loadDraw, 4, 0)
 
         self.solarPanelsImage = QLabel()
         self.solarPanelsImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1361,12 +1362,13 @@ class arcDashboard(QWidget):
 
         self.solarPanelsImage.setPixmap(solarPanelsPixmap)
 
-        layout.addWidget(self.solarPanelsImage, 2, 1, 5,3)
+        layout.addWidget(self.solarPanelsImage, 2, 1, 5, 3)
 
         self.allCameras = QLabel()
         self.allCameras.setPixmap(cameraPixmap)
         self.allCameras.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.allCameras.setAttribute(Qt.WA_TranslucentBackground)
+
 
         self.allCamerasButton = QPushButton("All Cameras")
         self.allCamerasButton.clicked.connect(self.viewAllCameras)
@@ -1421,9 +1423,9 @@ class arcDashboard(QWidget):
         efoyButton = QPushButton("Efoy Webpage")
         efoyButton.clicked.connect(self.openEfoy)
 
-        layout.addWidget(victronButton, 15, 1)
-        layout.addWidget(self.routerButton, 15, 2)
-        layout.addWidget(efoyButton, 15, 3)
+        layout.addWidget(victronButton, 9, 1)
+        layout.addWidget(self.routerButton, 9, 2)
+        layout.addWidget(efoyButton, 9, 3)
 
         self.backButton = QPushButton("Back")
         self.backButton.clicked.connect(self.closeEvent)
@@ -1433,12 +1435,12 @@ class arcDashboard(QWidget):
         background-color: #295231;
         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 17, 2)
+        layout.addWidget(self.backButton, 11, 2)
 
         self.relaysButton = QPushButton("Relays")
         self.relaysButton.clicked.connect(self.openRelays)
 
-        layout.addWidget(self.relaysButton, 16, 2)
+        layout.addWidget(self.relaysButton, 10, 2)
 
         if selectedTextDevice == None:
             self.relaysButton.hide()
@@ -1447,7 +1449,7 @@ class arcDashboard(QWidget):
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.errorMessage.setAttribute(Qt.WA_TranslucentBackground)
 
-        layout.addWidget(self.errorMessage, 18, 2)
+        layout.addWidget(self.errorMessage, 12, 2)
 
         if selectedCCTV == 1:
 
