@@ -1471,16 +1471,11 @@ class arcDashboard(QWidget):
             self.allCameras.hide()
             self.allCamerasButton.hide()
 
-            #layout.addWidget(unitLabel, 0, 1)
-
             layout.addWidget(self.Camera1, 0, 0)
             layout.addWidget(self.camera1Button, 1, 0)
 
 
-
         elif selectedCCTV == 2:
-
-            #layout.addWidget(unitLabel, 0, 2)
 
             self.Camera4.hide()
             self.camera4Button.hide()
@@ -1497,8 +1492,6 @@ class arcDashboard(QWidget):
 
         elif selectedCCTV == 3:
 
-            #layout.addWidget(unitLabel, 0, 2)
-
             self.Camera4.hide()
             self.camera4Button.hide()
 
@@ -1509,8 +1502,6 @@ class arcDashboard(QWidget):
             layout.addWidget(self.camera1Button, 1, 1)
 
         else:
-
-            #layout.addWidget(unitLabel, 0, 2)
 
             layout.addWidget(self.allCameras, 0, 0)
             layout.addWidget(self.allCamerasButton, 1, 0)
@@ -2369,131 +2360,140 @@ class unitManagement(QWidget):
 
         self.unitName = QLabel("")
 
-        layout.addWidget(self.unitName, 1, 0)
+        layout.addWidget(self.unitName, 2, 0)
 
+        self.locationLabel = QLabel("Location")
+        self.locationLabel.hide()
         self.locationEdit = QLineEdit()
-        self.locationEdit.setPlaceholderText("Location")
         self.locationEdit.textChanged.connect(self.getUpdatedLocation)
         self.locationEdit.hide()
 
-        layout.addWidget(self.locationEdit, 1, 1)
 
+        layout.addWidget(self.locationEdit, 2, 1)
+        layout.addWidget(self.locationLabel, 1, 1)
+
+        self.companyLabel = QLabel("Company")
+        self.companyLabel.hide()
         self.companyEdit = QLineEdit()
-        self.companyEdit.setPlaceholderText("Company")
         self.companyEdit.textChanged.connect(self.getUpdatedCompany)
         self.companyEdit.hide()
 
-        layout.addWidget(self.companyEdit, 1, 2)
+        layout.addWidget(self.companyLabel, 1, 2)
+        layout.addWidget(self.companyEdit, 2, 2)
 
+
+        self.numCamerasLabel = QLabel("Number of Cameras")
+        self.numCamerasLabel.hide()
         self.numCameras = QLineEdit()
         self.numCameras.textChanged.connect(self.getUpdatedNumCCTV)
         self.numCameras.hide()
 
-        layout.addWidget(self.numCameras, 1, 3)
+        layout.addWidget(self.numCamerasLabel, 1, 3)
+        layout.addWidget(self.numCameras, 2, 3)
 
         changeButton = QPushButton("Change Details")
         changeButton.clicked.connect(self.changeUnit)
 
-        layout.addWidget(changeButton, 2, 0, 1, 2)
+        layout.addWidget(changeButton, 3, 0, 1, 2)
 
         deleteButton = QPushButton("Delete")
         deleteButton.clicked.connect(self.deleteUnit)
 
-        layout.addWidget(deleteButton, 2, 2, 1, 2)
+        layout.addWidget(deleteButton, 3, 2, 1, 2)
 
         addNewUnitLabel = QLabel("--------------- Add New Unit ---------------")
         addNewUnitLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(addNewUnitLabel, 3, 0, 1, 4)
+        layout.addWidget(addNewUnitLabel, 4, 0, 1, 4)
 
         self.unitNameAdd = QLineEdit()
         self.unitNameAdd.setPlaceholderText("Unit ID")
         self.unitNameAdd.textChanged.connect(self.getNewUnitName)
 
-        layout.addWidget(self.unitNameAdd, 4, 0)
+        layout.addWidget(self.unitNameAdd, 5, 0)
 
         self.locationAdd = QLineEdit()
         self.locationAdd.setPlaceholderText("Location")
         self.locationAdd.textChanged.connect(self.getNewLocation)
 
-        layout.addWidget(self.locationAdd, 4, 1)
+        layout.addWidget(self.locationAdd, 5, 1)
 
         self.companyAdd = QLineEdit()
         self.companyAdd.setPlaceholderText("Company")
         self.companyAdd.textChanged.connect(self.getNewCompany)
 
-        layout.addWidget(self.companyAdd, 4, 2)
+        layout.addWidget(self.companyAdd, 5, 2)
 
         self.numCamerasAdd = QSpinBox()
         self.numCamerasAdd.setMinimum(1)
         self.numCamerasAdd.setMaximum(4)
         self.numCamerasAdd.textChanged.connect(self.getNewNumCCTV)
 
-        layout.addWidget(self.numCamerasAdd, 4, 3)
+        layout.addWidget(self.numCamerasAdd, 5, 3)
 
         self.cameratypeAdd = QLineEdit()
         self.cameratypeAdd.setPlaceholderText("Camera Manufacturer")
         self.cameratypeAdd.textChanged.connect(self.getCameraType)
 
-        layout.addWidget(self.cameratypeAdd, 5, 0)
+        layout.addWidget(self.cameratypeAdd, 6, 0)
 
         self.IPAdd = QLineEdit()
         self.IPAdd.setPlaceholderText("IP Address")
         self.IPAdd.textChanged.connect(self.getNewIP)
 
-        layout.addWidget(self.IPAdd, 5, 1)
+        layout.addWidget(self.IPAdd, 6, 1)
 
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC", "IO"])
         unitType.currentIndexChanged.connect(self.getNewUnitType)
 
-        layout.addWidget(unitType, 5, 2)
+        layout.addWidget(unitType, 6, 2)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd, 5, 3)
+        layout.addWidget(self.victronAdd, 6, 3)
 
         self.efoyAdd = QLineEdit()
         self.efoyAdd.setPlaceholderText("Efoy ID")
         self.efoyAdd.textChanged.connect(self.getNewEfoy)
 
-        layout.addWidget(self.efoyAdd, 6, 0)
+        layout.addWidget(self.efoyAdd, 7, 0)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
         self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd, 6, 1)
+        layout.addWidget(self.latAdd, 7, 1)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
         self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd, 6, 2)
+        layout.addWidget(self.lonAdd, 7, 2)
 
         self.textDevice = QRadioButton("Text Device")
         self.textDevice.toggled.connect(self.textDeviceState)
 
-        layout.addWidget(self.textDevice, 6, 3)
+        layout.addWidget(self.textDevice, 7, 3)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
-        layout.addWidget(addUnit, 7, 0, 1, 4)
+        layout.addWidget(addUnit, 8, 0, 1, 4)
 
         self.w3wLineEdit = QLineEdit()
         self.w3wLineEdit.setPlaceholderText("what3words")
         self.w3wLineEdit.textChanged.connect(self.getW3W)
 
-        layout.addWidget(self.w3wLineEdit, 8, 0, 1, 2)
+        layout.addWidget(self.w3wLineEdit, 9, 0, 1, 2)
 
         self.w3wButton = QPushButton("Convert")
         self.w3wButton.clicked.connect(self.convertW3W)
 
-        layout.addWidget(self.w3wButton, 8, 2, 1, 2)
+        layout.addWidget(self.w3wButton, 9, 2, 1, 2)
 
         self.backButton = QPushButton("Back")
         self.backButton.clicked.connect(self.closeEvent)
@@ -2503,13 +2503,13 @@ class unitManagement(QWidget):
                         background-color: #295231;
                         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 9, 1, 1, 2)
+        layout.addWidget(self.backButton, 10, 1, 1, 2)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 10, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 11, 1, 1, 2)
 
         self.setLayout(layout)
 
@@ -2588,6 +2588,9 @@ class unitManagement(QWidget):
         self.locationEdit.show()
         self.companyEdit.show()
         self.numCameras.show()
+        self.locationLabel.show()
+        self.companyLabel.show()
+        self.numCamerasLabel.show()
 
         self.unitName.setText(self.selectedUnit)
         self.locationEdit.setText(self.selectedLocation)
