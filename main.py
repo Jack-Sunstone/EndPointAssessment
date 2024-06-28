@@ -806,7 +806,13 @@ class relays(QWidget):
             self.relay4Button.setStyleSheet("background-color: red;")
             self.lastSeenLabel.setStyleSheet("font: bold 14px;"
                                         "color: red;")
-
+        else:
+            self.relay1Button.setEnabled(True)
+            self.relay2Button.setEnabled(True)
+            self.relay3Button.setEnabled(True)
+            self.relay4Button.setEnabled(True)
+            self.lastSeenLabel.setStyleSheet("font: bold 14px;"
+                                             "color: white;")
     def setRelayImage(self):
 
         intList = [self.Relay4, self.Relay3, self.Relay2, self.Relay1]
