@@ -2337,13 +2337,14 @@ class unitManagement(QWidget):
         self.newLon = ""
         self.newUnitType = ""
         self.newTextDevice = "NULL"
+        self.newUnitSize = "4M"
 
         self.w3w = ""
 
         super().__init__()
 
         self.setWindowTitle("Unit Management")
-        self.setGeometry(0, 0, 650, 300)
+        self.setGeometry(0, 0, 700, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -2443,57 +2444,64 @@ class unitManagement(QWidget):
 
         layout.addWidget(self.IPAdd, 6, 1)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 6, 2)
+
         unitType = QComboBox()
         unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC", "IO"])
         unitType.currentIndexChanged.connect(self.getNewUnitType)
 
-        layout.addWidget(unitType, 6, 2)
+        layout.addWidget(unitType, 7, 0)
+
+        self.unitSize = QComboBox()
+        self.unitSize.addItems(["4M", "6M"])
+        self.unitSize.currentIndexChanged.connect(self.getNewUnitSize)
+
+        layout.addWidget(self.unitSize, 7, 1)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd, 6, 3)
+        layout.addWidget(self.victronAdd, 7, 2)
 
         self.efoyAdd = QLineEdit()
         self.efoyAdd.setPlaceholderText("Efoy ID")
         self.efoyAdd.textChanged.connect(self.getNewEfoy)
 
-        layout.addWidget(self.efoyAdd, 7, 0)
+        layout.addWidget(self.efoyAdd, 7, 3)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
         self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd, 7, 1)
+        layout.addWidget(self.latAdd, 8, 0,1,2)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
         self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd, 7, 2)
+        layout.addWidget(self.lonAdd, 8, 2,1,2)
 
-        self.textDevice = QRadioButton("Text Device")
-        self.textDevice.toggled.connect(self.textDeviceState)
-
-        layout.addWidget(self.textDevice, 7, 3)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
-        layout.addWidget(addUnit, 8, 0, 1, 4)
+        layout.addWidget(addUnit, 9, 0, 1, 4)
 
         self.w3wLineEdit = QLineEdit()
         self.w3wLineEdit.setPlaceholderText("what3words")
         self.w3wLineEdit.textChanged.connect(self.getW3W)
 
-        layout.addWidget(self.w3wLineEdit, 9, 0, 1, 2)
+        layout.addWidget(self.w3wLineEdit, 10, 0, 1, 2)
 
         self.w3wButton = QPushButton("Convert")
         self.w3wButton.clicked.connect(self.convertW3W)
 
-        layout.addWidget(self.w3wButton, 9, 2, 1, 2)
+        layout.addWidget(self.w3wButton, 10, 2, 1, 2)
 
         self.backButton = QPushButton("Back")
         self.backButton.clicked.connect(self.closeEvent)
@@ -2503,13 +2511,13 @@ class unitManagement(QWidget):
                         background-color: #295231;
                         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 10, 1, 1, 2)
+        layout.addWidget(self.backButton, 11, 1, 1, 2)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 11, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 12, 1, 1, 2)
 
         self.setLayout(layout)
 
@@ -2547,10 +2555,12 @@ class unitManagement(QWidget):
             self.newUnitType = "ARC"
             self.victronAdd.show()
             self.efoyAdd.show()
+            self.unitSize.show()
         elif unitIndex == 1:
             self.newUnitType = "IO"
             self.victronAdd.hide()
             self.efoyAdd.hide()
+            self.unitSize.hide()
 
     def getNewVictronID(self, ID):
         self.newVictronID = ID
@@ -2569,6 +2579,12 @@ class unitManagement(QWidget):
             self.newTextDevice = "Yes"
         else:
             self.newTextDevice = "NULL"
+
+    def getNewUnitSize(self, unitIndex):
+        if unitIndex == 1:
+            self.newUnitSize = "4M"
+        else:
+            self.newUnitSize = "6M"
 
     def getW3W(self, W3W):
         self.w3w = W3W
@@ -2628,7 +2644,7 @@ class unitManagement(QWidget):
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
                          self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy,
-                         self.newTextDevice)
+                         self.newTextDevice, self.newUnitSize)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
@@ -2708,13 +2724,14 @@ class superUnitManagement(QWidget):
         self.newLon = ""
         self.newUnitType = ""
         self.newTextDevice = "NULL"
+        self.newUnitSize = "4M"
 
         self.w3w = ""
 
         super().__init__()
 
         self.setWindowTitle("Super Unit Management")
-        self.setGeometry(0, 0, 650, 300)
+        self.setGeometry(0, 0, 700, 300)
         self.setWindowIcon(QIcon(sunstoneIcon))
         self.setWindowIconText("Logo")
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -2866,57 +2883,62 @@ class superUnitManagement(QWidget):
 
         layout.addWidget(self.IPAdd, 10, 1)
 
+        self.textDevice = QRadioButton("Text Device")
+        self.textDevice.toggled.connect(self.textDeviceState)
+
+        layout.addWidget(self.textDevice, 10, 2)
+
         unitType = QComboBox()
-        unitType.setPlaceholderText("Unit Type")
         unitType.addItems(["ARC", "IO"])
         unitType.currentIndexChanged.connect(self.getNewUnitType)
 
-        layout.addWidget(unitType, 10, 2)
+        layout.addWidget(unitType, 11, 0)
 
         self.victronAdd = QLineEdit()
         self.victronAdd.setPlaceholderText("Victron Site ID")
         self.victronAdd.textChanged.connect(self.getNewVictronID)
 
-        layout.addWidget(self.victronAdd, 10, 3)
+        layout.addWidget(self.victronAdd, 11, 2)
 
         self.efoyAdd = QLineEdit()
         self.efoyAdd.setPlaceholderText("Efoy ID")
         self.efoyAdd.textChanged.connect(self.getNewEfoy)
 
-        layout.addWidget(self.efoyAdd, 11, 0)
+        layout.addWidget(self.efoyAdd, 11, 3)
+
+        self.unitSize = QComboBox()
+        self.unitSize.addItems(["4M","6M"])
+        self.unitSize.currentIndexChanged.connect(self.getNewUnitSize)
+
+        layout.addWidget(self.unitSize,11,1)
 
         self.latAdd = QLineEdit("")
         self.latAdd.setPlaceholderText("Latitude")
         self.latAdd.textChanged.connect(self.getNewLat)
 
-        layout.addWidget(self.latAdd, 11, 1)
+        layout.addWidget(self.latAdd, 12, 0,1,2)
 
         self.lonAdd = QLineEdit("")
         self.lonAdd.setPlaceholderText("Longitude")
         self.lonAdd.textChanged.connect(self.getNewLon)
 
-        layout.addWidget(self.lonAdd, 11, 2)
-
-        self.textDevice = QRadioButton("Text Device")
-        self.textDevice.toggled.connect(self.textDeviceState)
-
-        layout.addWidget(self.textDevice, 11, 3)
+        layout.addWidget(self.lonAdd, 12, 2,1,2)
 
         addUnit = QPushButton("Add New Unit")
         addUnit.clicked.connect(self.addNewUnit)
 
-        layout.addWidget(addUnit, 12, 0, 1, 4)
+        layout.addWidget(addUnit, 13, 0, 1, 4)
 
         self.w3wLineEdit = QLineEdit()
         self.w3wLineEdit.setPlaceholderText("what3words")
         self.w3wLineEdit.textChanged.connect(self.getW3W)
 
-        layout.addWidget(self.w3wLineEdit, 13, 0, 1, 2)
+        layout.addWidget(self.w3wLineEdit, 14, 0, 1, 2)
 
         self.w3wButton = QPushButton("Convert")
         self.w3wButton.clicked.connect(self.convertW3W)
 
-        layout.addWidget(self.w3wButton, 13, 2, 1, 2)
+        layout.addWidget(self.w3wButton, 14, 2, 1, 2)
 
         self.backButton = QPushButton("Back")
         self.backButton.clicked.connect(self.closeEvent)
@@ -2926,13 +2948,13 @@ class superUnitManagement(QWidget):
                         background-color: #295231;
                         padding: 5px 15px;""")
 
-        layout.addWidget(self.backButton, 14, 1, 1, 2)
+        layout.addWidget(self.backButton, 15, 1, 1, 2)
 
         self.errorMessage = QLabel("")
         self.errorMessage.setStyleSheet("color: red")
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addWidget(self.errorMessage, 15, 1, 1, 2)
+        layout.addWidget(self.errorMessage, 16, 1, 1, 2)
 
         self.setLayout(layout)
 
@@ -2988,10 +3010,12 @@ class superUnitManagement(QWidget):
             self.newUnitType = "ARC"
             self.victronAdd.show()
             self.efoyAdd.show()
+            self.unitSize.show()
         elif unitIndex == 1:
             self.newUnitType = "IO"
             self.victronAdd.hide()
             self.efoyAdd.hide()
+            self.unitSize.hide()
 
     def getNewVictronID(self, ID):
         self.newVictronID = ID
@@ -3011,6 +3035,11 @@ class superUnitManagement(QWidget):
         else:
             self.newTextDevice = "NULL"
 
+    def getNewUnitSize(self, unitIndex):
+        if unitIndex == 1:
+            self.newUnitSize = "4M"
+        else:
+            self.newUnitSize = "6M"
     def getW3W(self, W3W):
         self.w3w = W3W
 
@@ -3104,7 +3133,7 @@ class superUnitManagement(QWidget):
             self.errorMessage.setText("Please speak to administrator about adding new brands")
         else:
             SQL.addUnits(self.newUnitName, self.newIP, self.newVictronID, self.newLocation, self.NoCCTV,
-                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy)
+                         self.newCompany, self.newLat, self.newLon, self.newUnitType, self.newCameraType, self.newEfoy, self.newUnitSize)
             self.errorMessage.setText("Unit Added")
             self.unitNameAdd.setText("")
             self.locationAdd.setText("")
