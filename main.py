@@ -313,6 +313,17 @@ class allCamerasView(QWidget):
 
         layout = QGridLayout()
 
+        if selectedUnitType == "ARC":
+
+            batteryVoltage = QLabel(f"Battery Voltage: {unitVoltage}V")
+            Solar = QLabel(f"Solar: {unitSolar}W")
+
+            layout.addWidget(batteryVoltage, 0, 0, 1, 1)
+            layout.addWidget(Solar, 0, 1, 1, 1)
+
+            batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
+            Solar.setAttribute(Qt.WA_TranslucentBackground)
+
         if selectedCamera.lower() == "axis":
 
             if selectedCCTV == 4:
@@ -387,28 +398,41 @@ class allCamerasView(QWidget):
             self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
             self.cameraFour = CameraWidget(640, 360, cameraFourLink)
 
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
-            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
-            layout.addWidget(self.cameraFour.getVideoFrame(), 1, 1, 1, 1)
+            self.cameraOne.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraTwo.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraThree.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraFour.setAttribute(Qt.WA_TranslucentBackground)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 1, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 1, 1, 1, 1)
+            layout.addWidget(self.cameraThree.getVideoFrame(), 2, 0, 1, 1)
+            layout.addWidget(self.cameraFour.getVideoFrame(), 2, 1, 1, 1)
 
         elif selectedCCTV == 3:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
             self.cameraThree = CameraWidget(640, 360, cameraThreeLink)
 
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
-            layout.addWidget(self.cameraThree.getVideoFrame(), 1, 0, 1, 1)
+            self.cameraOne.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraTwo.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraThree.setAttribute(Qt.WA_TranslucentBackground)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 1, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 1, 1, 1, 1)
+            layout.addWidget(self.cameraThree.getVideoFrame(), 2, 0, 1, 1)
 
         elif selectedCCTV == 2:
             self.cameraOne = CameraWidget(640, 360, cameraOneLink)
             self.cameraTwo = CameraWidget(640, 360, cameraTwoLink)
 
-            layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
-            layout.addWidget(self.cameraTwo.getVideoFrame(), 0, 1, 1, 1)
+            self.cameraOne.setAttribute(Qt.WA_TranslucentBackground)
+            self.cameraTwo.setAttribute(Qt.WA_TranslucentBackground)
+
+            layout.addWidget(self.cameraOne.getVideoFrame(), 1, 0, 1, 1)
+            layout.addWidget(self.cameraTwo.getVideoFrame(), 1, 1, 1, 1)
 
         self.setLayout(layout)
+        self.setStyleSheet(baseSheet)
 
     def closeEvent(self, event):
 
@@ -468,6 +492,16 @@ class singleCameraView(QWidget):
 
         layout = QGridLayout()
 
+        if selectedUnitType == "ARC":
+            batteryVoltage = QLabel(f"Battery Voltage: {unitVoltage}V")
+            Solar = QLabel(f"Solar: {unitSolar}W")
+
+            layout.addWidget(batteryVoltage, 0, 0, 1, 1)
+            layout.addWidget(Solar, 0, 1, 1, 1)
+
+            batteryVoltage.setAttribute(Qt.WA_TranslucentBackground)
+            Solar.setAttribute(Qt.WA_TranslucentBackground)
+
         if selectedCamera.lower() == "axis":
 
             cameraOneLink = axisPath(selectedIP, CameraNumber)
@@ -486,9 +520,13 @@ class singleCameraView(QWidget):
 
         self.cameraOne = CameraWidget(1280, 720, cameraOneLink)
 
-        layout.addWidget(self.cameraOne.getVideoFrame(), 0, 0, 1, 1)
+        layout.addWidget(self.cameraOne.getVideoFrame(), 1, 0, 1, 2)
+
+        self.cameraOne.setAttribute(Qt.WA_TranslucentBackground)
 
         self.setLayout(layout)
+
+        self.setStyleSheet(baseSheet)
 
     def closeEvent(self, event):
 
@@ -559,7 +597,6 @@ class relays(QWidget):
         Binary = "".join(strList)
 
         Decimal = binToDec(Binary)
-
 
         relayImage = resourcePath(f"Assets/Images/TextDevice/{Decimal}.png")
 
