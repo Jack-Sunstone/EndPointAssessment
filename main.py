@@ -523,7 +523,6 @@ class singleCameraView(QWidget):
 class relays(QWidget):
     def __init__(self):
         sunstoneIcon = resourcePath("Assets/Images/SunstoneLogo.png")
-
         response = requests.get(f"http://81.179.155.109:78/{selectedUnit}/lastSeen.php")
         lastSeen = response.text
 
@@ -920,6 +919,7 @@ class relays(QWidget):
     def closeEvent(self, a0):
         self.timer.stop()
         self.close()
+
 class ioDashboard(QWidget):
     def __init__(self):
 
@@ -1155,8 +1155,9 @@ class ioDashboard(QWidget):
         self.singleCamera.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 5)
-        if status == 0:
+        unitStatus = checkURL(selectedIP, 64430, 5)
+        apacheStatus = checkURL("81.179.155.109", 78, 1)
+        if unitStatus == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
 
@@ -1170,6 +1171,7 @@ class ioDashboard(QWidget):
             self.camera3Button.setEnabled(False)
             self.camera4Button.setEnabled(False)
             self.routerButton.setEnabled(False)
+
             self.allCameras.setPixmap(cameraPath)
             self.Camera1.setPixmap(cameraPath)
             self.Camera2.setPixmap(cameraPath)
@@ -1178,8 +1180,11 @@ class ioDashboard(QWidget):
 
         else:
             self.errorMessage.setText("Unit Online")
-            self.errorMessage.setStyleSheet("color: green;"
+            self.errorMessage.setStyleSheet("color: #1eff00;"
                                             "font: bold 14px;")
+        if apacheStatus == 0:
+            self.relaysButton.setEnabled(False)
+            self.relaysButton.setStyleSheet("background-color: red;")
 
     def openRouter(self):
         webbrowser.open(f"https://{selectedIP}:64430/")
@@ -1550,8 +1555,9 @@ class arcDashboard(QWidget):
         self.allCameras.move(Geo.topLeft())
 
     def checkUnitStatus(self):
-        status = checkURL(selectedIP, 64430, 5)
-        if status == 0:
+        unitStatus = checkURL(selectedIP, 64430, 5)
+        apacheStatus = checkURL("81.179.155.109", 78,1)
+        if unitStatus == 0:
 
             cameraPath = QPixmap(resourcePath("Assets/Images/OfflineCCTV.png"))
 
@@ -1576,7 +1582,9 @@ class arcDashboard(QWidget):
             self.errorMessage.setText("Unit Online")
             self.errorMessage.setStyleSheet("color: #1eff00;"
                                             "font: bold 14px;")
-
+        if apacheStatus == 0:
+            self.relaysButton.setEnabled(False)
+            self.relaysButton.setStyleSheet("background-color: red;")
     def updateData(self):
         global unitVoltage
         global unitLoad
