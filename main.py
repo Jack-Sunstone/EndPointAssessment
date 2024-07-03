@@ -209,8 +209,8 @@ class CameraWidget(QWidget):
 
         self.Deque = deque(maxlen=1)
 
-        self.screenWidth = Width - 16
-        self.screenHeight = Height - 16
+        self.screenWidth = Width
+        self.screenHeight = Height
 
         self.cameraStreamLink = streamLink
 
@@ -297,6 +297,9 @@ class CameraWidget(QWidget):
     def getVideoFrame(self):
         return self.videoFrame
 
+    def closeEvent(self, a0):
+        super().closeEvent(a0)
+
 
 class allCamerasView(QWidget):
     def __init__(self):
@@ -306,8 +309,8 @@ class allCamerasView(QWidget):
         super().__init__()
 
         self.setWindowTitle("View All Cameras")
-        self.setGeometry(0, 0, 1280, 720)
-        self.setFixedSize(1280, 720)
+        self.setGeometry(0, 0, 1310, 800)
+        self.setFixedSize(1310, 800)
         self.setWindowIcon(QIcon(cameraIcon))
         self.setWindowIconText("Camera")
 
@@ -464,7 +467,7 @@ class allCamerasView(QWidget):
             Geo.moveCenter(Center)
             self.openARCDashboard.move(Geo.topLeft())
 
-            self.hide()
+            self.close()
         elif str(selectedUnitType) == "IO":
             self.openIODashboard = ioDashboard()
             self.openIODashboard.show()
@@ -474,8 +477,7 @@ class allCamerasView(QWidget):
             Geo.moveCenter(Center)
             self.openIODashboard.move(Geo.topLeft())
 
-            self.hide()
-
+            self.close()
 
 class singleCameraView(QWidget):
     def __init__(self):
@@ -485,8 +487,8 @@ class singleCameraView(QWidget):
         super().__init__()
 
         self.setWindowTitle(f"Camera {CameraNumber}")
-        self.setGeometry(0, 0, 1280, 720)
-        self.setFixedSize(1280, 720)
+        self.setGeometry(0, 0, 1310, 800)
+        self.setFixedSize(1310, 800)
         self.setWindowIcon(QIcon(cameraIcon))
         self.setWindowIconText("Camera")
 
@@ -1053,6 +1055,8 @@ class ioDashboard(QWidget):
 
         if selectedTextDevice == None:
             self.relaysButton.hide()
+        elif selectedTextDevice.strip() == "NULL":
+            self.relaysButton.hide()
 
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1312,8 +1316,12 @@ class arcDashboard(QWidget):
             self.sunPath = resourcePath("Assets/Images/cloud.png")
 
         if selectedTextDevice != None:
-            self.solarStatus = SQL.fetchSolarState(selectedUnit)
-            self.solarStatus = int(self.solarStatus[0])
+            if selectedTextDevice.strip() != "NULL":
+                self.solarStatus = SQL.fetchSolarState(selectedUnit)
+                self.solarStatus = int(self.solarStatus[0])
+            else:
+                self.solarStatus = "N/A"
+
         else:
             self.solarStatus = "N/A"
 
@@ -1492,6 +1500,8 @@ class arcDashboard(QWidget):
 
         if selectedTextDevice == None:
             self.relaysButton.hide()
+        elif selectedTextDevice.strip() == "NULL":
+            self.relaysButton.hide()
 
         self.errorMessage = QLabel()
         self.errorMessage.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1630,8 +1640,12 @@ class arcDashboard(QWidget):
         pullVictronData(selectedUnit)
 
         if selectedTextDevice != None:
-            self.solarStatus = SQL.fetchSolarState(selectedUnit)
-            self.solarStatus = int(self.solarStatus[0])
+            if selectedTextDevice.strip() != "NULL":
+                self.solarStatus = SQL.fetchSolarState(selectedUnit)
+                self.solarStatus = int(self.solarStatus[0])
+            else:
+                self.solarStatus = "N/A"
+
         else:
             self.solarStatus = "N/A"
 
