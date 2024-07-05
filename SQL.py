@@ -13,7 +13,7 @@ def connection():
 def fetchUnitsSunstone():
     connection()
     cursor = cnxn.cursor()
-    cursor.execute("SELECT Name, Location FROM dbo.AllUnits ORDER BY Name")
+    cursor.execute("SELECT Name, Location FROM dbo.AllUnits WHERE Location != 'Sunstone' ORDER BY Name")
 
     for row in cursor.fetchall():
         yield row
@@ -338,7 +338,7 @@ def addUsers(Username, Password, Company, Rights):
 def updateUser(Username, Password, Rights):
     connection()
     cursor = cnxn.cursor()
-    print(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
+
     cursor.execute(f"UPDATE dbo.Users SET Password = '{Password}', Rights = '{Rights}' WHERE Username = '{Username}'")
 
     cnxn.commit()
