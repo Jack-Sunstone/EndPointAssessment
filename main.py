@@ -289,7 +289,7 @@ class CameraWidget(QWidget):
 
             self.Frame = cv2.resize(Frame, (self.screenWidth, self.screenHeight))
 
-            # Convert to pixmap and set to video frame
+            #Convert to pixmap and set to video frame
             self.Image = QImage(self.Frame, self.Frame.shape[1], self.Frame.shape[0], QImage.Format_RGB888).rgbSwapped()
             self.Pixmap = QPixmap.fromImage(self.Image)
             self.videoFrame.setPixmap(self.Pixmap)
@@ -2680,7 +2680,7 @@ class unitManagement(QWidget):
             self.errorMessage.setText("Number of Cameras should be between 1-4")
 
     def deleteUnit(self):
-        SQL.deleteUnits(self.selectedUnit)
+        SQL.deleteUnits(self.selectedUnit, selectedTextDevice)
         self.errorMessage.setText("Unit Deleted")
 
     def addNewUnit(self):

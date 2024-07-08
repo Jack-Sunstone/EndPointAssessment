@@ -308,7 +308,7 @@ def updateGenSuper(genName, Location, Company, Victron, Efoy1, Efoy2, Lat, Lon):
 
     cnxn.commit()
 
-def deleteUnits(Name):
+def deleteUnits(Name, textDevice):
     connection()
     cursor = cnxn.cursor()
     cursor.execute(f"DELETE FROM dbo.CCTVUnits WHERE Name = '{Name}'")
@@ -316,6 +316,9 @@ def deleteUnits(Name):
 
     if "ARC" in Name:
         cursor.execute(f"DELETE FROM dbo.VictronData WHERE Name = '{Name}'")
+
+    if "Yes" in textDevice:
+        cursor.execute(f"DELETE FROM dbo.Relays WHERE Name = '{Name}'")
 
     cnxn.commit()
 
