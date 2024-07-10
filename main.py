@@ -205,6 +205,8 @@ def checkURL(IPAddress, Port, Timeout):
 class CameraWidget(QWidget):
 
     def __init__(self, Width, Height, streamLink=0):
+        self.loop = 1
+        self.stream = 1
         super(CameraWidget, self).__init__()
 
         self.Deque = deque(maxlen=1)
@@ -229,12 +231,12 @@ class CameraWidget(QWidget):
         self.Timer.start(1)
 
     def loadNetworkStream(self):
-
         def loadNetworkStreamThread():
             if self.verifyNetworkStream(self.cameraStreamLink):
                 self.Capture = cv2.VideoCapture(self.cameraStreamLink)
                 self.Online = True
-
+            else:
+                self.videoFrame.setText("Camera Offline")
         self.loadStreamThread = Thread(target=loadNetworkStreamThread, args=())
         self.loadStreamThread.daemon = True
         self.loadStreamThread.start()
@@ -251,7 +253,7 @@ class CameraWidget(QWidget):
     def getFrame(self):
         # Function reads the frame -> resizes and then converts the image stored to a pixmap to be used in window
 
-        while True:
+        while self.loop == 1:
             try:
                 if self.Capture.isOpened() and self.Online:
                     # Read next frame from stream and insert into deque
@@ -262,7 +264,6 @@ class CameraWidget(QWidget):
                         self.Capture.release()
                         self.Online = False
                 else:
-
                     self.loadNetworkStream()
                     self.Spin(2)
                 self.Spin(.001)
@@ -293,12 +294,13 @@ class CameraWidget(QWidget):
             self.Image = QImage(self.Frame, self.Frame.shape[1], self.Frame.shape[0], QImage.Format_RGB888).rgbSwapped()
             self.Pixmap = QPixmap.fromImage(self.Image)
             self.videoFrame.setPixmap(self.Pixmap)
-
     def getVideoFrame(self):
         return self.videoFrame
 
     def closeEvent(self, a0):
-        super().closeEvent(a0)
+        self.loop = 0
+        self.close()
+        self.Timer.stop()
 
 
 class allCamerasView(QWidget):
